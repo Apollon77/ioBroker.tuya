@@ -1,0 +1,46 @@
+{
+  "name": "iobroker.tuya",
+  "version": "0.1.0",
+  "description": "Tuya",
+  "author": {
+    "name": "Ingo Fischer",
+    "email": "iobroker@fischer-ka.de"
+  },
+  "contributors": [
+    {
+      "name": "Apollon77",
+      "email": "iobroker@fischer-ka.de"
+    }
+  ],
+  "homepage": "https://github.com/Apollon77/ioBroker.tuya",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "Tuya",
+    "Smart Home",
+    "switch"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apollon77/ioBroker.tuya"
+  },
+  "dependencies": {
+    "request": "^2.79.0",
+    "tuyapi": "^3.1.0",
+    "extend": "^3.0.2",
+    "anyproxy": "^4.0.12"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "mocha": "^4.1.0",
+    "chai": "^4.1.2"
+  },
+  "main": "main.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --exit"
+  },
+  "bugs": {
+    "url": "https://github.com/Apollon77/ioBroker.tuya/issues"
+  },
+  "readmeFilename": "README.md"
+}

@@ -1,0 +1,83 @@
+{
+    "common": {
+        "name": "tuya",
+        "version": "0.1.0",
+        "news": {
+            "0.1.0": {
+                "en": "Initiale Tuya Adapter Version",
+                "de": "Initiale Tuya Adapter Version",
+                "ru": "Версия Initiale Tuya Adapter",
+                "pt": "Versão do Adaptador Initiale Tuya",
+                "nl": "Initiale Tuya-adapterversie",
+                "fr": "Initiale Tuya Adapter Version",
+                "it": "Versione dell'adattatore Initiale Tuya",
+                "es": "Initiale Tuya Adapter Version",
+                "pl": "Initiale Tuya Adapter Version"
+            }
+        },
+        "title": "Tuya",
+        "titleLang": {
+            "en": "Tuya",
+            "de": "Tuya",
+            "ru": "Tuya",
+            "pt": "Tuya",
+            "nl": "Tuya",
+            "fr": "Tuya",
+            "it": "Tuya",
+            "es": "Tuya",
+            "pl": "Tuya"
+        },
+        "desc": {
+            "en": "Tuya Adapter",
+            "de": "Tuya Adapter",
+            "ru": "Tuya адаптер",
+            "pt": "Adaptador Tuya",
+            "nl": "Tuya-adapter",
+            "fr": "Adaptateur Tuya",
+            "it": "Adattatore Tuya",
+            "es": "Adaptador Tuya",
+            "pl": "Adapter Tuya"
+        },
+        "license": "MIT",
+        "authors": [
+            "Apollon77 <iobroker@fischer-ka.de>"
+        ],
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "icon": "tuya.png",
+        "materialize": true,
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
+        "keywords": ["Tuya", "switch", "smarthome", "iobroker"],
+        "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
+        "loglevel": "info",
+        "type": "iot-systems",
+        "restartAdapters": []
+    },
+    "native": {
+        "pollingInterval": 60
+    },
+    "objects": [],
+    "instanceObjects": [{
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "If connected to Tuya devices",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
+}

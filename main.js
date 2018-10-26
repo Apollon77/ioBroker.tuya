@@ -1,0 +1,523 @@
+/* jshint -W097 */
+/* jshint -W030 */
+/* jshint strict:true */
+/* jslint node: true */
+/* jslint esversion: 6 */
+'use strict';
+
+const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
+const adapter = new utils.Adapter('tuya');
+const objectHelper = require(__dirname + '/lib/objectHelper'); // Get common adapter utils
+const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
+const dgram = require('dgram');
+const Parser = require('tuyapi/lib/message-parser.js');
+const extend = require('extend');
+
+const AnyProxy = require('anyproxy');
+let proxyServer;
+let proxyAdminMessageCallback;
+
+const TuyaDevice = require('tuyapi');
+
+const knownDevices = {};
+let connected = null;
+
+function decrypt(key, value) {
+    let result = '';
+    for (let i = 0; i < value.length; ++i) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+
+// is called when adapter shuts down - callback has to be called under any circumstances!
+adapter.on('unload', function(callback) {
+    try {
+        setConnected(false);
+        stopAll();
+        // adapter.log.info('cleaned everything up...');
+        callback();
+    } catch (e) {
+        callback();
+    }
+});
+
+process.on('SIGINT', function() {
+    stopAll();
+    setConnected(false);
+});
+
+process.on('uncaughtException', function(err) {
+    console.log('Exception: ' + err + '/' + err.toString());
+    if (adapter && adapter.log) {
+        adapter.log.warn('Exception: ' + err);
+    }
+    stopAll();
+    setConnected(false);
+});
+
+
+// is called if a subscribed state changes
+adapter.on('stateChange', function(id, state) {
+    // Warning, state can be null if it was deleted
+    adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+    objectHelper.handleStateChange(id, state);
+
+});
+
+adapter.on('message', function(msg) {
+    processMessage(msg);
+});
+
+function setConnected(isConnected) {
+    if (connected !== isConnected) {
+        connected = isConnected;
+        adapter.setState('info.connection', connected, true, (err) => {
+            // analyse if the state could be set (because of permissions)
+            if (err) adapter.log.error('Can not update connected state: ' + err);
+            else adapter.log.debug('connected set to ' + connected);
+        });
+    }
+}
+
+// is called when databases are connected and adapter received configuration.
+// start here!
+adapter.on('ready', function() {
+    // main();
+    adapter.getForeignObject('system.config', (err, obj) => {
+
+        if (adapter.config.password) {
+            if (obj && obj.native && obj.native.secret) {
+                //noinspection JSUnresolvedVariable
+                adapter.config.password = decrypt(obj.native.secret, adapter.config.password);
+            } else {
+                //noinspection JSUnresolvedVariable
+                adapter.config.password = decrypt('Zgfr56gFe87jJOM', adapter.config.password);
+            }
+        }
+        main();
+    });
+});
+
+function stopAll() {
+    for (const deviceId in knownDevices) {
+        if (!knownDevices.hasOwnProperty(deviceId)) continue;
+        knownDevices[deviceId].stop = true;
+        if (knownDevices[deviceId].device) {
+            knownDevices[deviceId].device.disconnect();
+        }
+    }
+}
+
+function initDeviceObjects(deviceId, data, objs, values) {
+    if (!values) {
+        values = {};
+    }
+    objs.forEach((obj) => {
+        const id = obj.id;
+        delete obj.id;
+        let onChange;
+        if (!data.localKey) {
+            obj.write = false;
+        }
+        if (obj.write) {
+            onChange = (value) => {
+                if (!knownDevices[deviceId].device) {
+                    adapter.log.debug(deviceId + 'Device communication not initialized, try to connect ...');
+                }
+                knownDevices[deviceId].device.set({
+                    'dps': id,
+                    'set': value
+                }).then(() => {
+                    adapter.log.debug(deviceId + '.' + id + ': set value ' + value);
+                }).catch((err) => {
+                    adapter.log.error(deviceId + '.' + id + ': ' + err);
+                });
+            };
+        }
+        objectHelper.setOrUpdateObject(deviceId + '.' + id, {
+            type: 'state',
+            common: obj
+        }, values[id], onChange);
+    });
+}
+
+function pollDevice(deviceId) {
+    knownDevices[deviceId].pollingTimeout = setTimeout(() => {
+        knownDevices[deviceId].pollingTimeout = null;
+        knownDevices[deviceId].device.get({
+            returnAsEvent: true
+        });
+        pollDevice(deviceId);
+    }, adapter.config.pollingInterval * 1000);
+}
+
+
+function initDevice(deviceId, productKey, data, callback) {
+    data.productKey = productKey;
+    let values;
+    if (data.dps) {
+        values = data.dps;
+        delete data.dps;
+    }
+    knownDevices[deviceId] = extend(true, knownDevices[deviceId] || {}, {
+        'data': data
+    });
+    // {"ip":"192.168.178.85","gwId":"34305060807d3a1d7178","active":2,"ability":0,"mode":0,"encrypt":true,"productKey":"8FAPq5h6gdV51Vcr","version":"3.1"}
+    let schema, schemaExt;
+    if (!data.schema) {
+        const known = mapper.getSchema(productKey);
+        if (known) {
+            data.schema = known.schema;
+            data.schemaExt = known.schemaExt;
+        }
+    }
+
+    if (knownDevices[deviceId].device) {
+        knownDevices[deviceId].stop = true;
+        knownDevices[deviceId].device.disconnect();
+        if (knownDevices[deviceId].reconnectTimeout) {
+            clearTimeout(knownDevices[deviceId].reconnectTimeout);
+            knownDevices[deviceId].reconnectTimeout = null;
+        }
+        if (knownDevices[deviceId].pollingTimeout) {
+            clearTimeout(knownDevices[deviceId].pollingTimeout);
+            knownDevices[deviceId].pollingTimeout = null;
+        }
+    }
+    if (!data.localKey) {
+        data.localKey = '';
+    }
+
+    adapter.log.debug(deviceId + ': Create device objects if not exist');
+    objectHelper.setOrUpdateObject(deviceId, {
+        type: 'device',
+        common: {
+            name: data.name || 'Device ' + deviceId
+        },
+        native: data
+    });
+    objectHelper.setOrUpdateObject(deviceId + '.online', {
+        type: 'state',
+        common: {
+            name: 'Device online status',
+            type: 'boolean',
+            role: 'indicator.reachable',
+            read: true,
+            write: false
+        }
+    }, false);
+    objectHelper.setOrUpdateObject(deviceId + '.ip', {
+        type: 'state',
+        common: {
+            name: 'Device IP',
+            type: 'string',
+            role: 'info.ip',
+            read: true,
+            write: false
+        }
+    }, data.ip);
+
+    if (data.schema) {
+        const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
+        initDeviceObjects(deviceId, data, objs, values);
+        knownDevices[deviceId].objectsInitialized = true;
+    }
+
+    objectHelper.processObjectQueue(() => {
+        if (!knownDevices[deviceId].ip) {
+            adapter.log.info(deviceId + ': Can not start because IP unknown');
+            callback && callback();
+        }
+
+        adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey);
+        knownDevices[deviceId].stop = false;
+        knownDevices[deviceId].device = new TuyaDevice({
+            id: deviceId,
+            key: knownDevices[deviceId].localKey || '0000000000000000',
+            ip: knownDevices[deviceId].ip,
+            persistentConnection: true
+        });
+
+        knownDevices[deviceId].device.on('data', (data) => {
+            if (typeof data !== 'object' || !data || !data.dps) return;
+            if (data.devId !== deviceId) {
+                adapter.log.warn(deviceId + ': Received data for other deviceId ' + data.devId + ' ... ignoring');
+                return;
+            }
+            adapter.log.debug(deviceId + ': Received data for ' + ': ' + JSON.stringify(data.dps));
+
+            if (!knownDevices[deviceId].objectsInitialized) {
+                adapter.log.info(deviceId + ': No schema exists but localKey, init basic states ...');
+                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!data.localKey), data.dps);
+                objectHelper.processObjectQueue();
+                return;
+            }
+            for (const id in data.dps) {
+                if (!data.hasOwnProperty(id)) continue;
+                adapter.setState(deviceId, data.dps[id], true);
+            }
+
+        });
+
+        knownDevices[deviceId].device.on('connected', () => {
+            adapter.log.debug(deviceId + ': Connected to device');
+            adapter.setState(deviceId + '.online', true, true);
+            if (knownDevices[deviceId].reconnectTimeout) {
+                clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                knownDevices[deviceId].reconnectTimeout = null;
+            }
+        });
+
+        knownDevices[deviceId].device.on('disconnected', () => {
+            adapter.log.debug(deviceId + ': Disconnected from device');
+            adapter.setState(deviceId + '.online', false, true);
+            if (!knownDevices[deviceId].stop) {
+                knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
+                    knownDevices[deviceId].device.connect();
+                }, 60000);
+            }
+        });
+
+        knownDevices[deviceId].device.on('error', (err) => {
+            adapter.log.info(deviceId + ': Error from device ' + err);
+        });
+
+        knownDevices[deviceId].device.connect();
+
+        if (!data.localKey) {
+            adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
+            pollDevice(deviceId);
+        }
+
+        callback && callback();
+    });
+}
+
+
+function discoverLocalDevices() {
+    const server = dgram.createSocket('udp4');
+
+    server.on('listening', function() {
+        const address = server.address();
+        adapter.log.info('Discover for Local Tuya devices on port 6666');
+    });
+
+    server.on('message', function(message, remote) {
+        adapter.log.debug(remote.address + ':' + remote.port + ' - ' + message);
+        const data = Parser.parse(message);
+        if (!data || !data.gwId) return;
+        if (knownDevices[data.gwId]) return;
+        initDevice(data.gwId, data.productKey, data);
+    });
+
+    server.bind(6666);
+}
+
+function initDone() {
+    setConnected(true);
+    discoverLocalDevices();
+    adapter.subscribeStates('*');
+}
+
+function processMessage(msg) {
+    switch (msg.command) {
+        case 'startProxy':
+            startProxy(msg);
+            break;
+        case 'stopProxy':
+            stopProxy(msg);
+            break;
+        case 'getproxyResult':
+            getProxyResult(msg);
+            break;
+        case 'getDeviceInfo':
+            getDeviceInfo(msg);
+            break;
+    }
+}
+
+function startProxy(msg) {
+    if (!AnyProxy.utils.certMgr.ifRootCAFileExists()) {
+        AnyProxy.utils.certMgr.generateRootCA((error, keyPath) => {
+            // let users to trust this CA before using proxy
+            if (!error) {
+                const certDir = require('path').dirname(keyPath);
+                adapter.log.info('The proxy certificate is generated at' + certDir);
+                return startProxy(msg);
+            } else {
+                adapter.log.error('error when generating rootCA', error);
+                adapter.sendTo(msg.from, msg.command, {
+                    result:     false,
+                    error:      error
+                }, msg.callback);
+                return;
+            }
+        });
+    }
+
+    const options = {
+        port: msg.message.proxyPort,
+        rule: require('./lib/anyproxy-rule.js')(adapter, catchProxyInfo),
+        webInterface: {
+            enable: true,
+            webPort: msg.message.proxyWebPort
+        },
+        throttle: 10000,
+        forceProxyHttps: true,
+        wsIntercept: false,
+        silent: false // TODO
+    };
+
+    proxyServer = new AnyProxy.ProxyServer(options);
+
+    proxyServer.on('ready', () => {
+        adapter.log.info('Anyproxy ready');
+        adapter.sendTo(msg.from, msg.command, {
+            result:     true,
+            error:      null
+        }, msg.callback);
+    });
+
+    proxyServer.on('error', (err) => {
+        adapter.log.error('Anyproxy ERROR: ' + err);
+    });
+
+    proxyServer.start();
+}
+
+function stopProxy(msg) {
+    proxyServer.close();
+    adapter.sendTo(msg.from, msg.command, {
+        result:     true,
+        error:      null
+    }, msg.callback);
+}
+
+function catchProxyInfo(data) {
+    if (!data || !Array.isArray(data)) return;
+
+    let devices, deviceInfos;
+
+    data.forEach((obj) => {
+        if (obj.a === 'tuya.m.my.group.device.list') {
+            devices = obj.result;
+        }
+        else if (obj.a === 'tuya.m.device.ref.info.my.list') {
+            deviceInfos = obj.result;
+        }
+    });
+
+    if (deviceInfos && deviceInfos.length) {
+        adapter.log.debug('Found ' + deviceInfos.length + ' device schema information');
+        deviceInfos.forEach((deviceInfo) => {
+            if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
+                adapter.log.info('new Shema added for ' + deviceInfo.id); //TODO!!
+            }
+        });
+
+    }
+    if (devices && devices.length) {
+        adapter.log.debug('Found ' + devices.length + ' devices');
+        devices.forEach((device) => {
+            delete device.ip;
+            initDevice(device.devId, device.productId, device);
+            /*
+            {
+                "devId": "34305060807d3a1d7832",
+                "dpMaxTime": 1540200260064,
+                "virtual": false,
+                "productId": "8FAPq5h6gdV51Vcr",
+                "dps": {
+                    "1": false,
+                    "2": 0,
+                    "3": 1,
+                    "4": 0,
+                    "5": 0,
+                    "6": 2399
+                },
+                "activeTime": 1539967915,
+                "ip": "91.89.163.25",
+                "lon": "8.345706",
+                "moduleMap": {
+                    "wifi": {
+                        "upgradeStatus": 0,
+                        "bv": "5.27",
+                        "cdv": "1.0.0",
+                        "pv": "2.1",
+                        "verSw": "1.0.1",
+                        "isOnline": true,
+                        "id": 2952706,
+                        "cadv": ""
+                    },
+                    "mcu": {
+                        "upgradeStatus": 0,
+                        "cdv": "",
+                        "verSw": "1.0.1",
+                        "isOnline": true,
+                        "id": 2952707,
+                        "cadv": ""
+                    }
+                },
+                "uuid": "34305060807d3a1d7832",
+                "name": "Steckdose 1",
+                "timezoneId": "Europe/Berlin",
+                "iconUrl": "https://images.tuyaus.com/smart/icon/1521522457nf46uh6z3tk3jag1m6bfq1tt9_0.jpg",
+                "lat": "49.035754",
+                "runtimeEnv": "prod",
+                "localKey": "03c5e7d3b8c97ec0"
+            }
+            */
+        });
+    }
+
+}
+
+function getProxyResult(msg) {
+    proxyAdminMessageCallback = msg;
+}
+
+function getDeviceInfo(msg) {
+
+}
+
+
+// main function
+function main() {
+    setConnected(false);
+    objectHelper.init(adapter);
+
+    adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
+
+    let options = {};
+
+    if (adapter.config.user && adapter.config.password) {
+        options = {
+            logger: adapter.log.debug,
+            user: adapter.config.user,
+            password: adapter.config.password
+        };
+    } else {
+        options = {
+            logger: adapter.log.debug,
+        };
+    }
+
+    adapter.getDevices((err, devices) => {
+        let deviceCnt = 0;
+        if (devices && devices.length) {
+            devices.forEach((device) => {
+                if (!device._id || !device.native) {
+                    deviceCnt++;
+                    initDevice(device._id, device.native.productKey, device.native, () => {
+                        if (!--deviceCnt) initDone();
+                    });
+                }
+            });
+        }
+        if (!deviceCnt) {
+            initDone();
+        }
+    });
+}
