@@ -1,336 +1,181 @@
 <html>
 
 <head>
-  <!-- these 4 files always have to be included -->
-  <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
-  <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-  <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-  <!-- these files always have to be included -->
-  <script type="text/javascript" src="../../js/translate.js"></script>
-  <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-  <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-  <script type="text/javascript" src="words.js"></script>
+    <!-- these 4 files always have to be included -->
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
 
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-  <script type="text/javascript">
-    var devices = [];
-    var active = false;
-    var g_onChange;
-    var SEP = '_';
-    var secret;
-
-    if (typeof _ !== 'function') _ = translateWord;
-
-    function encrypt(key, value) {
-      var result = '';
-      for (var i = 0; i < value.length; ++i) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-      }
-      return result;
-    }
-
-    function decrypt(key, value) {
-
-      var result = '';
-      for (var i = 0; i < value.length; ++i) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-      }
-      return result;
-
-    }
-
-
-    function loadHelper(settings, onChange) {
-
-      if (!settings) return;
-      if (settings.password === undefined) settings.password = '';
-      if (settings.user === undefined) settings.user = '';
-
-      g_onChange = onChange;
-
-      getIPs(function(ips) {
-        for (var i = 0; i < ips.length; i++) {
-          $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
+    <!-- these files always have to be included -->
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="words.js"></script>
+    <style>
+        .m .col .select-wrapper+label {
+            top: -26px;
         }
-        $('#bind.value').val(settings.bind).select();
-      });
 
-
-      $('#values').on('click', function() {
-        //checkDevices();
-      });
-
-      function checkDevices() {
-        console.log("Ceck devices");
-        var oldDev = table2values('values');
-        var newDev = [];
-        var tmpIp = [];
-        for (var i = 0; i < oldDev.length; i++) {
-          console.log(JSON.stringify(tmpIp));
-          if (!tmpIp.includes(oldDev[i].ip)) {
-            tmpIp.push(oldDev[i].ip);
-            newDev.push(oldDev[i]);
-            if (i === oldDev.length - 1) {
-              console.log("safe");
-              values2table('values', newDev, true);
-            }
-          }
+        .m span {
+            font-size: 0.9em;
         }
-      };
-      //checkDevices();
 
-      socket.emit('getState', 'system.adapter.' + adapter + '.' + instance + '.alive', function(err, state) {
-        active = /*common.enabled ||*/ (state && state.val);
-      });
-
-      changed = true;
-      g_onChange = onChange;
-
-      function getVal(id) {
-        var ar = id.split(SEP);
-        var obj = settings;
-        for (var i = 0; i < ar.length - 1; i++) {
-          if (obj[ar[i]] === undefined) obj[ar[i]] = {};
-          obj = obj[ar[i]];
+        #startProxy:hover {
+            cursor: pointer;
         }
-        return obj[ar[ar.length - 1]];
-      }
 
-      function forAllKeys(obj, s, cb) {
-        var sep = SEP; //'.';
-        if (typeof s === 'function') {
-          cb = s;
-          s = '';
+        #stopProxy:hover {
+            cursor: pointer;
         }
-        for (var i in obj) {
-          if (typeof obj[i] === 'object') {
-            if (Array.isArray(obj[i])) continue;
-            forAllKeys(obj[i], s ? s + sep + i : i, cb)
-          } else {
-            cb && cb(s ? s + sep + i : i);
-          }
+    </style>
+
+    <script type="text/javascript">
+        function getDeviceInfos() {
+            sendTo(null, 'getDeviceInfo', null, function (response) {
+                var text = response.result.devices + ' found, ' + response.result.devicesConnected + ' Devices connected, ' + response.result.devicesWithSchema + ' with Schema, ' + response.result.devicesWithLocalKey + ' controllable with localKey';
+                $('#deviceInfo').text(text);
+                onChange();
+            });
+            setTimeout(getDeviceInfos, 60000);
         }
-      }
+        function load(settings, onChange) {
+            if (!settings) return;
+            $('.value').each(function () {
+                var $key = $(this);
+                var id = $key.attr('id');
+                if ($key.attr('type') === 'checkbox') {
+                    $key.prop('checked', settings[id]).change(function () {
+                        onChange();
+                    });
+                } else {
+                    $key.val($key.attr('type') === 'password' && settings[id] ? decrypt(secret, settings[id]) : settings[id]).change(function () {
+                        onChange();
+                    }).keyup(function () {
+                        onChange();
+                    });
+                }
+            });
+            $('#proxyPort').val('8888');
+            $('#proxyWebPort').val('8889');
+            onChange(false);
+            M.updateTextFields();
 
+            getDeviceInfos();
 
-      //for (var key in settings) {
-      forAllKeys(settings, function(key) {
-        // example: select elements with id=key and class=value and insert value
-        var val = getVal(key);
+            $('#startProxy').click(function () {
+                sendTo(null, 'startProxy', {
+                    proxyPort: $('#proxyPort').val(),
+                    proxyWebPort: $('#proxyWebPort').val(),
+                }, function (response) {
+                    if (response.result) {
+                        $('#certImage').attr("src",response.result.qrcodeCert);
+                    }
+                    $('#proxyRunning').toggle();
 
-        if (val && $('#' + key + '.value').attr('data-crypt') == "1") {
-          val = decrypt(secret, val);
+                    sendTo(null, 'getProxyResult', null, function (response) {
+                        text = 'Discovered: ' + response.result.deviceCount + ' devices and ' + response.result.schemaCount + ' schemas. Turn off Proxy in 10s';
+                        $('#proxyResult').text(text);
+                        getDeviceInfos();
+                        setTimeout(function() {
+                            $('#proxyRunning').fadeOut('slow');
+                            sendTo(null, 'stopProxy', null, function (response) {
+                                onChange();
+                            });
+                        }, 10000);
+                    });
+                    onChange();
+                });
+            });
+            $('#stopProxy').click(function () {
+                sendTo(null, 'stopProxy', null, function (response) {
+                    onChange();
+                });
+            });
         }
-        //var val = $key.data('crypt') && settings[key] ? decrypt(secret, settings[key]) : settings[key];
-        // var val = $key.data('crypt') && getVal(key) ? decrypt(secret, getVal(key)) : getVal(key);
-        if ($('#' + key + '.value').attr('type') == 'checkbox') {
-          $('#' + key + '.value').prop('checked', val).change(function() {
-            if ($('#auth').prop('checked')) {
-              $('#secure').prop('checked', true);
-            }
-            onChange();
-            //showHideSettings();
-          });
-        } else {
-          $('#' + key + '.value').val(val).change(function() {
-            onChange();
-          }).keyup(function() {
-            onChange();
-          });
+
+
+        function save(callback) {
+            var obj = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                if ($this.attr('type') === 'checkbox') {
+                    obj[$this.attr('id')] = $this.prop('checked');
+                } else if ($this.attr('type') === 'password') {
+                    obj[$this.attr('id')] = encrypt(secret, $this.val());
+                } else {
+                    obj[$this.attr('id')] = $this.val();
+                }
+            });
+            callback(obj);
         }
-      });
-      // Set default language
-      if (!settings.language) {
-        settings.language = systemLang || 'en';
-        $('#language').val(settings.language).trigger('change');
-      }
-      devices = settings.keys; // || [ {name: '', ip: "", mac: ""} ];
-      values2table('values', devices, onChange);
-      //changed = true;
-      // $('#password_confirm').val($('#password').val());
-      onChange(false);
-    }
 
-    function load(settings, onChange) {
-
-      socket.emit('getObject', 'system.config', function(err, obj) {
-        secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
-        loadHelper(settings, onChange);
-      });
-
-      onChange(false);
-    }
-
-    function setVal(obj, id, val) {
-      var ar = id.split(SEP);
-      for (var i = 0; i < ar.length - 1; i++) {
-        if (obj[ar[i]] === undefined) obj[ar[i]] = {};
-        obj = obj[ar[i]];
-      }
-      obj[ar[ar.length - 1]] = val;
-    }
-
-    function save(callback) {
-      var obj = {};
-      changed = true;
-      $('.value').each(function() {
-        var $this = $(this),
-          val;
-        switch ($this.attr('type')) {
-          case 'checkbox':
-            val = $this.prop('checked');
-            break;
-          case 'number':
-          case 'value':
-            val = ~~$this.val();
-            break;
-          default:
-            // val = $this.val();
-            // obj[$this.attr('id')] =  $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
-            val = $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
-        }
-        setVal(obj, $this.attr('id'), val);
-      });
-      obj.keys = table2values('values');
-
-      /*
-      if ($('#password').val() !== $('#password_confirm').val()) {
-        showMessage(_('Password confirmation is not equal with password'));
-        return;
-      }
-      */
-
-
-      callback(obj);
-    }
-  </script>
-  <style>
-    .loader {
-      border: 4px solid #b8d1f3;
-      /* Light grey */
-      border-top: 4px solid #3498db;
-      /* Blue */
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
+    </script>
 </head>
 
-
 <body>
-  <!-- you have to put your config page in a div with id adapter-container -->
-  <div class="m adapter-container">
-
-    <!-- div class="row">
-      <div class="col s12">
-        <ul class="tabs">
-          <li class="tab col s2"><a href="#tab-main" class="translate active">Main settings</a></li>
-          <li class="tab col s2"><a href="#tab-keys" class="translate">Subscribers</a></li>
-        </ul>
-      </div -->
-
-    <!--div id="tab-main" class="col s12 page">
-
+    <div class="m adapter-container">
         <div class="row">
-          <div class="input-field col s6">
-            <img src="shelly.png" class="logo">
-          </div>
-          </div>
+            <div class="col s12 page">
+                <div class="row">
+                    <div class="col s6 m4 l2">
+                        <img src="tuya.png" class="logo">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input class="value" id="pollingInterval" type="number" />
+                        <label for="pollingInterval" class="translate">Polling Interval</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <span id="deviceInfo">Device Info</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <span>Proxy-Info</span>
+                    </div>
+                </div>
 
-          <div class="row">
-            <div class="col s12 m8 l5">
-              <select class="value" id="bind"></select>
-              <label class="translate" for="bind">IP:</label>
+                <div class="row">
+                    <div class="col s12 m8 l8">
+                        <input class="value" id="proxyPort" type="number" />
+                        <label for="proxyPort" class="translate">Proxy Port</label>
+                    </div>
+                    <div class="col s12 m4 l4">
+                        <input class="value" id="proxyWebPort" type="number" />
+                        <label for="proxyWebPort" class="translate">Proxy Web Info Port</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s12 m6 l6">
+                        <i id="startProxy" class="material-icons prefix">play_circle_filled</i>
+                        <label class="translate">Start proxy</label>
+                    </div>
+                    <div class="input-field col s12 m6 l6">
+                        <i id="stopProxy" class="material-icons prefix">stop</i>
+                        <label class="translate">Stop proxy</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="proxyRunning" class="input-field col s6 m6 l6 pull-s1 pull-m1 pull-l1" style="text-align: center; margin: -10px !important; display: none;">
+                        <span class="translate">Add Cert to your phone, add proxy and open App to sync</span>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                        <img id="certImage" src="" width="164" height="164"/>
+                    </div>
+                    <div id="proxyResult" class="input-field col s3 m3 l3"></div>
+                </div>
             </div>
-            <div class="col s12 m4 l1">
-              <input class="value number" id="port" min="1" max="65565" type="number" />
-              <label class="translate" for="port">Port:</label>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col s12">
-              <p class="translate">on save adapter restarts with new config immediately</p>
-            </div>
-          </div>
-        </div-->
-    <!-- /div -->
-
-    <!-- div id="tab-keys" class="col s12 page" -->
-
-    <div class="row">
-      <div class="input-field col s6">
-        <img src="tuya.png" class="logo">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col s12">
-        <p class="translate">tuyadescription</p>
-      </div>
-    </div>
-
-    <!--div class="input-field col s12">
-      <input class="value" id="pwd" type="checkbox" />
-      <label for="pwd" class="translate">Password Enable</label>
-    </div-->
-
-    <div class="row">
-      <div class="input-field col s12 m6 l4">
-        <input id="user" type="text" size="30" class="value" />
-        <label class="translate" for="user">User</label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="input-field col s12 m6 l4">
-        <input id="password" type="password" data-crypt="1" size="30" class="value" />
-        <label class="translate" for="password">Password</label>
-      </div>
-
-      <!--div class="input-field col s12 m6 l4">
-        <input id="password_confirm" type="password" size="30" class="value" />
-        <label class="translate" for="password_confirm">Confirm Password</label>
-      </div-->
-
-
-      <!--div id="values">
-        <div class="row">
-          <div class="col s12">
-            <a class="btn-floating waves-effect waves-light table-button-add"><i class="material-icons">add</i></a>
-          </div>
         </div>
-        <div class="row">
-          <div class="col s12">
-            <table class="table-values" style="width: 100%;">
-              <thead>
-                <tr>
-                  <th data-name="_index" style="width: 40px" class="translate"></th>
-                  <th data-name="hosts" style="width: 240px" data-style="width: 240px" class="translate" for="hosts">Hostname</th>
-                  <th data-name="devids" style="width: 120px" data-style="width: 120px" class="translate" for="devids">Shelly Deivce ID</th>
-                  <th data-buttons="delete" style="width: 40px"></th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div-->
     </div>
-    <!-- /div -->
-  </div>
+    </div>
 </body>
 
 </html>

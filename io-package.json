@@ -45,6 +45,8 @@
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "icon": "tuya.png",
+        "messagebox": true,
+        "subscribe": "messagebox",
         "materialize": true,
         "enabled": true,
         "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",

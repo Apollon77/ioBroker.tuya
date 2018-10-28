@@ -12,6 +12,7 @@ const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
 const Parser = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
+const os = require('os');
 
 const AnyProxy = require('anyproxy');
 let proxyServer;
@@ -20,16 +21,8 @@ let proxyAdminMessageCallback;
 const TuyaDevice = require('tuyapi');
 
 const knownDevices = {};
+const valueHandler = {};
 let connected = null;
-
-function decrypt(key, value) {
-    let result = '';
-    for (let i = 0; i < value.length; ++i) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-    }
-    return result;
-}
-
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function(callback) {
@@ -37,7 +30,7 @@ adapter.on('unload', function(callback) {
         setConnected(false);
         stopAll();
         // adapter.log.info('cleaned everything up...');
-        callback();
+        setTimeout(callback, 3000);
     } catch (e) {
         callback();
     }
@@ -136,6 +129,12 @@ function initDeviceObjects(deviceId, data, objs, values) {
                 });
             };
         }
+        if (obj.scale) {
+            valueHandler[deviceId + '.' + id] = (value) => {
+                return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+            };
+            values[id] = valueHandler[deviceId + '.' + id](values[id]);
+        }
         objectHelper.setOrUpdateObject(deviceId + '.' + id, {
             type: 'state',
             common: obj
@@ -161,18 +160,20 @@ function initDevice(deviceId, productKey, data, callback) {
         values = data.dps;
         delete data.dps;
     }
-    knownDevices[deviceId] = extend(true, knownDevices[deviceId] || {}, {
-        'data': data
-    });
     // {"ip":"192.168.178.85","gwId":"34305060807d3a1d7178","active":2,"ability":0,"mode":0,"encrypt":true,"productKey":"8FAPq5h6gdV51Vcr","version":"3.1"}
     let schema, schemaExt;
     if (!data.schema) {
         const known = mapper.getSchema(productKey);
+        adapter.log.debug(deviceId + ': Schema found for ' + productKey + ': ' + known);
         if (known) {
             data.schema = known.schema;
             data.schemaExt = known.schemaExt;
         }
     }
+
+    knownDevices[deviceId] = extend(true, knownDevices[deviceId] || {}, {
+        'data': data
+    });
 
     if (knownDevices[deviceId].device) {
         knownDevices[deviceId].stop = true;
@@ -188,6 +189,12 @@ function initDevice(deviceId, productKey, data, callback) {
     }
     if (!data.localKey) {
         data.localKey = '';
+    }
+    else {
+        knownDevices[deviceId].localKey = data.localKey;
+    }
+    if (data.ip) {
+        knownDevices[deviceId].ip = data.ip;
     }
 
     adapter.log.debug(deviceId + ': Create device objects if not exist');
@@ -246,17 +253,22 @@ function initDevice(deviceId, productKey, data, callback) {
                 adapter.log.warn(deviceId + ': Received data for other deviceId ' + data.devId + ' ... ignoring');
                 return;
             }
-            adapter.log.debug(deviceId + ': Received data for ' + ': ' + JSON.stringify(data.dps));
+            adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
 
             if (!knownDevices[deviceId].objectsInitialized) {
-                adapter.log.info(deviceId + ': No schema exists but localKey, init basic states ...');
+                adapter.log.info(deviceId + ': No schema exists, init basic states ...');
                 initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!data.localKey), data.dps);
+                knownDevices[deviceId].objectsInitialized = true;
                 objectHelper.processObjectQueue();
                 return;
             }
             for (const id in data.dps) {
-                if (!data.hasOwnProperty(id)) continue;
-                adapter.setState(deviceId, data.dps[id], true);
+                if (!data.dps.hasOwnProperty(id)) continue;
+                let value = data.dps[id];
+                if (valueHandler[deviceId + '.' + id]) {
+                    value = valueHandler[deviceId + '.' + id](value);
+                }
+                adapter.setState(deviceId + '.' + id, value, true);
             }
 
         });
@@ -301,27 +313,29 @@ function discoverLocalDevices() {
 
     server.on('listening', function() {
         const address = server.address();
-        adapter.log.info('Discover for Local Tuya devices on port 6666');
+        adapter.log.info('Discover for local Tuya devices on port 6666');
     });
 
     server.on('message', function(message, remote) {
         adapter.log.debug(remote.address + ':' + remote.port + ' - ' + message);
         const data = Parser.parse(message);
-        if (!data || !data.gwId) return;
-        if (knownDevices[data.gwId]) return;
-        initDevice(data.gwId, data.productKey, data);
+        if (!data.data || !data.data.gwId) return;
+        if (knownDevices[data.data.gwId]) return;
+        initDevice(data.data.gwId, data.data.productKey, data.data);
     });
 
     server.bind(6666);
 }
 
 function initDone() {
+    adapter.log.info('Existing devices initialized');
     setConnected(true);
     discoverLocalDevices();
     adapter.subscribeStates('*');
 }
 
 function processMessage(msg) {
+    adapter.log.debug('Message: ' + JSON.stringify(msg));
     switch (msg.command) {
         case 'startProxy':
             startProxy(msg);
@@ -329,7 +343,7 @@ function processMessage(msg) {
         case 'stopProxy':
             stopProxy(msg);
             break;
-        case 'getproxyResult':
+        case 'getProxyResult':
             getProxyResult(msg);
             break;
         case 'getDeviceInfo':
@@ -357,6 +371,20 @@ function startProxy(msg) {
         });
     }
 
+    const ifaces = os.networkInterfaces();
+    let ownIp;
+    for (const eth in ifaces) {
+        if (!ifaces.hasOwnProperty(eth)) continue;
+        for (let num = 0; num < ifaces[eth].length; num++) {
+            if (ifaces[eth][num].family !== 'IPv6' && ifaces[eth][num].address !== '127.0.0.1' && ifaces[eth][num].address !== '0.0.0.0') {
+                ownIp = ifaces[eth][num].address;
+                adapter.log.debug('Use first network interface (' + ownIp + ')');
+                break;
+            }
+        }
+        if (ownIp) break;
+    }
+
     const options = {
         port: msg.message.proxyPort,
         rule: require('./lib/anyproxy-rule.js')(adapter, catchProxyInfo),
@@ -373,22 +401,42 @@ function startProxy(msg) {
     proxyServer = new AnyProxy.ProxyServer(options);
 
     proxyServer.on('ready', () => {
-        adapter.log.info('Anyproxy ready');
-        adapter.sendTo(msg.from, msg.command, {
-            result:     true,
-            error:      null
-        }, msg.callback);
+        adapter.log.info('Anyproxy ready to receive requests');
+        const QRCode = require('qrcode');
+        let qrCodeCert;
+        QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/fetchCrtFile').then((url) => {
+            qrCodeCert = url;
+            adapter.sendTo(msg.from, msg.command, {
+                result:     {
+                    qrcodeCert: qrCodeCert
+                },
+                error:      null
+            }, msg.callback);
+            setTimeout(() => {
+                if (proxyServer) {
+                    proxyServer.close();
+                    proxyServer = null;
+                }
+            }, 300000);
+        }).catch(err => {
+            console.error(err);
+        });
+
     });
 
     proxyServer.on('error', (err) => {
         adapter.log.error('Anyproxy ERROR: ' + err);
+        adapter.log.error(err.stack);
     });
 
     proxyServer.start();
 }
 
 function stopProxy(msg) {
-    proxyServer.close();
+    if (proxyServer) {
+        proxyServer.close();
+        proxyServer = null;
+    }
     adapter.sendTo(msg.from, msg.command, {
         result:     true,
         error:      null
@@ -396,11 +444,12 @@ function stopProxy(msg) {
 }
 
 function catchProxyInfo(data) {
-    if (!data || !Array.isArray(data)) return;
+    if (!data || !data.result || !Array.isArray(data.result)) return;
 
-    let devices, deviceInfos;
+    let devices = [];
+    let deviceInfos = [];
 
-    data.forEach((obj) => {
+    data.result.forEach((obj) => {
         if (obj.a === 'tuya.m.my.group.device.list') {
             devices = obj.result;
         }
@@ -413,15 +462,20 @@ function catchProxyInfo(data) {
         adapter.log.debug('Found ' + deviceInfos.length + ' device schema information');
         deviceInfos.forEach((deviceInfo) => {
             if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
-                adapter.log.info('new Shema added for ' + deviceInfo.id); //TODO!!
+                adapter.log.info('new Shema added for product type ' + deviceInfo.id + '. Please send next line from logfile on disk to developer!');
+                adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
             }
         });
-
     }
+    else {
+        deviceInfos = [];
+    }
+
     if (devices && devices.length) {
         adapter.log.debug('Found ' + devices.length + ' devices');
         devices.forEach((device) => {
             delete device.ip;
+            device.schema = false;
             initDevice(device.devId, device.productId, device);
             /*
             {
@@ -471,14 +525,64 @@ function catchProxyInfo(data) {
             */
         });
     }
-
+    else {
+        devices = [];
+    }
+    if (proxyAdminMessageCallback) {
+        console.log('send ... ... ... ...');
+        adapter.sendTo(proxyAdminMessageCallback.from, proxyAdminMessageCallback.command, {
+            result:     {
+                schemaCount: deviceInfos.length,
+                deviceCount: devices.length
+            },
+            error:      null
+        }, proxyAdminMessageCallback.callback);
+        proxyAdminMessageCallback = null;
+    }
 }
 
 function getProxyResult(msg) {
     proxyAdminMessageCallback = msg;
+
+    // To simulate a successfull response ...
+    /*
+    if (proxyAdminMessageCallback) {
+        console.log('send ... ... ... ...');
+        adapter.sendTo(proxyAdminMessageCallback.from, proxyAdminMessageCallback.command, {
+            result:     {
+                schemaCount: 1,
+                deviceCount: 2
+            },
+            error:      null
+        }, proxyAdminMessageCallback.callback);
+        proxyAdminMessageCallback = null;
+    }
+    */
 }
 
 function getDeviceInfo(msg) {
+    let devices = 0;
+    let devicesConnected = 0;
+    let devicesWithSchema = 0;
+    let devicesWithLocalKey = 0;
+
+    for (const deviceId in knownDevices) {
+        if (!knownDevices.hasOwnProperty(deviceId)) continue;
+
+        devices++;
+        if (knownDevices[deviceId].device) devicesConnected++;
+        if (knownDevices[deviceId].localKey) devicesWithLocalKey++;
+        if (knownDevices[deviceId].data.schema) devicesWithSchema++;
+    }
+    adapter.sendTo(msg.from, msg.command, {
+        result:     {
+            devices: devices,
+            devicesConnected: devicesConnected,
+            devicesWithLocalKey: devicesWithLocalKey,
+            devicesWithSchema: devicesWithSchema
+        },
+        error:      null
+    }, msg.callback);
 
 }
 
@@ -490,27 +594,15 @@ function main() {
 
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
 
-    let options = {};
-
-    if (adapter.config.user && adapter.config.password) {
-        options = {
-            logger: adapter.log.debug,
-            user: adapter.config.user,
-            password: adapter.config.password
-        };
-    } else {
-        options = {
-            logger: adapter.log.debug,
-        };
-    }
-
     adapter.getDevices((err, devices) => {
         let deviceCnt = 0;
         if (devices && devices.length) {
+            adapter.log.debug('init ' + devices.length + ' known devices');
             devices.forEach((device) => {
-                if (!device._id || !device.native) {
+                if (device._id && device.native) {
+                    const id = device._id.substr(adapter.namespace.length + 1);
                     deviceCnt++;
-                    initDevice(device._id, device.native.productKey, device.native, () => {
+                    initDevice(id, device.native.productKey, device.native, () => {
                         if (!--deviceCnt) initDone();
                     });
                 }
