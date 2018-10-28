@@ -32,11 +32,19 @@
     </style>
 
     <script type="text/javascript">
+
+        function sprintf(format) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            var i = 0;
+            return format.replace(/%s/g, function() {
+                return args[i++];
+            });
+        }
+
         function getDeviceInfos() {
             sendTo(null, 'getDeviceInfo', null, function (response) {
-                var text = response.result.devices + ' found, ' + response.result.devicesConnected + ' Devices connected, ' + response.result.devicesWithSchema + ' with Schema, ' + response.result.devicesWithLocalKey + ' controllable with localKey';
+                var text = sprintf(systemDictionary['StatusInfo'][systemLang], response.result.devices, response.result.devicesConnected, response.result.devicesWithSchema, response.result.devicesWithLocalKey);
                 $('#deviceInfo').text(text);
-                onChange();
             });
             setTimeout(getDeviceInfos, 60000);
         }
@@ -57,40 +65,40 @@
                     });
                 }
             });
-            $('#proxyPort').val('8888');
-            $('#proxyWebPort').val('8889');
             onChange(false);
             M.updateTextFields();
 
             getDeviceInfos();
 
             $('#startProxy').click(function () {
+                $('#proxyResult').text('');
                 sendTo(null, 'startProxy', {
                     proxyPort: $('#proxyPort').val(),
                     proxyWebPort: $('#proxyWebPort').val(),
                 }, function (response) {
-                    if (response.result) {
+                    if (response.result && response.result.qrcodeCert) {
                         $('#certImage').attr("src",response.result.qrcodeCert);
+                        $('#proxyRunning').toggle();
                     }
-                    $('#proxyRunning').toggle();
 
                     sendTo(null, 'getProxyResult', null, function (response) {
-                        text = 'Discovered: ' + response.result.deviceCount + ' devices and ' + response.result.schemaCount + ' schemas. Turn off Proxy in 10s';
+                        var text = sprintf(systemDictionary['DiscoveredInfo'][systemLang], response.result.deviceCount, response.result.schemaCount);
                         $('#proxyResult').text(text);
+                        $('#certImage').toggle();
+                        $('#proxyRunning').fadeOut('slow');
+                        $('#proxyDone').toggle();
                         getDeviceInfos();
                         setTimeout(function() {
-                            $('#proxyRunning').fadeOut('slow');
                             sendTo(null, 'stopProxy', null, function (response) {
-                                onChange();
+                                $('#proxyDone').fadeOut('slow');
                             });
-                        }, 10000);
+                        }, 15000);
                     });
-                    onChange();
                 });
             });
             $('#stopProxy').click(function () {
                 sendTo(null, 'stopProxy', null, function (response) {
-                    onChange();
+                    $('#proxyRunning').fadeOut('slow');
                 });
             });
         }
@@ -130,47 +138,52 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6">
-                        <span id="deviceInfo">Device Info</span>
+                    <div class="input-field col s12">
+                        <b><span id="deviceInfo"></span></b>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6">
-                        <span>Proxy-Info</span>
+                    <div class="input-field col s12">
+                        <span class="translate">Proxy-Info</span>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col s12 m8 l8">
+                    <div class="col s6">
                         <input class="value" id="proxyPort" type="number" />
                         <label for="proxyPort" class="translate">Proxy Port</label>
                     </div>
-                    <div class="col s12 m4 l4">
+                    <div class="col s6">
                         <input class="value" id="proxyWebPort" type="number" />
                         <label for="proxyWebPort" class="translate">Proxy Web Info Port</label>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s6">
                         <i id="startProxy" class="material-icons prefix">play_circle_filled</i>
                         <label class="translate">Start proxy</label>
                     </div>
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s6">
                         <i id="stopProxy" class="material-icons prefix">stop</i>
                         <label class="translate">Stop proxy</label>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div id="proxyRunning" class="input-field col s6 m6 l6 pull-s1 pull-m1 pull-l1" style="text-align: center; margin: -10px !important; display: none;">
-                        <span class="translate">Add Cert to your phone, add proxy and open App to sync</span>
+                    <div id="proxyRunning" class="input-field col s12" style="display: none;">
+                        <br/><br/>
+                        <span class="translate">ProxySteps</span>
                         <div class="progress">
                             <div class="indeterminate"></div>
                         </div>
                         <img id="certImage" src="" width="164" height="164"/>
                     </div>
-                    <div id="proxyResult" class="input-field col s3 m3 l3"></div>
+                </div>
+                <div class="row">
+                    <div id="proxyDone" class="input-field col s12" style="display: none;">
+                        <b><span id="proxyResult"></span></b>
+                    </div>
                 </div>
             </div>
         </div>

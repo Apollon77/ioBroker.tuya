@@ -57,7 +57,9 @@
         "restartAdapters": []
     },
     "native": {
-        "pollingInterval": 60
+        "pollingInterval": 60,
+        "proxyWebPort": 8888,
+        "proxyWebPort": 8889
     },
     "objects": [],
     "instanceObjects": [{

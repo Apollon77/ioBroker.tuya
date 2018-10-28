@@ -16,6 +16,7 @@ const os = require('os');
 
 const AnyProxy = require('anyproxy');
 let proxyServer;
+let proxyStopTimeout;
 let proxyAdminMessageCallback;
 
 const TuyaDevice = require('tuyapi');
@@ -23,6 +24,7 @@ const TuyaDevice = require('tuyapi');
 const knownDevices = {};
 const valueHandler = {};
 let connected = null;
+let connectedCount = 0;
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function(callback) {
@@ -77,20 +79,7 @@ function setConnected(isConnected) {
 // is called when databases are connected and adapter received configuration.
 // start here!
 adapter.on('ready', function() {
-    // main();
-    adapter.getForeignObject('system.config', (err, obj) => {
-
-        if (adapter.config.password) {
-            if (obj && obj.native && obj.native.secret) {
-                //noinspection JSUnresolvedVariable
-                adapter.config.password = decrypt(obj.native.secret, adapter.config.password);
-            } else {
-                //noinspection JSUnresolvedVariable
-                adapter.config.password = decrypt('Zgfr56gFe87jJOM', adapter.config.password);
-            }
-        }
-        main();
-    });
+    main();
 });
 
 function stopAll() {
@@ -280,6 +269,8 @@ function initDevice(deviceId, productKey, data, callback) {
                 clearTimeout(knownDevices[deviceId].reconnectTimeout);
                 knownDevices[deviceId].reconnectTimeout = null;
             }
+            connectedCount++;
+            if (!connected) setConnected(true);
         });
 
         knownDevices[deviceId].device.on('disconnected', () => {
@@ -290,6 +281,8 @@ function initDevice(deviceId, productKey, data, callback) {
                     knownDevices[deviceId].device.connect();
                 }, 60000);
             }
+            connectedCount--;
+            if (connected && connectedCount === 0) setConnected(false);
         });
 
         knownDevices[deviceId].device.on('error', (err) => {
@@ -329,7 +322,6 @@ function discoverLocalDevices() {
 
 function initDone() {
     adapter.log.info('Existing devices initialized');
-    setConnected(true);
     discoverLocalDevices();
     adapter.subscribeStates('*');
 }
@@ -398,38 +390,54 @@ function startProxy(msg) {
         silent: false // TODO
     };
 
-    proxyServer = new AnyProxy.ProxyServer(options);
+    if (!proxyServer) {
+        proxyServer = new AnyProxy.ProxyServer(options);
 
-    proxyServer.on('ready', () => {
-        adapter.log.info('Anyproxy ready to receive requests');
-        const QRCode = require('qrcode');
-        let qrCodeCert;
-        QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/fetchCrtFile').then((url) => {
-            qrCodeCert = url;
-            adapter.sendTo(msg.from, msg.command, {
-                result:     {
-                    qrcodeCert: qrCodeCert
-                },
-                error:      null
-            }, msg.callback);
-            setTimeout(() => {
-                if (proxyServer) {
-                    proxyServer.close();
-                    proxyServer = null;
-                }
-            }, 300000);
-        }).catch(err => {
-            console.error(err);
+        proxyServer.on('ready', () => {
+            adapter.log.info('Anyproxy ready to receive requests');
+            const QRCode = require('qrcode');
+            let qrCodeCert;
+            QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/fetchCrtFile').then((url) => {
+                qrCodeCert = url;
+                adapter.sendTo(msg.from, msg.command, {
+                    result: {
+                        qrcodeCert: qrCodeCert
+                    },
+                    error: null
+                }, msg.callback);
+                proxyStopTimeout = setTimeout(() => {
+                    if (proxyServer) {
+                        proxyServer.close();
+                        proxyServer = null;
+                    }
+                }, 600000);
+            }).catch(err => {
+                console.error(err);
+            });
         });
 
-    });
+        proxyServer.on('error', (err) => {
+            adapter.log.error('Anyproxy ERROR: ' + err);
+            adapter.log.error(err.stack);
+        });
 
-    proxyServer.on('error', (err) => {
-        adapter.log.error('Anyproxy ERROR: ' + err);
-        adapter.log.error(err.stack);
-    });
-
-    proxyServer.start();
+        proxyServer.start();
+    }
+    else {
+        clearTimeout(proxyStopTimeout);
+        proxyStopTimeout = setTimeout(() => {
+            if (proxyServer) {
+                proxyServer.close();
+                proxyServer = null;
+            }
+        }, 300000);
+        adapter.sendTo(msg.from, msg.command, {
+            result:     {
+                success: true
+            },
+            error:      null
+        }, msg.callback);
+    }
 }
 
 function stopProxy(msg) {
