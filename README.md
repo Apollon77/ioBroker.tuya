@@ -49,8 +49,12 @@ Directly after this the objects should be updated with more meaningful names and
 
 The sync is only needed initially or after you added new devices to your App.
 
+## Credits
+The work of the adapter would not had been possible without the great work of @codetheweb and @NortherMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
+
 ## Todo
 * enhance testing: state checks and setState's
+* enhance documentation
 
 ## Changelog
 
