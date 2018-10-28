@@ -15,6 +15,7 @@ const extend = require('extend');
 const os = require('os');
 
 const AnyProxy = require('anyproxy');
+let server;
 let proxyServer;
 let proxyStopTimeout;
 let proxyAdminMessageCallback;
@@ -302,7 +303,7 @@ function initDevice(deviceId, productKey, data, callback) {
 
 
 function discoverLocalDevices() {
-    const server = dgram.createSocket('udp4');
+    server = dgram.createSocket('udp4');
 
     server.on('listening', function() {
         const address = server.address();
