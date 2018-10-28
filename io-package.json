@@ -58,7 +58,7 @@
     },
     "native": {
         "pollingInterval": 60,
-        "proxyWebPort": 8888,
+        "proxyPort": 8888,
         "proxyWebPort": 8889
     },
     "objects": [],
