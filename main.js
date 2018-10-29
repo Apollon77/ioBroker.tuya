@@ -108,7 +108,8 @@ function initDeviceObjects(deviceId, data, objs, values) {
         if (obj.write) {
             onChange = (value) => {
                 if (!knownDevices[deviceId].device) {
-                    adapter.log.debug(deviceId + 'Device communication not initialized, try to connect ...');
+                    adapter.log.debug(deviceId + 'Device communication not initialized ...');
+                    return;
                 }
 
                 if (obj.scale) {
