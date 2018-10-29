@@ -65,7 +65,7 @@ The work of the adapter would not had been possible without the great work of @c
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2018 Apollon77 <iobroker@fischer-ka.de>
+Copyright (c) 2018 Apollon77 <iobroker@fischer-ka.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

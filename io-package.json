@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "tuya",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "news": {
-            "0.1.0": {
+            "0.1.1": {
                 "en": "Initiale Tuya Adapter Version",
                 "de": "Initiale Tuya Adapter Version",
                 "ru": "Версия Initiale Tuya Adapter",

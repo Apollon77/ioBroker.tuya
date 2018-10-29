@@ -89,6 +89,7 @@ function stopAll() {
         knownDevices[deviceId].stop = true;
         if (knownDevices[deviceId].device) {
             knownDevices[deviceId].device.disconnect();
+            knownDevices[deviceId].device = null;
         }
     }
 }
@@ -109,6 +110,14 @@ function initDeviceObjects(deviceId, data, objs, values) {
                 if (!knownDevices[deviceId].device) {
                     adapter.log.debug(deviceId + 'Device communication not initialized, try to connect ...');
                 }
+
+                if (obj.scale) {
+                    value *= Math.pow(10, obj.scale);
+                }
+                else if (obj.states) {
+                    value = obj.states[value.toString()];
+                }
+
                 knownDevices[deviceId].device.set({
                     'dps': id,
                     'set': value
@@ -122,6 +131,17 @@ function initDeviceObjects(deviceId, data, objs, values) {
         if (obj.scale) {
             valueHandler[deviceId + '.' + id] = (value) => {
                 return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+            };
+            values[id] = valueHandler[deviceId + '.' + id](values[id]);
+        }
+        else if (obj.states) {
+            valueHandler[deviceId + '.' + id] = (value) => {
+                for (const key in obj.states) {
+                    if (!obj.states.hasOwnProperty(key)) continue;
+                    if (obj.states[key] === value) return key;
+                }
+                adapter.log.warn(deviceId + '.' + id + ': Value from device not defined in Schema: ' + value);
+                return null;
             };
             values[id] = valueHandler[deviceId + '.' + id](values[id]);
         }
@@ -161,13 +181,15 @@ function initDevice(deviceId, productKey, data, callback) {
         }
     }
 
-    knownDevices[deviceId] = extend(true, knownDevices[deviceId] || {}, {
+    knownDevices[deviceId] = extend(true, {}, knownDevices[deviceId] || {}, {
         'data': data
     });
+    knownDevices[deviceId].errorcount = 0;
 
     if (knownDevices[deviceId].device) {
         knownDevices[deviceId].stop = true;
         knownDevices[deviceId].device.disconnect();
+        knownDevices[deviceId].device = null;
         if (knownDevices[deviceId].reconnectTimeout) {
             clearTimeout(knownDevices[deviceId].reconnectTimeout);
             knownDevices[deviceId].reconnectTimeout = null;
@@ -178,7 +200,7 @@ function initDevice(deviceId, productKey, data, callback) {
         }
     }
     if (!data.localKey) {
-        data.localKey = '';
+        data.localKey = knownDevices[deviceId].localKey || '';
     }
     else {
         knownDevices[deviceId].localKey = data.localKey;
@@ -238,6 +260,7 @@ function initDevice(deviceId, productKey, data, callback) {
         });
 
         knownDevices[deviceId].device.on('data', (data) => {
+            knownDevices[deviceId].errorcount = 0;
             if (typeof data !== 'object' || !data || !data.dps) return;
             if (data.devId !== deviceId) {
                 adapter.log.warn(deviceId + ': Received data for other deviceId ' + data.devId + ' ... ignoring');
@@ -247,7 +270,7 @@ function initDevice(deviceId, productKey, data, callback) {
 
             if (!knownDevices[deviceId].objectsInitialized) {
                 adapter.log.info(deviceId + ': No schema exists, init basic states ...');
-                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!data.localKey), data.dps);
+                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps);
                 knownDevices[deviceId].objectsInitialized = true;
                 objectHelper.processObjectQueue();
                 return;
@@ -278,6 +301,10 @@ function initDevice(deviceId, productKey, data, callback) {
             adapter.log.debug(deviceId + ': Disconnected from device');
             adapter.setState(deviceId + '.online', false, true);
             if (!knownDevices[deviceId].stop) {
+                if (knownDevices[deviceId].reconnectTimeout) {
+                    clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                    knownDevices[deviceId].reconnectTimeout = null;
+                }
                 knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
                     knownDevices[deviceId].device.connect();
                 }, 60000);
@@ -287,12 +314,27 @@ function initDevice(deviceId, productKey, data, callback) {
         });
 
         knownDevices[deviceId].device.on('error', (err) => {
-            adapter.log.info(deviceId + ': Error from device ' + err);
+            adapter.log.info(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
+            knownDevices[deviceId].errorcount++;
+
+            if (knownDevices[deviceId].errorcount > 3) {
+                knownDevices[deviceId].stop = true;
+                knownDevices[deviceId].device.disconnect();
+                knownDevices[deviceId].device = null;
+                if (knownDevices[deviceId].reconnectTimeout) {
+                    clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                    knownDevices[deviceId].reconnectTimeout = null;
+                }
+                if (knownDevices[deviceId].pollingTimeout) {
+                    clearTimeout(knownDevices[deviceId].pollingTimeout);
+                    knownDevices[deviceId].pollingTimeout = null;
+                }
+            }
         });
 
         knownDevices[deviceId].device.connect();
 
-        if (!data.localKey) {
+        if (!knownDevices[deviceId].localKey) {
             adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
             pollDevice(deviceId);
         }
@@ -311,10 +353,10 @@ function discoverLocalDevices() {
     });
 
     server.on('message', function(message, remote) {
-        adapter.log.debug(remote.address + ':' + remote.port + ' - ' + message);
+        adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
         const data = Parser.parse(message);
         if (!data.data || !data.data.gwId) return;
-        if (knownDevices[data.data.gwId]) return;
+        if (knownDevices[data.data.gwId] && knownDevices[data.data.gwId].device) return;
         initDevice(data.data.gwId, data.data.productKey, data.data);
     });
 
