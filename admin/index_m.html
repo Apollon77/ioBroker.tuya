@@ -83,6 +83,12 @@
                     return;
                 }
                 $('#proxyResult').text('');
+                $('.hideOnStart').each(function () {
+                    $(this).toggle(false);
+                });
+                $('.showOnStart').each(function () {
+                    $(this).toggle(true);
+                });
                 sendTo(null, 'startProxy', {
                     proxyPort: $('#proxyPort').val(),
                     proxyWebPort: $('#proxyWebPort').val(),
@@ -90,18 +96,21 @@
                     if (response.result && response.result.qrcodeCert) {
                         $('#certImage').attr("src", response.result.qrcodeCert);
                         $('#proxy-dialog').modal('open');
-                        // $('#proxyRunning').toggle();
                     }
 
                     sendTo(null, 'getProxyResult', null, function (response) {
                         var text = sprintf(systemDictionary['DiscoveredInfo'][systemLang], response.result.deviceCount, response.result.schemaCount);
                         $('#proxyResult').text(text);
                         $('#proxyRunning').fadeOut('slow');
+                        $('#success').fadeIn('slow');
                         $('#proxyDone').toggle();
+                        $('#certImage').toggle();
+                        $('.progress').toggle();
                         getDeviceInfos();
                         setTimeout(function () {
                             sendTo(null, 'stopProxy', null, function (response) {
                                 $('#proxyDone').fadeOut('slow');
+                                $('#proxy-dialog').modal('close');
                             });
                         }, 15000);
                     });
@@ -178,59 +187,23 @@
                         <label class="translate">Start proxy</label>
                     </div>
                 </div>
-
-                <!--           
-                <div class="row">
-                    <div class="col s6">
-                        <input class="value" id="proxyPort" type="number" />
-                        <label for="proxyPort" class="translate">Proxy Port</label>
-                    </div>
-                    <div class="col s6">
-                        <input class="value" id="proxyWebPort" type="number" />
-                        <label for="proxyWebPort" class="translate">Proxy Web Info Port</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s6">
-                        <i id="startProxy" class="material-icons prefix">play_circle_filled</i>
-                        <label class="translate">Start proxy</label>
-                    </div>
-                    <div class="input-field col s6">
-                        <i id="stopProxy" class="material-icons prefix">stop</i>
-                        <label class="translate">Stop proxy</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div id="proxyRunning" class="input-field col s12" style="display: none;">
-                        <br /><br />
-                        <span class="translate">ProxySteps</span>
-                        <div class="progress">
-                            <div class="indeterminate"></div>
-                        </div>
-                        <img id="certImage" src="" width="164" height="164" />
-                    </div>
-                </div>
--->
-                <div class="row">
-                    <div id="proxyDone" class="input-field col s12" style="display: none;">
-                        <b><span id="proxyResult"></span></b>
-                    </div>
-                </div>
             </div>
         </div>
         <div id="proxy-dialog" class="modal">
             <div class="modal-content">
                 <h6 class="title translate">Proxy Information</h6>
                 <br>
-                <span class="translate">ProxySteps</span>
-                <div class="progress">
+                <span class="translate showOnStart">ProxySteps</span>
+                <div class="progress showOnStart">
                     <div class="indeterminate"></div>
                 </div>
-                <p style="text-align:center;"><img id="certImage" src="" width="164" height="164" /></p>
+                <p style="text-align:center;"><i id="success" class="material-icons large hideOnStart">check</i><img id="certImage" class="showOnStart" src="" width="164" height="164" /></p>
+                <div id="proxyDone" class="input-field col s12 hideOnStart">
+                    <b><span id="proxyResult"></span></b>
+                </div>
             </div>
             <div class="modal-footer">
-                <a id="stopProxy" class="btn-close modal-action modal-close waves-effect waves-green btn-flat translate">Stop
-                    Proxy</a>
+                <a id="stopProxy" class="btn-close modal-action modal-close waves-effect waves-green btn-flat translate">Stop Proxy</a>
             </div>
         </div>
     </div>
