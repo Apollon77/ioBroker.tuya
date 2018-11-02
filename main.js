@@ -131,12 +131,14 @@ function initDeviceObjects(deviceId, data, objs, values) {
         }
         if (obj.scale) {
             valueHandler[deviceId + '.' + id] = (value) => {
+                if (value === undefined) return undefined;
                 return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
             };
             values[id] = valueHandler[deviceId + '.' + id](values[id]);
         }
         else if (obj.states) {
             valueHandler[deviceId + '.' + id] = (value) => {
+                if (value === undefined) return undefined;
                 for (const key in obj.states) {
                     if (!obj.states.hasOwnProperty(key)) continue;
                     if (obj.states[key] === value) return key;

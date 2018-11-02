@@ -49,6 +49,8 @@ Directly after this the objects should be updated with more meaningful names and
 
 The sync is only needed initially or after you added new devices to your App.
 
+Some images for some mobile OS can be found at the [Proxy-Page](PROXY.md).
+
 ## Credits
 The work of the adapter would not had been possible without the great work of @codetheweb and @NortherMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
 
@@ -58,8 +60,11 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
-### 0.1.x
-* development and first tests
+### 0.1.2
+* (BuZZy1337) Optimized Admin, thank you very much!
+
+### 0.1.0/1
+* (Apollon77) development and first tests
 
 ## License
 

@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "tuya",
-        "version": "0.1.1",
+        "version": "0.1.2",
         "news": {
+            "0.1.2": {
+                "en": "Optimized admin and other things",
+                "de": "Optimierter Admin und andere Dinge",
+                "ru": "Оптимизированный администратор и другие вещи",
+                "pt": "Administrador otimizado e outras coisas",
+                "nl": "Geoptimaliseerde beheerder en andere dingen",
+                "fr": "Optimisé admin et d'autres choses",
+                "it": "Admin ottimizzato e altre cose",
+                "es": "Administrador optimizado y otras cosas.",
+                "pl": "Zoptymalizowany administrator i inne rzeczy"
+            },
             "0.1.1": {
                 "en": "Initiale Tuya Adapter Version",
                 "de": "Initiale Tuya Adapter Version",
