@@ -94,9 +94,12 @@ function stopAll() {
     }
 }
 
-function initDeviceObjects(deviceId, data, objs, values) {
+function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     if (!values) {
         values = {};
+    }
+    if (!preserveFields) {
+        preserveFields = [];
     }
     objs.forEach((obj) => {
         const id = obj.id;
@@ -151,7 +154,7 @@ function initDeviceObjects(deviceId, data, objs, values) {
         objectHelper.setOrUpdateObject(deviceId + '.' + id, {
             type: 'state',
             common: obj
-        }, values[id], onChange);
+        }, preserveFields, values[id], onChange);
     });
 }
 
@@ -166,7 +169,10 @@ function pollDevice(deviceId) {
 }
 
 
-function initDevice(deviceId, productKey, data, callback) {
+function initDevice(deviceId, productKey, data, preserveFields, callback) {
+    if (!preserveFields) {
+        preserveFields = [];
+    }
     data.productKey = productKey;
     let values;
     if (data.dps) {
@@ -191,8 +197,10 @@ function initDevice(deviceId, productKey, data, callback) {
 
     if (knownDevices[deviceId].device) {
         knownDevices[deviceId].stop = true;
-        knownDevices[deviceId].device.disconnect();
-        knownDevices[deviceId].device = null;
+        if (knownDevices[deviceId].device) {
+            knownDevices[deviceId].device.disconnect();
+            knownDevices[deviceId].device = null;
+        }
         if (knownDevices[deviceId].reconnectTimeout) {
             clearTimeout(knownDevices[deviceId].reconnectTimeout);
             knownDevices[deviceId].reconnectTimeout = null;
@@ -243,7 +251,7 @@ function initDevice(deviceId, productKey, data, callback) {
 
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
-        initDeviceObjects(deviceId, data, objs, values);
+        initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
     }
 
@@ -251,6 +259,7 @@ function initDevice(deviceId, productKey, data, callback) {
         if (!knownDevices[deviceId].ip) {
             adapter.log.info(deviceId + ': Can not start because IP unknown');
             callback && callback();
+            return;
         }
 
         adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey);
@@ -273,7 +282,7 @@ function initDevice(deviceId, productKey, data, callback) {
 
             if (!knownDevices[deviceId].objectsInitialized) {
                 adapter.log.info(deviceId + ': No schema exists, init basic states ...');
-                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps);
+                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
                 knownDevices[deviceId].objectsInitialized = true;
                 objectHelper.processObjectQueue();
                 return;
@@ -322,8 +331,10 @@ function initDevice(deviceId, productKey, data, callback) {
 
             if (knownDevices[deviceId].errorcount > 3) {
                 knownDevices[deviceId].stop = true;
-                knownDevices[deviceId].device.disconnect();
-                knownDevices[deviceId].device = null;
+                if (knownDevices[deviceId].device) {
+                    knownDevices[deviceId].device.disconnect();
+                    knownDevices[deviceId].device = null;
+                }
                 if (knownDevices[deviceId].reconnectTimeout) {
                     clearTimeout(knownDevices[deviceId].reconnectTimeout);
                     knownDevices[deviceId].reconnectTimeout = null;
@@ -357,10 +368,16 @@ function discoverLocalDevices() {
 
     server.on('message', function(message, remote) {
         adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
-        const data = Parser.parse(message);
+        let data;
+        try {
+            data = Parser.parse(message);
+        }
+        catch (err) {
+            return;
+        }
         if (!data.data || !data.data.gwId) return;
         if (knownDevices[data.data.gwId] && knownDevices[data.data.gwId].device) return;
-        initDevice(data.data.gwId, data.data.productKey, data.data);
+        initDevice(data.data.gwId, data.data.productKey, data.data, ['name']);
     });
 
     server.bind(6666);
@@ -656,7 +673,7 @@ function main() {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
                     deviceCnt++;
-                    initDevice(id, device.native.productKey, device.native, () => {
+                    initDevice(id, device.native.productKey, device.native, ['name'], () => {
                         if (!--deviceCnt) initDone();
                     });
                 }

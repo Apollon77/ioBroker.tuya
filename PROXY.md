@@ -22,3 +22,11 @@
 ![Proxy 3](img/ios_Proxy_3.jpg)
 
 ![Proxy 4](img/ios_Proxy_4.jpg)
+
+## Android
+
+### Install certificate
+
+### Enable PROXY
+
+![Proxy](img/Android-Proxy.jpg)
