@@ -62,6 +62,10 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 1.0.0
+* (Apollon77) Add several new schema definitions
+* (Apollon77) Optimizations and bug fixes
+
 ### 0.1.3
 * (Apollon77) Add several new schema definitions
 * (Apollon77) Try to preserve names of objects. Sync with App via proxy will overwrite in any case!

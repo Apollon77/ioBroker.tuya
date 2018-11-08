@@ -27,6 +27,8 @@
 
 ### Install certificate
 
+![Zertifikat](img/Android-Zertifikat.jpg)
+
 ### Enable PROXY
 
 ![Proxy](img/Android-Proxy.jpg)

@@ -326,7 +326,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         });
 
         knownDevices[deviceId].device.on('error', (err) => {
-            adapter.log.info(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
+            adapter.log.debug(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
             knownDevices[deviceId].errorcount++;
 
             if (knownDevices[deviceId].errorcount > 3) {
