@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "tuya",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "news": {
+            "1.0.1": {
+                "en": "optimizations",
+                "de": "Optimierungen",
+                "ru": "оптимизации",
+                "pt": "otimizações",
+                "nl": "optimalisaties",
+                "fr": "optimisations",
+                "it": "ottimizzazioni",
+                "es": "optimizaciones",
+                "pl": "optymalizacje"
+            },
             "1.0.0": {
                 "en": "More schema information added; optimizations and bugfixes",
                 "de": "Weitere Schemainformationen hinzugefügt; Optimierungen und Bugfixes",

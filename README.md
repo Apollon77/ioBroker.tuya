@@ -62,6 +62,9 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 1.0.1
+* (Apollon77) Automatically convert some value types like booleans better
+
 ### 1.0.0
 * (Apollon77) Add several new schema definitions
 * (Apollon77) Optimizations and bug fixes
