@@ -62,6 +62,9 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 1.0.3
+* (Apollon77) New schemas added
+
 ### 1.0.2
 * (Apollon77) New schemas added
 * (Apollon77) Data are requested from the device after controlling because sometimes not all data seems to be updated automatically
