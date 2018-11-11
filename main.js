@@ -127,8 +127,10 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     'set': value
                 }).then(() => {
                     adapter.log.debug(deviceId + '.' + id + ': set value ' + value);
+                    pollDevice(deviceId, 2000);
                 }).catch((err) => {
                     adapter.log.error(deviceId + '.' + id + ': ' + err);
+                    pollDevice(deviceId, 2000);
                 });
             };
         }
@@ -158,14 +160,21 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     });
 }
 
-function pollDevice(deviceId) {
+function pollDevice(deviceId, overwriteDelay) {
+    if (!overwriteDelay) {
+        overwriteDelay = adapter.config.pollingInterval * 1000;
+    }
+    if (knownDevices[deviceId].pollingTimeout) {
+        clearTimeout(knownDevices[deviceId].pollingTimeout);
+        knownDevices[deviceId].pollingTimeout = null;
+    }
     knownDevices[deviceId].pollingTimeout = setTimeout(() => {
         knownDevices[deviceId].pollingTimeout = null;
         knownDevices[deviceId].device.get({
             returnAsEvent: true
         });
         pollDevice(deviceId);
-    }, adapter.config.pollingInterval * 1000);
+    }, overwriteDelay);
 }
 
 

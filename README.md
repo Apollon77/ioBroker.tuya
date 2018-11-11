@@ -54,13 +54,17 @@ The sync is only needed initially or after you added new devices to your App.
 Some images for some mobile OS can be found at the [Proxy-Page](PROXY.md).
 
 ## Credits
-The work of the adapter would not had been possible without the great work of @codetheweb and @NortherMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
+The work of the adapter would not had been possible without the great work of @codetheweb and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
 
 ## Todo
 * enhance testing: state checks and setState's
 * enhance documentation
 
 ## Changelog
+
+### 1.0.2
+* (Apollon77) New schemas added
+* (Apollon77) Data are requested from the device after controlling because sometimes not all data seems to be updated automatically
 
 ### 1.0.1
 * (Apollon77) Automatically convert some value types like booleans better

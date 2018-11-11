@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "tuya",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "news": {
+            "1.0.2": {
+                "en": "More schema information added, all data are updated after the device was controlled",
+                "de": "Weitere Schemainformationen hinzugefügt, alle Daten werden aktualisiert, nachdem das Gerät gesteuert wurde",
+                "ru": "Добавлена ​​дополнительная информация о схеме, все данные обновляются после того, как устройство контролировалось",
+                "pt": "Mais informações de esquema adicionadas, todos os dados são atualizados depois que o dispositivo foi controlado",
+                "nl": "Er is meer schema-informatie toegevoegd en alle gegevens worden bijgewerkt nadat het apparaat werd bestuurd",
+                "fr": "Plus d'informations de schéma ajoutées, toutes les données sont mises à jour après le contrôle du périphérique",
+                "it": "Aggiunte ulteriori informazioni sullo schema, tutti i dati vengono aggiornati dopo il controllo del dispositivo",
+                "es": "Más información de esquema agregada, todos los datos se actualizan después de que el dispositivo fue controlado",
+                "pl": "Dodano więcej informacji o schemacie, wszystkie dane są aktualizowane po kontroli urządzenia"
+            },
             "1.0.1": {
                 "en": "optimizations",
                 "de": "Optimierungen",
