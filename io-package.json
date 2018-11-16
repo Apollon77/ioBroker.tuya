@@ -1,8 +1,19 @@
 {
     "common": {
         "name": "tuya",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "news": {
+            "1.0.4": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена ​​дополнительная информация о схеме",
+                "pt": "Mais informações de esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Ulteriori informazioni sullo schema aggiunte",
+                "es": "Más información de esquema añadido",
+                "pl": "Dodano więcej informacji o schemacie"
+            },
             "1.0.3": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",

@@ -62,6 +62,9 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 1.0.4 (2018-11-16)
+* (Apollon77) New schemas added
+
 ### 1.0.3
 * (Apollon77) New schemas added
 
