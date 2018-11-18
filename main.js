@@ -236,7 +236,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             name: data.name || 'Device ' + deviceId
         },
         native: data
-    });
+    }, preserveFields);
     objectHelper.setOrUpdateObject(deviceId + '.online', {
         type: 'state',
         common: {
