@@ -32,3 +32,8 @@
 ### Enable PROXY
 
 ![Proxy](img/Android-Proxy.jpg)
+
+### Fallback Option if above do not work
+
+This solution that works for user that also have a Windows computer was reported in [ioBroker Forum](https://forum.iobroker.net/viewtopic.php?f=36&t=18029&p=195494#p195375) and is working wth an Android Simulator.
+
