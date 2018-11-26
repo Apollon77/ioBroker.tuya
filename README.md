@@ -5,9 +5,6 @@
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.tuya.svg)](https://www.npmjs.com/package/iobroker.tuya)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.tuya.svg)](https://www.npmjs.com/package/iobroker.tuya)
-[![Dependency Status](https://gemnasium.com/badges/github.com/Apollon77/ioBroker.tuya.svg)](https://gemnasium.com/github.com/Apollon77/ioBroker.tuya)
-[![Maintainability](https://api.codeclimate.com/v1/badges/ccc74a3ef8de69265ca1/maintainability)](https://codeclimate.com/github/Apollon77/ioBroker.tuya/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/ccc74a3ef8de69265ca1/test_coverage)](https://codeclimate.com/github/Apollon77/ioBroker.tuya/test_coverage)
 
 **Tests:** Linux/Mac/Windows: [![Travis-CI](http://img.shields.io/travis/Apollon77/ioBroker.tuya/master.svg)](https://travis-ci.org/Apollon77/ioBroker.tuya)
 Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/Apollon77/ioBroker.tuya?branch=master&svg=true)](https://ci.appveyor.com/project/Apollon77/ioBroker-daikin/)
@@ -21,6 +18,8 @@ Tuya devices are ESP8266MOD WiFi smart devices from Shenzhen Xenon.
 Beside devices usable with the Smart Live App the use of the Jinvoo Smart App, Xenon Smart app, eFamilyCloud, io.e (Luminea or such) app should also be possible. Please report back if successfull.
 
 The adapter is proofed to work very well with all devices that are "always in wifi". Devices that only come online when there is an event, send their data and go offline again are not supported.
+
+One adapter instance can handle all devices in one network that routes UDP packages.
 
 ## How the adapter works
 
