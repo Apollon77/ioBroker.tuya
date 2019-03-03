@@ -1,47 +1,48 @@
 {
-    "name": "iobroker.tuya",
-    "version": "1.0.7",
-    "description": "Tuya",
-    "author": {
-        "name": "Ingo Fischer",
-        "email": "iobroker@fischer-ka.de"
-    },
-    "contributors": [
-        {
-            "name": "Apollon77",
-            "email": "iobroker@fischer-ka.de"
-        }
-    ],
-    "homepage": "https://github.com/Apollon77/ioBroker.tuya",
-    "license": "MIT",
-    "keywords": [
-        "ioBroker",
-        "Tuya",
-        "Smart Home",
-        "switch"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Apollon77/ioBroker.tuya"
-    },
-    "dependencies": {
-        "request": "^2.88.0",
-        "tuyapi": "^3.1.4",
-        "extend": "^3.0.2",
-        "anyproxy": "^4.0.12",
-        "qrcode": "^1.3.0"
-    },
-    "devDependencies": {
-        "gulp": "^4.0.0",
-        "mocha": "^5.2.0",
-        "chai": "^4.2.0"
-    },
-    "main": "main.js",
-    "scripts": {
-        "test": "node node_modules/mocha/bin/mocha --exit"
-    },
-    "bugs": {
-        "url": "https://github.com/Apollon77/ioBroker.tuya/issues"
-    },
-    "readmeFilename": "README.md"
+  "name": "iobroker.tuya",
+  "version": "1.0.7",
+  "description": "Tuya",
+  "author": {
+    "name": "Ingo Fischer",
+    "email": "iobroker@fischer-ka.de"
+  },
+  "contributors": [
+    {
+      "name": "Apollon77",
+      "email": "iobroker@fischer-ka.de"
+    }
+  ],
+  "homepage": "https://github.com/Apollon77/ioBroker.tuya",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "Tuya",
+    "Smart Home",
+    "switch"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apollon77/ioBroker.tuya"
+  },
+  "dependencies": {
+    "request": "^2.88.0",
+    "tuyapi": "^3.1.4",
+    "extend": "^3.0.2",
+    "anyproxy": "^4.0.12",
+    "qrcode": "^1.3.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "mocha": "^6.0.2",
+    "chai": "^4.2.0",
+    "@iobroker/adapter-core": "^1.0.3"
+  },
+  "main": "main.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --exit"
+  },
+  "bugs": {
+    "url": "https://github.com/Apollon77/ioBroker.tuya/issues"
+  },
+  "readmeFilename": "README.md"
 }
