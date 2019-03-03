@@ -5,7 +5,7 @@
 /* jslint esversion: 6 */
 'use strict';
 
-const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const adapter = new utils.Adapter('tuya');
 const objectHelper = require(__dirname + '/lib/objectHelper'); // Get common adapter utils
 const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
@@ -88,6 +88,14 @@ function stopAll() {
         if (!knownDevices.hasOwnProperty(deviceId)) continue;
         knownDevices[deviceId].stop = true;
         if (knownDevices[deviceId].device) {
+            if (knownDevices[deviceId].reconnectTimeout) {
+                clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                knownDevices[deviceId].reconnectTimeout = null;
+            }
+            if (knownDevices[deviceId].pollingTimeout) {
+                clearTimeout(knownDevices[deviceId].pollingTimeout);
+                knownDevices[deviceId].pollingTimeout = null;
+            }
             knownDevices[deviceId].device.disconnect();
             knownDevices[deviceId].device = null;
         }
@@ -206,10 +214,6 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
     if (knownDevices[deviceId].device) {
         knownDevices[deviceId].stop = true;
-        if (knownDevices[deviceId].device) {
-            knownDevices[deviceId].device.disconnect();
-            knownDevices[deviceId].device = null;
-        }
         if (knownDevices[deviceId].reconnectTimeout) {
             clearTimeout(knownDevices[deviceId].reconnectTimeout);
             knownDevices[deviceId].reconnectTimeout = null;
@@ -217,6 +221,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         if (knownDevices[deviceId].pollingTimeout) {
             clearTimeout(knownDevices[deviceId].pollingTimeout);
             knownDevices[deviceId].pollingTimeout = null;
+        }
+        if (knownDevices[deviceId].device) {
+            knownDevices[deviceId].device.disconnect();
+            knownDevices[deviceId].device = null;
         }
     }
     if (!data.localKey) {
@@ -340,10 +348,6 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
             if (knownDevices[deviceId].errorcount > 3) {
                 knownDevices[deviceId].stop = true;
-                if (knownDevices[deviceId].device) {
-                    knownDevices[deviceId].device.disconnect();
-                    knownDevices[deviceId].device = null;
-                }
                 if (knownDevices[deviceId].reconnectTimeout) {
                     clearTimeout(knownDevices[deviceId].reconnectTimeout);
                     knownDevices[deviceId].reconnectTimeout = null;
@@ -351,6 +355,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 if (knownDevices[deviceId].pollingTimeout) {
                     clearTimeout(knownDevices[deviceId].pollingTimeout);
                     knownDevices[deviceId].pollingTimeout = null;
+                }
+                if (knownDevices[deviceId].device) {
+                    knownDevices[deviceId].device.disconnect();
+                    knownDevices[deviceId].device = null;
                 }
             }
         });
