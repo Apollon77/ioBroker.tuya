@@ -7,6 +7,7 @@ node_js:
   - '6'
   - '8'
   - '10'
+  - '12'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then CC=gcc-4.9; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.9; fi'
@@ -15,9 +16,9 @@ before_script:
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
 script:
-  - npm run test:package
-  - npm run test:unit
-  - npm run test:integration
+  - 'npm run test:package'
+  - 'npm run test:unit'
+  - 'npm run test:integration'
 addons:
   apt:
     sources:
