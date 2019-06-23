@@ -164,7 +164,8 @@
         "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
         "loglevel": "info",
         "type": "iot-systems",
-        "restartAdapters": []
+        "restartAdapters": [],
+        "stopTimeout": 5000
     },
     "native": {
         "pollingInterval": 60,
