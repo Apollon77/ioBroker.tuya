@@ -13,8 +13,8 @@ const dgram = require('dgram');
 const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
 const os = require('os');
+let AnyProxy;
 
-const AnyProxy = require('anyproxy');
 let server;
 let serverEncrypted;
 let proxyServer;
@@ -328,6 +328,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 clearTimeout(knownDevices[deviceId].reconnectTimeout);
                 knownDevices[deviceId].reconnectTimeout = null;
             }
+            knownDevices[deviceId].connected = true;
             connectedCount++;
             if (!connected) setConnected(true);
         });
@@ -341,10 +342,15 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     knownDevices[deviceId].reconnectTimeout = null;
                 }
                 knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
-                    knownDevices[deviceId].device.connect();
+                    knownDevices[deviceId].device.connect().catch(err => {
+                        adapter.log.error(deviceId + ': ' + err);
+                    });
                 }, 60000);
             }
-            connectedCount--;
+            if (knownDevices[deviceId].connected) {
+                knownDevices[deviceId].connected = false;
+                connectedCount--;
+            }
             if (connected && connectedCount === 0) setConnected(false);
         });
 
@@ -369,7 +375,9 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             }
         });
 
-        knownDevices[deviceId].device.connect();
+        knownDevices[deviceId].device.connect().catch(err => {
+            adapter.log.error(deviceId + ': ' + err);
+        });
 
         if (!knownDevices[deviceId].localKey) {
             adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
@@ -385,7 +393,7 @@ function discoverLocalDevices() {
     server = dgram.createSocket('udp4');
     server.on('listening', function() {
         //const address = server.address();
-        adapter.log.info('Discover for local Tuya devices on port 6666');
+        adapter.log.info('Listen for local Tuya devices on port 6666');
     });
     const normalParser = new MessageParser({version: 3.1});
     server.on('message', function(message, remote) {
@@ -407,7 +415,7 @@ function discoverLocalDevices() {
 
     serverEncrypted.on('listening', function() {
         //const address = server.address();
-        adapter.log.info('Discover for local Tuya devices on port 6667');
+        adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
     });
     serverEncrypted.on('message', function(message, remote) {
         if (!discoveredEncryptedDevices[remote.address]) {
@@ -478,22 +486,26 @@ function processMessage(msg) {
 }
 
 function startProxy(msg) {
+    if (!AnyProxy) {
+        AnyProxy = require('anyproxy');
+    }
+
     if (!AnyProxy.utils.certMgr.ifRootCAFileExists()) {
         AnyProxy.utils.certMgr.generateRootCA((error, keyPath) => {
             // let users to trust this CA before using proxy
             if (!error) {
                 const certDir = require('path').dirname(keyPath);
                 adapter.log.info('The proxy certificate is generated at' + certDir);
-                return startProxy(msg);
+                startProxy(msg);
             } else {
-                adapter.log.error('error when generating rootCA', error);
+                adapter.log.error('error when generating rootCA' + error);
                 adapter.sendTo(msg.from, msg.command, {
                     result:     false,
                     error:      error
                 }, msg.callback);
-                return;
             }
         });
+        return;
     }
 
     const ifaces = os.networkInterfaces();
