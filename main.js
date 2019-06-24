@@ -10,12 +10,13 @@ const adapter = new utils.Adapter('tuya');
 const objectHelper = require(__dirname + '/lib/objectHelper'); // Get common adapter utils
 const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
-const Parser = require('tuyapi/lib/message-parser.js');
+const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
 const os = require('os');
 
 const AnyProxy = require('anyproxy');
 let server;
+let serverEncrypted;
 let proxyServer;
 let proxyStopTimeout;
 let proxyAdminMessageCallback;
@@ -23,9 +24,11 @@ let proxyAdminMessageCallback;
 const TuyaDevice = require('tuyapi');
 
 const knownDevices = {};
+let discoveredEncryptedDevices = {};
 const valueHandler = {};
 let connected = null;
 let connectedCount = 0;
+let adapterInitDone = false;
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function(callback) {
@@ -233,6 +236,12 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     else {
         knownDevices[deviceId].localKey = data.localKey;
     }
+    if (!data.version) {
+        data.version = knownDevices[deviceId].version || '';
+    }
+    else {
+        knownDevices[deviceId].version = data.version;
+    }
     if (data.ip) {
         knownDevices[deviceId].ip = data.ip;
     }
@@ -274,18 +283,15 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
     objectHelper.processObjectQueue(() => {
         if (!knownDevices[deviceId].ip) {
-            adapter.log.info(deviceId + ': Can not start because IP unknown');
-            callback && callback();
-            return;
+            return checkDiscoveredEncryptedDevices(deviceId, callback);
         }
-
-        adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey);
+        adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey + ', Version=' + knownDevices[deviceId].version);
         knownDevices[deviceId].stop = false;
         knownDevices[deviceId].device = new TuyaDevice({
             id: deviceId,
             key: knownDevices[deviceId].localKey || '0000000000000000',
             ip: knownDevices[deviceId].ip,
-            persistentConnection: true
+            version: knownDevices[deviceId].version
         });
 
         knownDevices[deviceId].device.on('data', (data) => {
@@ -377,33 +383,80 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
 function discoverLocalDevices() {
     server = dgram.createSocket('udp4');
-
     server.on('listening', function() {
-        const address = server.address();
+        //const address = server.address();
         adapter.log.info('Discover for local Tuya devices on port 6666');
     });
-
+    const normalParser = new MessageParser({version: 3.1});
     server.on('message', function(message, remote) {
         adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
         let data;
         try {
-            data = Parser.parse(message);
+            data = normalParser.parse(message);
         }
         catch (err) {
             return;
         }
-        if (!data.data || !data.data.gwId) return;
-        if (knownDevices[data.data.gwId] && knownDevices[data.data.gwId].device) return;
-        initDevice(data.data.gwId, data.data.productKey, data.data, ['name']);
+        if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
+        if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
+        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
     });
-
     server.bind(6666);
+
+    serverEncrypted = dgram.createSocket('udp4');
+
+    serverEncrypted.on('listening', function() {
+        //const address = server.address();
+        adapter.log.info('Discover for local Tuya devices on port 6667');
+    });
+    serverEncrypted.on('message', function(message, remote) {
+        if (!discoveredEncryptedDevices[remote.address]) {
+            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
+            discoveredEncryptedDevices[remote.address] = message;
+
+            // try to auto init devices when known already by using proxy
+            if (adapterInitDone) {
+                for (let deviceId of Object.keys(knownDevices)) {
+                    if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
+                    checkDiscoveredEncryptedDevices(deviceId);
+                }
+            }
+        }
+    });
+    serverEncrypted.bind(6667);
+}
+
+function checkDiscoveredEncryptedDevices(deviceId, callback) {
+    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages');
+    const parser = new MessageParser({version: knownDevices[deviceId].version, key: knownDevices[deviceId].localKey});
+
+    for (let ip of Object.keys(discoveredEncryptedDevices)) {
+        if (discoveredEncryptedDevices[ip] === true) continue;
+
+        let data;
+        try {
+            data = parser.parse(discoveredEncryptedDevices[ip]);
+        }
+        catch (err) {
+            continue;
+        }
+        if (!data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) continue;
+        if (data.payload.gwId === deviceId) {
+            discoveredEncryptedDevices[remote.address] = true;
+            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], callback);
+            return true;
+        }
+    }
+    adapter.log.info(deviceId + ': Can not initialize because IP unknown, waiting for UDP messages');
+    callback && callback();
 }
 
 function initDone() {
     adapter.log.info('Existing devices initialized');
     discoverLocalDevices();
     adapter.subscribeStates('*');
+    discoveredEncryptedDevices = {}; // Clean discovered devices to reset auto detection
+    adapterInitDone = true;
 }
 
 function processMessage(msg) {
