@@ -435,7 +435,7 @@ function discoverLocalDevices() {
 }
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
-    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages');
+    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages: version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
     const parser = new MessageParser({version: knownDevices[deviceId].version, key: knownDevices[deviceId].localKey});
 
     for (let ip of Object.keys(discoveredEncryptedDevices)) {
@@ -446,16 +446,20 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
             data = parser.parse(discoveredEncryptedDevices[ip]);
         }
         catch (err) {
+            adapter.log.debug(deviceId + ': Error on decrypt try: ' + err);
             continue;
         }
-        if (!data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) continue;
+        if (!data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
+            adapter.log.debug(deviceId + ': No relevant Data for decrypt try: ' + JSON.stringify(data));
+            continue;
+        }
         if (data.payload.gwId === deviceId) {
             discoveredEncryptedDevices[remote.address] = true;
             initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], callback);
             return true;
         }
     }
-    adapter.log.info(deviceId + ': Can not initialize because IP unknown, waiting for UDP messages');
+    adapter.log.info(deviceId + ': None of the discovered devices matches :-(');
     callback && callback();
 }
 
