@@ -61,11 +61,11 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
-### 2.0.0 (2019-03-08) [WIP]
+### 2.0.1 (2019-03-08) [WIP]
 * (Apollon77) New schemas added
 * (Apollon77) Update all Dependencies
 * (Apollon77) Nodejs 6.x no longer supported!
-* (Apollon77) Theoretically support encrypted devices
+* (Apollon77) Support encrypted devices
 
 ### 1.0.8 (2019-03-08) [Unreleased]
 * (Apollon77) New schemas added

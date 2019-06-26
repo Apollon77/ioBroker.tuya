@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "tuya",
-        "version": "2.0.0",
+        "version": "2.0.1",
         "news": {
             "1.0.8": {
                 "en": "More schema information added",

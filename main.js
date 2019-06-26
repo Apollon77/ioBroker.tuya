@@ -400,7 +400,7 @@ function discoverLocalDevices() {
         adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
         let data;
         try {
-            data = normalParser.parse(message);
+            data = normalParser.parse(message)[0];
         }
         catch (err) {
             return;
@@ -436,14 +436,14 @@ function discoverLocalDevices() {
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
     adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages: version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
-    const parser = new MessageParser({version: knownDevices[deviceId].version, key: knownDevices[deviceId].localKey});
+    const parser = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: knownDevices[deviceId].localKey});
 
     for (let ip of Object.keys(discoveredEncryptedDevices)) {
         if (discoveredEncryptedDevices[ip] === true) continue;
 
         let data;
         try {
-            data = parser.parse(discoveredEncryptedDevices[ip]);
+            data = parser.parse(discoveredEncryptedDevices[ip])[0];
         }
         catch (err) {
             adapter.log.debug(deviceId + ': Error on decrypt try: ' + err);
@@ -454,7 +454,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
             continue;
         }
         if (data.payload.gwId === deviceId) {
-            discoveredEncryptedDevices[remote.address] = true;
+            discoveredEncryptedDevices[data.payload.ip] = true;
             initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], callback);
             return true;
         }
