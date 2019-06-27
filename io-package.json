@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "2.0.1",
+        "version": "2.0.2",
         "news": {
+            "2.0.2": {
+                "en": "support new tuya devcices including encrypted firmware, BREAKING: nodejs 6 no longer supported",
+                "de": "Unterstützung neuer Tuya-Geräte, einschließlich verschlüsselter Firmware, BREAKING: NodeJS 6 wird nicht mehr unterstützt",
+                "ru": "поддержка новых устройств Tuya, включая зашифрованные прошивки, BREAKING: nodejs 6 больше не поддерживается",
+                "pt": "suporte a novos devaios de tuya incluindo firmware criptografado, QUEBRANDO: nodejs 6 não é mais suportado",
+                "nl": "ondersteuning voor nieuwe tuya-apparaten inclusief gecodeerde firmware, BREAKING: nodejs 6 wordt niet langer ondersteund",
+                "fr": "prise en charge des nouveaux systèmes de tuya, y compris les microprogrammes chiffrés, BREAKING: nodejs 6 n'est plus pris en charge",
+                "it": "supportare nuovi strumenti tuya incluso il firmware crittografato, BREAKING: nodejs 6 non più supportato",
+                "es": "soporta nuevos dispositivos tuya incluyendo firmware encriptado, BREAKING: nodejs 6 ya no es compatible",
+                "pl": "obsługuje nowe tuya devcices, w tym szyfrowane oprogramowanie, BREAKING: nodejs 6 nie jest już obsługiwany",
+                "zh-cn": "支持新的tuya设备，包括加密固件，BREAKING：不再支持nodejs 6"
+            },
             "1.0.8": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",

@@ -61,7 +61,7 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
-### 2.0.1 (2019-03-08) [WIP]
+### 2.0.2 (2019-06-27)
 * (Apollon77) New schemas added
 * (Apollon77) Update all Dependencies
 * (Apollon77) Nodejs 6.x no longer supported!
