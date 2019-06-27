@@ -203,7 +203,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     let schema, schemaExt;
     if (!data.schema) {
         const known = mapper.getSchema(productKey);
-        adapter.log.debug(deviceId + ': Schema found for ' + productKey + ': ' + known);
+        adapter.log.debug(deviceId + ': Schema found for ' + productKey + ': ' + JSON.stringify(known));
         if (known) {
             data.schema = known.schema;
             data.schemaExt = known.schemaExt;
