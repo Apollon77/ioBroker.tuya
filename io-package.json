@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "2.0.2",
+        "version": "2.0.3",
         "news": {
+            "2.0.3": {
+                "en": "new tuya devcices supported",
+                "de": "neue Tuya-Geräte werden unterstützt",
+                "ru": "поддерживаются новые устройства Tuya",
+                "pt": "novos tuya devcices suportados",
+                "nl": "nieuwe tuya-apparaten worden ondersteund",
+                "fr": "nouveaux tuya devcices supportés",
+                "it": "nuovi supporti tuya supportati",
+                "es": "nuevos dispositivos tuya soportados",
+                "pl": "obsługiwane nowe tuja devcices",
+                "zh-cn": "支持新的tuya devcices"
+            },
             "2.0.2": {
                 "en": "support new tuya devcices including encrypted firmware, BREAKING: nodejs 6 no longer supported",
                 "de": "Unterstützung neuer Tuya-Geräte, einschließlich verschlüsselter Firmware, BREAKING: NodeJS 6 wird nicht mehr unterstützt",

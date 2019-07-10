@@ -297,10 +297,6 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         knownDevices[deviceId].device.on('data', (data) => {
             knownDevices[deviceId].errorcount = 0;
             if (typeof data !== 'object' || !data || !data.dps) return;
-            if (data.devId !== deviceId) {
-                adapter.log.warn(deviceId + ': Received data for other deviceId ' + data.devId + ' ... ignoring');
-                return;
-            }
             adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
 
             if (!knownDevices[deviceId].objectsInitialized) {
@@ -558,6 +554,7 @@ function startProxy(msg) {
                     if (proxyServer) {
                         proxyServer.close();
                         proxyServer = null;
+                        AnyProxy = null;
                     }
                 }, 600000);
             }).catch(err => {
@@ -578,6 +575,7 @@ function startProxy(msg) {
             if (proxyServer) {
                 proxyServer.close();
                 proxyServer = null;
+                AnyProxy = null;
             }
         }, 300000);
         adapter.sendTo(msg.from, msg.command, {
@@ -593,6 +591,7 @@ function stopProxy(msg) {
     if (proxyServer) {
         proxyServer.close();
         proxyServer = null;
+        AnyProxy = null;
     }
     adapter.sendTo(msg.from, msg.command, {
         result:     true,
