@@ -1,6 +1,6 @@
 {
   "name": "iobroker.tuya",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Tuya",
   "author": {
     "name": "Ingo Fischer",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "request": "^2.88.0",
-    "tuyapi": "^5.1.1",
+    "tuyapi": "^5.1.2",
     "extend": "^3.0.2",
     "anyproxy": "^4.1.0",
     "qrcode": "^1.3.3",

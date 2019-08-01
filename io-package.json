@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "2.0.3",
+        "version": "2.0.4",
         "news": {
+            "2.0.4": {
+                "en": "tuya library updated to prevent memory leak",
+                "de": "Die Tuya-Bibliothek wurde aktualisiert, um einen Speicherverlust zu verhindern",
+                "ru": "Обновлена библиотека tuya для предотвращения утечки памяти",
+                "pt": "biblioteca tuya atualizada para evitar vazamento de memória",
+                "nl": "tuya-bibliotheek bijgewerkt om geheugenlekken te voorkomen",
+                "fr": "bibliothèque de tuya mise à jour pour éviter les fuites de mémoire",
+                "it": "libreria tuya aggiornata per evitare perdite di memoria",
+                "es": "Tuya Library actualizada para evitar pérdidas de memoria",
+                "pl": "biblioteka tuya zaktualizowana, aby zapobiec wyciekowi pamięci",
+                "zh-cn": "tuya库已更新，以防止内存泄漏"
+            },
             "2.0.3": {
                 "en": "new tuya devcices supported",
                 "de": "neue Tuya-Geräte werden unterstützt",
