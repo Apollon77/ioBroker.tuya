@@ -71,7 +71,7 @@ The work of the adapter would not had been possible without the great work of @c
 ## Changelog
 
 ### 3.0.0 (2019-09-03)
-* (Apollon77) Switch from AnyProxy to mitm ... hopefully get SSL-Proxy working again
+* (Apollon77) Switch from AnyProxy to mitm ... hopefully get SSL-Proxy working again. Important: The Proxy is called "NodeMITMProxyCA"!
 
 ### 2.0.4 (2019-08-01)
 * (Apollon77) New schemas added

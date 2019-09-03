@@ -2,6 +2,8 @@
 
 ## iOS
 
+**Important: The Proxy is called "NodeMITMProxyCA" and no longer "Anyproxy" since 3.0.0!**
+
 https://youtu.be/bHaL9ftU2zc
 
 ### Install Certificate
@@ -28,6 +30,8 @@ https://youtu.be/bHaL9ftU2zc
 ## Android
 
 https://youtu.be/bHaL9ftU2zc?t=275
+
+**Important: The Proxy is called "NodeMITMProxyCA" and no longer "Anyproxy" since 3.0.0!**
 
 ### Install certificate
 

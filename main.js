@@ -12,6 +12,7 @@ const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
 const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
