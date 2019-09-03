@@ -58,15 +58,16 @@ systemDictionary = {
         "pl": "Port proxy"
     },
     "Proxy Web Info Port": {
-        "en": "Proxy Web Info Port",
-        "de": "Proxy-Web-Info-Port",
-        "ru": "Порт прокси-сервера",
-        "pt": "Porta de informações da Web de proxy",
-        "nl": "Proxy Web Info-poort",
-        "fr": "Port d'informations Web proxy",
-        "it": "Proxy Web Info Port",
-        "es": "Proxy Web Info Port",
-        "pl": "Port informacyjny sieci Web proxy"
+        "en": "Proxy SSL-Zertifikat Port",
+        "de": "Proxy SSL-Zertifikat Port",
+        "ru": "Прокси SSL-Порт Зертификата",
+        "pt": "Porta SSL-Zertifikat Proxy",
+        "nl": "Proxy SSL-Zertifikat-poort",
+        "fr": "Port proxy SSL-Zertifikat",
+        "it": "Porta proxy SSL-Zertifikat",
+        "es": "Puerto proxy SSL-Zertifikat",
+        "pl": "Port proxy SSL-Zertifikat Port",
+        "zh-cn": "代理SSL-Zertifikat端口"
     },
     "Start proxy": {
         "en": "Start proxy (be patient, can take some seconds!)",
