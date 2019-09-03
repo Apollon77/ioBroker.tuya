@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "tuya",
-        "version": "2.0.4",
+        "version": "3.0.0",
         "news": {
             "2.0.4": {
                 "en": "tuya library updated to prevent memory leak",

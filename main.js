@@ -13,11 +13,16 @@ const dgram = require('dgram');
 const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
 const os = require('os');
-let AnyProxy;
+const path = require('path');
+const http = require('http');
+const serveStatic = require('serve-static');
+const finalhandler = require('finalhandler');
+const mitm = require('http-mitm-proxy');
 
 let server;
 let serverEncrypted;
 let proxyServer;
+let staticServer;
 let proxyStopTimeout;
 let proxyAdminMessageCallback;
 
@@ -35,6 +40,7 @@ adapter.on('unload', function(callback) {
     try {
         setConnected(false);
         stopAll();
+        stopProxy();
         // adapter.log.info('cleaned everything up...');
         setTimeout(callback, 3000);
     } catch (e) {
@@ -44,6 +50,7 @@ adapter.on('unload', function(callback) {
 
 process.on('SIGINT', function() {
     stopAll();
+    stopProxy();
     setConnected(false);
 });
 
@@ -53,6 +60,7 @@ process.on('uncaughtException', function(err) {
         adapter.log.warn('Exception: ' + err);
     }
     stopAll();
+    stopProxy();
     setConnected(false);
 });
 
@@ -486,28 +494,6 @@ function processMessage(msg) {
 }
 
 function startProxy(msg) {
-    if (!AnyProxy) {
-        AnyProxy = require('anyproxy');
-    }
-
-    if (!AnyProxy.utils.certMgr.ifRootCAFileExists()) {
-        AnyProxy.utils.certMgr.generateRootCA((error, keyPath) => {
-            // let users to trust this CA before using proxy
-            if (!error) {
-                const certDir = require('path').dirname(keyPath);
-                adapter.log.info('The proxy certificate is generated at' + certDir);
-                startProxy(msg);
-            } else {
-                adapter.log.error('error when generating rootCA' + error);
-                adapter.sendTo(msg.from, msg.command, {
-                    result:     false,
-                    error:      error
-                }, msg.callback);
-            }
-        });
-        return;
-    }
-
     const ifaces = os.networkInterfaces();
     let ownIp;
     for (const eth in ifaces) {
@@ -522,60 +508,91 @@ function startProxy(msg) {
         if (ownIp) break;
     }
 
-    const options = {
-        port: msg.message.proxyPort,
-        rule: require('./lib/anyproxy-rule.js')(adapter, catchProxyInfo),
-        webInterface: {
-            enable: true,
-            webPort: msg.message.proxyWebPort
-        },
-        throttle: 10000,
-        forceProxyHttps: true,
-        wsIntercept: false,
-        silent: false // TODO
-    };
-
     if (!proxyServer) {
-        proxyServer = new AnyProxy.ProxyServer(options);
+        const dataDir = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir());
+        const configPath = path.join(dataDir, adapter.namespace.replace('.', '_'));
+        if (!fs.existsSync(configPath)) {
+            fs.mkdirSync(configPath);
+        }
 
-        proxyServer.on('ready', () => {
-            adapter.log.info('Anyproxy ready to receive requests');
-            const QRCode = require('qrcode');
-            let qrCodeCert;
-            QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/fetchCrtFile').then((url) => {
-                qrCodeCert = url;
-                adapter.sendTo(msg.from, msg.command, {
-                    result: {
-                        qrcodeCert: qrCodeCert
-                    },
-                    error: null
-                }, msg.callback);
-                proxyStopTimeout = setTimeout(() => {
-                    if (proxyServer) {
-                        proxyServer.close();
-                        proxyServer = null;
-                        AnyProxy = null;
+        // Create proxy server
+        proxyServer = mitm();
+
+        proxyServer.onRequest((ctx, callback) => {
+            if (ctx.clientToProxyRequest.headers.host.includes('tuya')) {
+                ctx.onResponseData((ctx, chunk, callback) => {
+                    const body = chunk.toString('utf8');
+                    if (body.includes('tuya.m.my.group.device.list')) {
+                        let response;
+                        try {
+                            response = JSON.parse(body);
+                        }
+                        catch (err) {
+                            adapter.log.debug('SSL-Proxy: error checking response');
+                        }
+                        catchProxyInfo(response);
                     }
-                }, 600000);
-            }).catch(err => {
-                console.error(err);
+
+                    return callback(null, chunk);
+                });
+            }
+
+            return callback();
+        });
+
+        proxyServer.listen({
+            port: msg.message.proxyPort,
+            sslCaDir: configPath
+        }, () => {
+            // Create server for downloading certificate
+            const serve = serveStatic(path.join(configPath, 'certs'), {});
+
+            // Create server
+            staticServer = http.createServer((req, res) => {
+                serve(req, res, finalhandler(req, res));
+            });
+
+            // Listen
+            staticServer.listen(msg.message.proxyWebPort, () => {
+                adapter.log.info('SSL-Proxy ready to receive requests');
+                const QRCode = require('qrcode');
+                let qrCodeCert;
+                QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/ca.pem').then((url) => {
+                    qrCodeCert = url;
+                    adapter.sendTo(msg.from, msg.command, {
+                        result: {
+                            qrcodeCert: qrCodeCert
+                        },
+                        error: null
+                    }, msg.callback);
+                    proxyStopTimeout = setTimeout(() => {
+                        if (proxyServer) {
+                            proxyServer.close();
+                            staticServer.close();
+                            proxyServer = null;
+                            staticServer = null;
+                        }
+                    }, 600000);
+                }).catch(err => {
+                    console.error(err);
+                });
             });
         });
 
-        proxyServer.on('error', (err) => {
-            adapter.log.error('Anyproxy ERROR: ' + err);
+        proxyServer.onError((ctx, err) => {
+            adapter.log.error('SSL-Proxy ERROR: ' + err);
             adapter.log.error(err.stack);
         });
 
-        proxyServer.start();
     }
     else {
         clearTimeout(proxyStopTimeout);
         proxyStopTimeout = setTimeout(() => {
             if (proxyServer) {
                 proxyServer.close();
+                staticServer.close();
                 proxyServer = null;
-                AnyProxy = null;
+                staticServer = null;
             }
         }, 300000);
         adapter.sendTo(msg.from, msg.command, {
@@ -590,13 +607,16 @@ function startProxy(msg) {
 function stopProxy(msg) {
     if (proxyServer) {
         proxyServer.close();
+        staticServer.close();
         proxyServer = null;
-        AnyProxy = null;
+        staticServer = null;
     }
-    adapter.sendTo(msg.from, msg.command, {
-        result:     true,
-        error:      null
-    }, msg.callback);
+    if (msg) {
+        adapter.sendTo(msg.from, msg.command, {
+            result: true,
+            error: null
+        }, msg.callback);
+    }
 }
 
 function catchProxyInfo(data) {

@@ -7,3 +7,4 @@ admin/i18n/*/flat.txt
 .DS_Store
 package-lock.json
 .vscode
+.http-mitm-proxy
