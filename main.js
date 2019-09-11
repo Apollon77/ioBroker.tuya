@@ -536,7 +536,7 @@ function startProxy(msg) {
                             response = JSON.parse(body);
                         }
                         catch (err) {
-                            adapter.log.debug('SSL-Proxy: error checking response');
+                            adapter.log.debug('SSL-Proxy: error checking response: ' + err);
                         }
                         catchProxyInfo(response);
                     }
