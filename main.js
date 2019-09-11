@@ -520,6 +520,13 @@ function startProxy(msg) {
         proxyServer = mitm();
 
         proxyServer.onRequest((ctx, callback) => {
+            ctx.onResponse(function(ctx, callback) {
+                ctx.proxyToServerRequest.socket.once('close', () => {
+                    ctx.clientToProxyRequest.socket.destroy()
+                });
+                return callback();
+            });
+
             if (ctx.clientToProxyRequest.headers.host.includes('tuya')) {
                 ctx.onResponseData((ctx, chunk, callback) => {
                     const body = chunk.toString('utf8');
@@ -543,7 +550,8 @@ function startProxy(msg) {
 
         proxyServer.listen({
             port: msg.message.proxyPort,
-            sslCaDir: configPath
+            sslCaDir: configPath,
+            keepAlive: true
         }, () => {
             // Create server for downloading certificate
             const serve = serveStatic(path.join(configPath, 'certs'), {});
