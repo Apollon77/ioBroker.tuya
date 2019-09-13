@@ -528,8 +528,14 @@ function startProxy(msg) {
             });
 
             if (ctx.clientToProxyRequest.headers.host.includes('tuya')) {
-                ctx.onResponseData((ctx, chunk, callback) => {
-                    const body = chunk.toString('utf8');
+                const chunks = [];
+                ctx.onResponseData(function(ctx, chunk, callback) {
+                    chunks.push(chunk);
+                    return callback(null, chunk);
+                });
+                ctx.onResponseEnd(function(ctx, callback) {
+                    const body = Buffer.concat(chunks).toString('utf-8');
+
                     if (body.includes('tuya.m.my.group.device.list')) {
                         let response;
                         try {
@@ -537,11 +543,11 @@ function startProxy(msg) {
                         }
                         catch (err) {
                             adapter.log.debug('SSL-Proxy: error checking response: ' + err);
+                            adapter.log.debug(body);
                         }
                         catchProxyInfo(response);
                     }
-
-                    return callback(null, chunk);
+                    return callback();
                 });
             }
 
