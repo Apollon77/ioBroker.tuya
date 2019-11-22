@@ -6,9 +6,11 @@
 'use strict';
 
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-const adapter = new utils.Adapter('tuya');
-const objectHelper = require(__dirname + '/lib/objectHelper'); // Get common adapter utils
-const mapper = require(__dirname + '/lib/mapper'); // Get common adapter utils
+let adapter;
+
+const Sentry = require('@sentry/node');
+const objectHelper = require('@apollon/iobroker-tools').objectHelper; // Get common adapter utils
+const mapper = require('./lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
 const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
@@ -36,18 +38,82 @@ let connected = null;
 let connectedCount = 0;
 let adapterInitDone = false;
 
-// is called when adapter shuts down - callback has to be called under any circumstances!
-adapter.on('unload', function(callback) {
-    try {
-        setConnected(false);
-        stopAll();
-        stopProxy();
-        // adapter.log.info('cleaned everything up...');
-        setTimeout(callback, 3000);
-    } catch (e) {
-        callback();
+function setConnected(isConnected) {
+    if (connected !== isConnected) {
+        connected = isConnected;
+        adapter && adapter.setState('info.connection', connected, true, (err) => {
+            // analyse if the state could be set (because of permissions)
+            if (err && adapter && adapter.log) adapter.log.error('Can not update connected state: ' + err);
+            else if (adapter && adapter.log) adapter.log.debug('connected set to ' + connected);
+        });
     }
-});
+}
+
+function startAdapter(options) {
+    options = options || {};
+    Object.assign(options, {
+        name: 'tuya'
+    });
+    adapter = new utils.Adapter(options);
+
+    adapter.on('unload', function(callback) {
+        try {
+            setConnected(false);
+            stopAll();
+            stopProxy();
+            // adapter.log.info('cleaned everything up...');
+            setTimeout(callback, 3000);
+        } catch (e) {
+            callback();
+        }
+    });
+
+    adapter.on('stateChange', function(id, state) {
+        // Warning, state can be null if it was deleted
+        adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+        objectHelper.handleStateChange(id, state);
+
+    });
+
+    adapter.on('message', function(msg) {
+        processMessage(msg);
+    });
+
+    adapter.on('ready', function() {
+        Sentry.init({
+            dsn: 'https://878016cbe4434c47a1a4ed89279d8b53@sentry.io/1831519'
+        });
+        Sentry.configureScope(scope => {
+            scope.setTag('version', adapter.common.installedVersion || adapter.common.version);
+            if (adapter.common.installedFrom) {
+                scope.setTag('installedFrom', adapter.common.installedFrom);
+            }
+            else {
+                scope.setTag('installedFrom', adapter.common.installedVersion || adapter.common.version);
+            }
+        });
+
+        adapter.getForeignObject('system.config', (err, obj) => {
+            if (obj && obj.common && obj.common.diag) {
+                adapter.getForeignObject('system.meta.uuid', (err, obj) => {
+                    // create uuid
+                    if (!err  && obj) {
+                        Sentry.configureScope(scope => {
+                            scope.setUser({
+                                id: obj.native.uuid
+                            });
+                        });
+                    }
+                    main();
+                });
+            }
+            else {
+                main();
+            }
+        });
+    });
+    return adapter;
+}
 
 process.on('SIGINT', function() {
     stopAll();
@@ -63,36 +129,6 @@ process.on('uncaughtException', function(err) {
     stopAll();
     stopProxy();
     setConnected(false);
-});
-
-
-// is called if a subscribed state changes
-adapter.on('stateChange', function(id, state) {
-    // Warning, state can be null if it was deleted
-    adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
-    objectHelper.handleStateChange(id, state);
-
-});
-
-adapter.on('message', function(msg) {
-    processMessage(msg);
-});
-
-function setConnected(isConnected) {
-    if (connected !== isConnected) {
-        connected = isConnected;
-        adapter.setState('info.connection', connected, true, (err) => {
-            // analyse if the state could be set (because of permissions)
-            if (err) adapter.log.error('Can not update connected state: ' + err);
-            else adapter.log.debug('connected set to ' + connected);
-        });
-    }
-}
-
-// is called when databases are connected and adapter received configuration.
-// start here!
-adapter.on('ready', function() {
-    main();
 });
 
 function stopAll() {
@@ -440,10 +476,11 @@ function discoverLocalDevices() {
 }
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
-    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages: version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
+    const foundIps = Object.keys(discoveredEncryptedDevices);
+    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages (#IPs: ' + foundIps.length + '): version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
     const parser = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: knownDevices[deviceId].localKey});
 
-    for (let ip of Object.keys(discoveredEncryptedDevices)) {
+    for (let ip of foundIps) {
         if (discoveredEncryptedDevices[ip] === true) continue;
 
         let data;
@@ -626,7 +663,7 @@ function stopProxy(msg) {
         proxyServer = null;
         staticServer = null;
     }
-    if (msg) {
+    if (msg && adapter) {
         adapter.sendTo(msg.from, msg.command, {
             result: true,
             error: null
@@ -653,8 +690,9 @@ function catchProxyInfo(data) {
         adapter.log.debug('Found ' + deviceInfos.length + ' device schema information');
         deviceInfos.forEach((deviceInfo) => {
             if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
-                adapter.log.info('new Shema added for product type ' + deviceInfo.id + '. Please send next line from logfile on disk to developer!');
+                adapter.log.info('new Schema added for product type ' + deviceInfo.id + '. Please send next line from logfile on disk to developer!');
                 adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
+                Sentry.captureMessage(deviceInfo.id + ': ' + JSON.stringify(deviceInfo.schemaInfo));
             }
         });
     }
@@ -777,8 +815,6 @@ function getDeviceInfo(msg) {
 
 }
 
-
-// main function
 function main() {
     setConnected(false);
     objectHelper.init(adapter);
@@ -803,4 +839,12 @@ function main() {
             initDone();
         }
     });
+}
+
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
 }
