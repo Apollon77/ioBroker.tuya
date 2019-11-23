@@ -58,9 +58,9 @@ function startAdapter(options) {
 
     adapter.on('unload', function(callback) {
         try {
-            setConnected(false);
             stopAll();
             stopProxy();
+            setConnected(false);
             // adapter.log.info('cleaned everything up...');
             setTimeout(callback, 3000);
         } catch (e) {
@@ -132,18 +132,24 @@ process.on('uncaughtException', function(err) {
 });
 
 function stopAll() {
+    server.close();
+    serverEncrypted.close();
+    if (proxyStopTimeout) {
+        clearTimeout(proxyStopTimeout);
+        proxyStopTimeout = null;
+    }
     for (const deviceId in knownDevices) {
         if (!knownDevices.hasOwnProperty(deviceId)) continue;
         knownDevices[deviceId].stop = true;
+        if (knownDevices[deviceId].reconnectTimeout) {
+            clearTimeout(knownDevices[deviceId].reconnectTimeout);
+            knownDevices[deviceId].reconnectTimeout = null;
+        }
+        if (knownDevices[deviceId].pollingTimeout) {
+            clearTimeout(knownDevices[deviceId].pollingTimeout);
+            knownDevices[deviceId].pollingTimeout = null;
+        }
         if (knownDevices[deviceId].device) {
-            if (knownDevices[deviceId].reconnectTimeout) {
-                clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                knownDevices[deviceId].reconnectTimeout = null;
-            }
-            if (knownDevices[deviceId].pollingTimeout) {
-                clearTimeout(knownDevices[deviceId].pollingTimeout);
-                knownDevices[deviceId].pollingTimeout = null;
-            }
             knownDevices[deviceId].device.disconnect();
             knownDevices[deviceId].device = null;
         }
@@ -228,6 +234,8 @@ function pollDevice(deviceId, overwriteDelay) {
         knownDevices[deviceId].pollingTimeout = null;
         knownDevices[deviceId].device.get({
             returnAsEvent: true
+        }).catch(err => {
+            adapter.log.warn(deviceId + ' error on get: ' + err);
         });
         pollDevice(deviceId);
     }, overwriteDelay);
@@ -431,48 +439,57 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
 
 function discoverLocalDevices() {
-    server = dgram.createSocket('udp4');
-    server.on('listening', function() {
-        //const address = server.address();
-        adapter.log.info('Listen for local Tuya devices on port 6666');
-    });
-    const normalParser = new MessageParser({version: 3.1});
-    server.on('message', function(message, remote) {
-        adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
-        let data;
-        try {
-            data = normalParser.parse(message)[0];
-        }
-        catch (err) {
-            return;
-        }
-        if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
-        if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
-        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
-    });
-    server.bind(6666);
+    try {
+        server = dgram.createSocket('udp4');
+        server.on('listening', function () {
+            //const address = server.address();
+            adapter.log.info('Listen for local Tuya devices on port 6666');
+        });
+        const normalParser = new MessageParser({version: 3.1});
+        server.on('message', function (message, remote) {
+            adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
+            let data;
+            try {
+                data = normalParser.parse(message)[0];
+            } catch (err) {
+                return;
+            }
+            if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
+            if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
+            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
+        });
+        server.bind(6666);
+    }
+    catch(err) {
+        adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
+    }
 
-    serverEncrypted = dgram.createSocket('udp4');
+    try {
+        serverEncrypted = dgram.createSocket('udp4');
 
-    serverEncrypted.on('listening', function() {
-        //const address = server.address();
-        adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
-    });
-    serverEncrypted.on('message', function(message, remote) {
-        if (!discoveredEncryptedDevices[remote.address]) {
-            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
-            discoveredEncryptedDevices[remote.address] = message;
+        serverEncrypted.on('listening', function () {
+            //const address = server.address();
+            adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
+        });
+        serverEncrypted.on('message', function (message, remote) {
+            if (!discoveredEncryptedDevices[remote.address]) {
+                adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
+                discoveredEncryptedDevices[remote.address] = message;
 
-            // try to auto init devices when known already by using proxy
-            if (adapterInitDone) {
-                for (let deviceId of Object.keys(knownDevices)) {
-                    if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
-                    checkDiscoveredEncryptedDevices(deviceId);
+                // try to auto init devices when known already by using proxy
+                if (adapterInitDone) {
+                    for (let deviceId of Object.keys(knownDevices)) {
+                        if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
+                        checkDiscoveredEncryptedDevices(deviceId);
+                    }
                 }
             }
-        }
-    });
-    serverEncrypted.bind(6667);
+        });
+        serverEncrypted.bind(6667);
+    }
+    catch (err) {
+        adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
+    }
 }
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
@@ -692,7 +709,11 @@ function catchProxyInfo(data) {
             if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
                 adapter.log.info('new Schema added for product type ' + deviceInfo.id + '. Please send next line from logfile on disk to developer!');
                 adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
-                Sentry.captureMessage(deviceInfo.id + ': ' + JSON.stringify(deviceInfo.schemaInfo));
+                Sentry.withScope(scope => {
+                    scope.setLevel('info');
+                    scope.setExtra("schema", deviceInfo.id + ': ' + JSON.stringify(deviceInfo.schemaInfo));
+                    Sentry.captureMessage('Schema ' + deviceInfo.id, 'info');
+                });
             }
         });
     }
