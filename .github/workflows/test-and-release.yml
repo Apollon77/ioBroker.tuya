@@ -10,7 +10,7 @@ on:
     branches:
       - '*'
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v?[0-9]+.[0-9]+.[0-9]+'
   pull_request: {}
 
 jobs:
@@ -106,8 +106,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Create a clean build
-        run: npm run build
+#      - name: Create a clean build
+#        run: npm run build
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
