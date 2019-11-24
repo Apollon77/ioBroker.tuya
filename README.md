@@ -74,7 +74,7 @@ The work of the adapter would not had been possible without the great work of @c
 
 ### 3.1.3 (2019-11-24)
 * (Apollon77) try to get rid of SSL errors with new proxies
-* (Apollon77) New schemas added
+* (Apollon77) Many new schemas added
 * (Apollon77) Sentry added for error/exception/schema reporting
 * (Apollon77) Compact Mode added
 
