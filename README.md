@@ -72,6 +72,9 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 3.1.4 (2019-11-24)
+* (Apollon77) New schemas added
+
 ### 3.1.3 (2019-11-24)
 * (Apollon77) try to get rid of SSL errors with new proxies
 * (Apollon77) Many new schemas added
