@@ -439,57 +439,53 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
 
 function discoverLocalDevices() {
-    try {
-        server = dgram.createSocket('udp4');
-        server.on('listening', function () {
-            //const address = server.address();
-            adapter.log.info('Listen for local Tuya devices on port 6666');
-        });
-        const normalParser = new MessageParser({version: 3.1});
-        server.on('message', function (message, remote) {
-            adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
-            let data;
-            try {
-                data = normalParser.parse(message)[0];
-            } catch (err) {
-                return;
-            }
-            if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
-            if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
-            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
-        });
-        server.bind(6666);
-    }
-    catch(err) {
+    server = dgram.createSocket('udp4');
+    server.on('listening', function () {
+        //const address = server.address();
+        adapter.log.info('Listen for local Tuya devices on port 6666');
+    });
+    const normalParser = new MessageParser({version: 3.1});
+    server.on('message', function (message, remote) {
+        adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
+        let data;
+        try {
+            data = normalParser.parse(message)[0];
+        } catch (err) {
+            return;
+        }
+        if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
+        if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
+        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
+    });
+    server.on('error', err => {
         adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
-    }
+    });
+    server.bind(6666);
 
-    try {
-        serverEncrypted = dgram.createSocket('udp4');
+    serverEncrypted = dgram.createSocket('udp4');
 
-        serverEncrypted.on('listening', function () {
-            //const address = server.address();
-            adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
-        });
-        serverEncrypted.on('message', function (message, remote) {
-            if (!discoveredEncryptedDevices[remote.address]) {
-                adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
-                discoveredEncryptedDevices[remote.address] = message;
+    serverEncrypted.on('listening', function () {
+        //const address = server.address();
+        adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
+    });
+    serverEncrypted.on('message', function (message, remote) {
+        if (!discoveredEncryptedDevices[remote.address]) {
+            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
+            discoveredEncryptedDevices[remote.address] = message;
 
-                // try to auto init devices when known already by using proxy
-                if (adapterInitDone) {
-                    for (let deviceId of Object.keys(knownDevices)) {
-                        if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
-                        checkDiscoveredEncryptedDevices(deviceId);
-                    }
+            // try to auto init devices when known already by using proxy
+            if (adapterInitDone) {
+                for (let deviceId of Object.keys(knownDevices)) {
+                    if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
+                    checkDiscoveredEncryptedDevices(deviceId);
                 }
             }
-        });
-        serverEncrypted.bind(6667);
-    }
-    catch (err) {
+        }
+    });
+    serverEncrypted.on('error', err => {
         adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
-    }
+    });
+    serverEncrypted.bind(6667);
 }
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
