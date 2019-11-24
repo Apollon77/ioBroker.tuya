@@ -711,7 +711,7 @@ function catchProxyInfo(data) {
                 adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
                 Sentry.withScope(scope => {
                     scope.setLevel('info');
-                    scope.setExtra("schema", deviceInfo.id + ': ' + JSON.stringify(deviceInfo.schemaInfo));
+                    scope.setExtra("schema", '"' + deviceInfo.id + '": ' + JSON.stringify(deviceInfo.schemaInfo));
                     Sentry.captureMessage('Schema ' + deviceInfo.id, 'info');
                 });
             }
