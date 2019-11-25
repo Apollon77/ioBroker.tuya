@@ -9,7 +9,7 @@ const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 let adapter;
 
 const Sentry = require('@sentry/node');
-const SentryIntegrations = require('@sentry/integrations')
+const SentryIntegrations = require('@sentry/integrations');
 const objectHelper = require('@apollon/iobroker-tools').objectHelper; // Get common adapter utils
 const mapper = require('./lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
@@ -84,8 +84,8 @@ function startAdapter(options) {
         Sentry.init({
             dsn: 'https://878016cbe4434c47a1a4ed89279d8b53@sentry.io/1831519',
             integrations: [
-                new SentryIntegrations.Dedupe(),
-            ],
+                new SentryIntegrations.Dedupe()
+            ]
         });
         Sentry.configureScope(scope => {
             scope.setTag('version', adapter.common.installedVersion || adapter.common.version);
