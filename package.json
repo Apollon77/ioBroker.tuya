@@ -1,6 +1,6 @@
 {
   "name": "iobroker.tuya",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "description": "Tuya",
   "author": {
     "name": "Ingo Fischer",
@@ -34,7 +34,8 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^1.0.3",
     "@apollon/iobroker-tools": "^0.1.0",
-    "@sentry/node": "^5.9.0"
+    "@sentry/node": "^5.9.0",
+    "@sentry/integrations": "^5.8.0"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
