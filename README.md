@@ -72,6 +72,9 @@ The work of the adapter would not had been possible without the great work of @c
 
 ## Changelog
 
+### 3.1.7 (2019-11-26)
+* (Apollon77) New schemas added
+
 ### 3.1.6 (2019-11-25)
 * (Apollon77) New schemas added
 * (Apollon77) Optimize Sentry integration and dedupe errors
