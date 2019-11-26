@@ -10,3 +10,4 @@ test
 appveyor.yml
 package-lock.json
 .vscode
+.github

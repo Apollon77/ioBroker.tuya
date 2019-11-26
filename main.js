@@ -82,7 +82,7 @@ function startAdapter(options) {
 
     adapter.on('ready', function() {
         Sentry.init({
-            dsn: 'https://878016cbe4434c47a1a4ed89279d8b53@sentry.io/1831519',
+            dsn: 'https://75f5da9008d64e9e859641533329756b@sentry.io/1831519',
             integrations: [
                 new SentryIntegrations.Dedupe()
             ]
