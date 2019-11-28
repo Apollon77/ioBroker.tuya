@@ -11,6 +11,7 @@ let adapter;
 const Sentry = require('@sentry/node');
 const SentryIntegrations = require('@sentry/integrations');
 const packageJson = require('./package.json');
+
 const objectHelper = require('@apollon/iobroker-tools').objectHelper; // Get common adapter utils
 const mapper = require('./lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
@@ -566,6 +567,12 @@ function startProxy(msg) {
     }
 
     if (!proxyServer) {
+        msg.message.proxyPort = parseInt(msg.message.proxyPort, 10);
+        if (isNaN(msg.message.proxyPort) || msg.message.proxyPort < 1024 || msg.message.proxyPort > 65535) {
+            adapter.log.warn('Invalid port set for Proxy. Reset to 8888');
+            msg.message.proxyPort = 8888;
+        }
+
         const dataDir = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir());
         const configPath = path.join(dataDir, adapter.namespace.replace('.', '_'));
         if (!fs.existsSync(configPath)) {
