@@ -617,6 +617,11 @@ function startProxy(msg) {
             return callback();
         });
 
+        proxyServer.onError((ctx, err) => {
+            adapter.log.error('SSL-Proxy ERROR: ' + err);
+            adapter.log.error(err.stack);
+        });
+
         proxyServer.listen({
             port: msg.message.proxyPort,
             sslCaDir: configPath,
@@ -628,6 +633,11 @@ function startProxy(msg) {
             // Create server
             staticServer = http.createServer((req, res) => {
                 serve(req, res, finalhandler(req, res));
+            });
+
+            staticServer.on('error', err => {
+                adapter.log.error('SSL-Proxy could not be started: ' + err);
+                adapter.log.error(err.stack);
             });
 
             // Listen
@@ -655,11 +665,6 @@ function startProxy(msg) {
                     console.error(err);
                 });
             });
-        });
-
-        proxyServer.onError((ctx, err) => {
-            adapter.log.error('SSL-Proxy ERROR: ' + err);
-            adapter.log.error(err.stack);
         });
 
     }
