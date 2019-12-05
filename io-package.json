@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.1.9",
+        "version": "3.1.10",
         "news": {
+            "3.1.10": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена дополнительная информация о схеме",
+                "pt": "Mais informações do esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Ulteriori informazioni sullo schema aggiunte",
+                "es": "Se agregó más información de esquema",
+                "pl": "Dodano więcej informacji o schemacie",
+                "zh-cn": "添加了更多架构信息"
+            },
             "3.1.9": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -110,127 +122,6 @@
                 "es": "soporta nuevos dispositivos tuya incluyendo firmware encriptado, BREAKING: nodejs 6 ya no es compatible",
                 "pl": "obsługuje nowe tuya devcices, w tym szyfrowane oprogramowanie, BREAKING: nodejs 6 nie jest już obsługiwany",
                 "zh-cn": "支持新的tuya设备，包括加密固件，BREAKING：不再支持nodejs 6"
-            },
-            "1.0.8": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена ​​дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Más información de esquema añadido",
-                "pl": "Dodano więcej informacji o schemacie"
-            },
-            "1.0.7": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена ​​дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Más información de esquema añadido",
-                "pl": "Dodano więcej informacji o schemacie"
-            },
-            "1.0.5": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена ​​дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Más información de esquema añadido",
-                "pl": "Dodano więcej informacji o schemacie"
-            },
-            "1.0.4": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена ​​дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Más información de esquema añadido",
-                "pl": "Dodano więcej informacji o schemacie"
-            },
-            "1.0.3": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена ​​дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Más información de esquema añadido",
-                "pl": "Dodano więcej informacji o schemacie"
-            },
-            "1.0.2": {
-                "en": "More schema information added, all data are updated after the device was controlled",
-                "de": "Weitere Schemainformationen hinzugefügt, alle Daten werden aktualisiert, nachdem das Gerät gesteuert wurde",
-                "ru": "Добавлена ​​дополнительная информация о схеме, все данные обновляются после того, как устройство контролировалось",
-                "pt": "Mais informações de esquema adicionadas, todos os dados são atualizados depois que o dispositivo foi controlado",
-                "nl": "Er is meer schema-informatie toegevoegd en alle gegevens worden bijgewerkt nadat het apparaat werd bestuurd",
-                "fr": "Plus d'informations de schéma ajoutées, toutes les données sont mises à jour après le contrôle du périphérique",
-                "it": "Aggiunte ulteriori informazioni sullo schema, tutti i dati vengono aggiornati dopo il controllo del dispositivo",
-                "es": "Más información de esquema agregada, todos los datos se actualizan después de que el dispositivo fue controlado",
-                "pl": "Dodano więcej informacji o schemacie, wszystkie dane są aktualizowane po kontroli urządzenia"
-            },
-            "1.0.1": {
-                "en": "optimizations",
-                "de": "Optimierungen",
-                "ru": "оптимизации",
-                "pt": "otimizações",
-                "nl": "optimalisaties",
-                "fr": "optimisations",
-                "it": "ottimizzazioni",
-                "es": "optimizaciones",
-                "pl": "optymalizacje"
-            },
-            "1.0.0": {
-                "en": "More schema information added; optimizations and bugfixes",
-                "de": "Weitere Schemainformationen hinzugefügt; Optimierungen und Bugfixes",
-                "ru": "Добавлена ​​дополнительная информация о схеме; оптимизация и исправления",
-                "pt": "Mais informações de esquema adicionadas; otimizações e correções de bugs",
-                "nl": "Meer schema-informatie toegevoegd; optimalisaties en bugfixes",
-                "fr": "Plus d'informations de schéma ajoutées; optimisations et corrections de bugs",
-                "it": "Ulteriori informazioni sullo schema aggiunte; ottimizzazioni e bugfix",
-                "es": "Más información de esquema añadido; optimizaciones y correcciones de errores",
-                "pl": "Dodano więcej informacji o schemacie; optymalizacje i poprawki błędów"
-            },
-            "0.1.3": {
-                "en": "More schema information added; optimizations and bugfixes",
-                "de": "Weitere Schemainformationen hinzugefügt; Optimierungen und Bugfixes",
-                "ru": "Добавлена ​​дополнительная информация о схеме; оптимизация и исправления",
-                "pt": "Mais informações de esquema adicionadas; otimizações e correções de bugs",
-                "nl": "Meer schema-informatie toegevoegd; optimalisaties en bugfixes",
-                "fr": "Plus d'informations de schéma ajoutées; optimisations et corrections de bugs",
-                "it": "Ulteriori informazioni sullo schema aggiunte; ottimizzazioni e bugfix",
-                "es": "Más información de esquema añadido; optimizaciones y correcciones de errores",
-                "pl": "Dodano więcej informacji o schemacie; optymalizacje i poprawki błędów"
-            },
-            "0.1.2": {
-                "en": "Optimized admin and other things",
-                "de": "Optimierter Admin und andere Dinge",
-                "ru": "Оптимизированный администратор и другие вещи",
-                "pt": "Administrador otimizado e outras coisas",
-                "nl": "Geoptimaliseerde beheerder en andere dingen",
-                "fr": "Optimisé admin et d'autres choses",
-                "it": "Admin ottimizzato e altre cose",
-                "es": "Administrador optimizado y otras cosas.",
-                "pl": "Zoptymalizowany administrator i inne rzeczy"
-            },
-            "0.1.1": {
-                "en": "Initiale Tuya Adapter Version",
-                "de": "Initiale Tuya Adapter Version",
-                "ru": "Версия Initiale Tuya Adapter",
-                "pt": "Versão do Adaptador Initiale Tuya",
-                "nl": "Initiale Tuya-adapterversie",
-                "fr": "Initiale Tuya Adapter Version",
-                "it": "Versione dell'adattatore Initiale Tuya",
-                "es": "Initiale Tuya Adapter Version",
-                "pl": "Initiale Tuya Adapter Version"
             }
         },
         "title": "Tuya",
