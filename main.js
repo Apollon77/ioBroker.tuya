@@ -572,6 +572,10 @@ function startProxy(msg) {
             adapter.log.warn('Invalid port set for Proxy. Reset to 8888');
             msg.message.proxyPort = 8888;
         }
+        if (isNaN(msg.message.proxyWebPort) || msg.message.proxyWebPort < 1024 || msg.message.proxyWebPort > 65535) {
+            adapter.log.warn('Invalid port set for Proxy web port. Reset to 8889');
+            msg.message.proxyPort = 8889;
+        }
 
         const dataDir = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir());
         const configPath = path.join(dataDir, adapter.namespace.replace('.', '_'));
