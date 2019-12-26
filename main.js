@@ -594,7 +594,7 @@ function startProxy(msg) {
                 return callback();
             });
 
-            if (ctx.clientToProxyRequest.headers.host.includes('tuya')) {
+            if (ctx.clientToProxyRequest.headers && ctx.clientToProxyRequest.headers.host && ctx.clientToProxyRequest.headers.host.includes('tuya')) {
                 const chunks = [];
                 ctx.onResponseData(function(ctx, chunk, callback) {
                     chunks.push(chunk);
