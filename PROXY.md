@@ -47,6 +47,8 @@ Depending on your Android version an installation of the Certificate for "VPN an
 
 see [TuyaSync.pdf](https://https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/TuyaSync.pdf)
 
+A list of knwon compatible apps and versions can be found in [README.md](https://github.com/Apollon77/ioBroker.tuya#compatible-mobile-apps-and-versions) !
+
 Thanks go to to HappyTeaFriend from ioBroker-Forum!
 
 ### Fallback Option if above do not work
