@@ -43,9 +43,17 @@ Depending on your Android version an installation of the Certificate for "VPN an
 
 ![Proxy](img/Android-Proxy.jpg)
 
+### Detailed Step by Step Guide for using Proxy with Android and older App version
+
+see [TuyaSync.pdf](https://https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/TuyaSync.pdf)
+
+Thanks go to to HappyTeaFriend from ioBroker-Forum!
+
 ### Fallback Option if above do not work
 
 This solution that works for user that also have a Windows computer was reported in [ioBroker Forum](https://forum.iobroker.net/topic/16103/aufruf-neuer-adapter-iobroker-tuya-wlan-devices-tuya-smart-life-und-andere/83) and is working wth an Android Simulator.
 A second Andreoid Emulator approach is described at https://forum.iobroker.net/topic/23431/aufruf-tuya-adapter-tests-verschl%C3%BCsselte-ger%C3%A4te/19
 
 https://youtu.be/bHaL9ftU2zc?t=157
+
+
