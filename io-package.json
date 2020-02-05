@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.1.16",
+        "version": "3.2.0",
         "news": {
             "3.1.16": {
                 "en": "More schema information added",
@@ -225,8 +225,14 @@
         "type": "iot-systems",
         "restartAdapters": [],
         "stopTimeout": 5000,
-        "compact": true
-    },
+        "compact": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
+                "pathWhitelist": ["@apollon"],
+                "errorBlacklist": ["SyntaxError"]
+            }
+        }    },
     "native": {
         "pollingInterval": 60,
         "proxyPort": 8888,
