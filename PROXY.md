@@ -45,7 +45,7 @@ Depending on your Android version an installation of the Certificate for "VPN an
 
 ### Detailed Step by Step Guide for using Proxy with Android and older App version
 
-see [TuyaSync.pdf](https://https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/TuyaSync.pdf)
+see [TuyaSync.pdf](https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/TuyaSync.pdf)
 
 A list of knwon compatible apps and versions can be found in [README.md](https://github.com/Apollon77/ioBroker.tuya#compatible-mobile-apps-and-versions) !
 
