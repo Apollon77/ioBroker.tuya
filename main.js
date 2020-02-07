@@ -724,13 +724,39 @@ function startProxy(msg) {
             // Listen
             staticServer.listen(msg.message.proxyWebPort, () => {
                 adapter.log.info('SSL-Proxy ready to receive requests');
-                const QRCode = require('qrcode');
-                let qrCodeCert;
-                QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/ca.pem').then((url) => {
-                    qrCodeCert = url;
+                let QRCode;
+                try {
+                    QRCode = require('qrcode');
+                }
+                catch (e) {
+                    QRCode = null;
+                }
+                if (!QRCode) {
+                    let qrCodeCert;
+                    QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/ca.pem').then((url) => {
+                        qrCodeCert = url;
+                        adapter.sendTo(msg.from, msg.command, {
+                            result: {
+                                qrcodeCert: qrCodeCert
+                            },
+                            error: null
+                        }, msg.callback);
+                        proxyStopTimeout = setTimeout(() => {
+                            if (proxyServer) {
+                                proxyServer.close();
+                                staticServer.close();
+                                proxyServer = null;
+                                staticServer = null;
+                            }
+                        }, 600000);
+                    }).catch(err => {
+                        console.error(err);
+                    });
+                }
+                else {
                     adapter.sendTo(msg.from, msg.command, {
                         result: {
-                            qrcodeCert: qrCodeCert
+                            qrcodeCert: 'Not existing'
                         },
                         error: null
                     }, msg.callback);
@@ -742,9 +768,7 @@ function startProxy(msg) {
                             staticServer = null;
                         }
                     }, 600000);
-                }).catch(err => {
-                    console.error(err);
-                });
+                }
             });
         });
 
