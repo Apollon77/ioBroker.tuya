@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.2.1",
+        "version": "3.2.2",
         "news": {
-            "3.2.1": {
+            "3.2.2": {
                 "en": "More schema information added, further fixes and optimizations",
                 "de": "Weitere Schemainformationen hinzugefügt, weitere Korrekturen und Optimierungen",
                 "ru": "Добавлена дополнительная информация о схеме, дополнительные исправления и оптимизации",

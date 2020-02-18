@@ -731,7 +731,7 @@ function startProxy(msg) {
                 catch (e) {
                     QRCode = null;
                 }
-                if (!QRCode) {
+                if (QRCode) {
                     let qrCodeCert;
                     QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/ca.pem').then((url) => {
                         qrCodeCert = url;
