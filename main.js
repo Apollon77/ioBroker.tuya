@@ -548,7 +548,7 @@ function discoverLocalDevices() {
             // try to auto init devices when known already by using proxy
             if (adapterInitDone) {
                 for (let deviceId of Object.keys(knownDevices)) {
-                    if (knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
+                    if (!knownDevices[deviceId].ip || !knownDevices[deviceId].localKey) continue;
                     checkDiscoveredEncryptedDevices(deviceId);
                 }
             }
