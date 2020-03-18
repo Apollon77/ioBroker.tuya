@@ -235,6 +235,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     if (!preserveFields) {
         preserveFields = [];
     }
+    const physicalDeviceId = data.meshId || deviceId;
     objs.forEach((obj) => {
         const id = obj.id;
         delete obj.id;
@@ -244,7 +245,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         }
         if (obj.write) {
             onChange = (value) => {
-                if (!knownDevices[deviceId].device) {
+                if (!knownDevices[physicalDeviceId].device) {
                     adapter.log.debug(deviceId + 'Device communication not initialized ...');
                     return;
                 }
@@ -256,11 +257,12 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     value = obj.states[value.toString()];
                 }
 
-                knownDevices[deviceId].device.set({
+                knownDevices[physicalDeviceId].device.set({
                     'dps': id,
-                    'set': value
+                    'set': value,
+                    'devId': deviceId
                 }).then(() => {
-                    adapter.log.debug(deviceId + '.' + id + ': set value ' + value);
+                    adapter.log.debug(deviceId + '.' + id + ': set value ' + value + ' via ' + physicalDeviceId);
                     pollDevice(deviceId, 2000);
                 }).catch((err) => {
                     adapter.log.error(deviceId + '.' + id + ': ' + err);
@@ -304,7 +306,9 @@ function pollDevice(deviceId, overwriteDelay) {
     }
     knownDevices[deviceId].pollingTimeout = setTimeout(() => {
         knownDevices[deviceId].pollingTimeout = null;
-        knownDevices[deviceId].device.get({
+
+        const physicalDeviceId = knownDevices[deviceId].data.meshId || deviceId;
+        knownDevices[physicalDeviceId].device.get({
             returnAsEvent: true
         }).catch(err => {
             adapter.log.warn(deviceId + ' error on get: ' + err);
@@ -325,7 +329,6 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         delete data.dps;
     }
     // {"ip":"192.168.178.85","gwId":"34305060807d3a1d7178","active":2,"ability":0,"mode":0,"encrypt":true,"productKey":"8FAPq5h6gdV51Vcr","version":"3.1"}
-    let schema, schemaExt;
     if (!data.schema) {
         const known = mapper.getSchema(productKey);
         adapter.log.debug(deviceId + ': Schema found for ' + productKey + ': ' + JSON.stringify(known));
@@ -379,7 +382,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         },
         native: data
     }, preserveFields);
-    objectHelper.setOrUpdateObject(deviceId + '.online', {
+    !data.meshId && objectHelper.setOrUpdateObject(deviceId + '.online', {
         type: 'state',
         common: {
             name: 'Device online status',
@@ -389,7 +392,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             write: false
         }
     }, false);
-    objectHelper.setOrUpdateObject(deviceId + '.ip', {
+    !data.meshId && objectHelper.setOrUpdateObject(deviceId + '.ip', {
         type: 'state',
         common: {
             name: 'Device IP',
@@ -407,104 +410,105 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     }
 
     objectHelper.processObjectQueue(() => {
-        if (!knownDevices[deviceId].ip) {
-            return checkDiscoveredEncryptedDevices(deviceId, callback);
-        }
-        adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey + ', Version=' + knownDevices[deviceId].version);
-        knownDevices[deviceId].stop = false;
-        knownDevices[deviceId].device = new TuyaDevice({
-            id: deviceId,
-            key: knownDevices[deviceId].localKey || '0000000000000000',
-            ip: knownDevices[deviceId].ip,
-            version: knownDevices[deviceId].version
-        });
-
-        knownDevices[deviceId].device.on('data', (data) => {
-            knownDevices[deviceId].errorcount = 0;
-            if (typeof data !== 'object' || !data || !data.dps) return;
-            adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
-
-            if (!knownDevices[deviceId].objectsInitialized) {
-                adapter.log.info(deviceId + ': No schema exists, init basic states ...');
-                initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
-                knownDevices[deviceId].objectsInitialized = true;
-                objectHelper.processObjectQueue();
-                return;
+        if (!data.meshId) { // only devices without a meshId are real devices
+            if (!knownDevices[deviceId].ip) {
+                return checkDiscoveredEncryptedDevices(deviceId, callback);
             }
-            for (const id in data.dps) {
-                if (!data.dps.hasOwnProperty(id)) continue;
-                let value = data.dps[id];
-                if (valueHandler[deviceId + '.' + id]) {
-                    value = valueHandler[deviceId + '.' + id](value);
+            adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey + ', Version=' + knownDevices[deviceId].version);
+            knownDevices[deviceId].stop = false;
+            knownDevices[deviceId].device = new TuyaDevice({
+                id: deviceId,
+                key: knownDevices[deviceId].localKey || '0000000000000000',
+                ip: knownDevices[deviceId].ip,
+                version: knownDevices[deviceId].version
+            });
+
+            knownDevices[deviceId].device.on('data', (data) => {
+                knownDevices[deviceId].errorcount = 0;
+                if (typeof data !== 'object' || !data || !data.dps) return;
+                adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
+
+                if (!knownDevices[deviceId].objectsInitialized) {
+                    adapter.log.info(deviceId + ': No schema exists, init basic states ...');
+                    initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
+                    knownDevices[deviceId].objectsInitialized = true;
+                    objectHelper.processObjectQueue();
+                    return;
                 }
-                adapter.setState(deviceId + '.' + id, value, true);
-            }
+                for (const id in data.dps) {
+                    if (!data.dps.hasOwnProperty(id)) continue;
+                    let value = data.dps[id];
+                    if (valueHandler[deviceId + '.' + id]) {
+                        value = valueHandler[deviceId + '.' + id](value);
+                    }
+                    adapter.setState(deviceId + '.' + id, value, true);
+                }
 
-        });
+            });
 
-        knownDevices[deviceId].device.on('connected', () => {
-            adapter.log.debug(deviceId + ': Connected to device');
-            adapter.setState(deviceId + '.online', true, true);
-            if (knownDevices[deviceId].reconnectTimeout) {
-                clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                knownDevices[deviceId].reconnectTimeout = null;
-            }
-            knownDevices[deviceId].connected = true;
-            connectedCount++;
-            if (!connected) setConnected(true);
-        });
-
-        knownDevices[deviceId].device.on('disconnected', () => {
-            adapter.log.debug(deviceId + ': Disconnected from device');
-            adapter.setState(deviceId + '.online', false, true);
-            if (!knownDevices[deviceId].stop) {
+            knownDevices[deviceId].device.on('connected', () => {
+                adapter.log.debug(deviceId + ': Connected to device');
+                adapter.setState(deviceId + '.online', true, true);
                 if (knownDevices[deviceId].reconnectTimeout) {
                     clearTimeout(knownDevices[deviceId].reconnectTimeout);
                     knownDevices[deviceId].reconnectTimeout = null;
                 }
-                knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
-                    knownDevices[deviceId].device.connect().catch(err => {
-                        adapter.log.error(deviceId + ': ' + err);
-                    });
-                }, 60000);
-            }
-            if (knownDevices[deviceId].connected) {
-                knownDevices[deviceId].connected = false;
-                connectedCount--;
-            }
-            if (connected && connectedCount === 0) setConnected(false);
-        });
+                knownDevices[deviceId].connected = true;
+                connectedCount++;
+                if (!connected) setConnected(true);
+            });
 
-        knownDevices[deviceId].device.on('error', (err) => {
-            adapter.log.debug(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
-            knownDevices[deviceId].errorcount++;
-
-            if (knownDevices[deviceId].errorcount > 3) {
-                knownDevices[deviceId].stop = true;
-                if (knownDevices[deviceId].reconnectTimeout) {
-                    clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                    knownDevices[deviceId].reconnectTimeout = null;
+            knownDevices[deviceId].device.on('disconnected', () => {
+                adapter.log.debug(deviceId + ': Disconnected from device');
+                adapter.setState(deviceId + '.online', false, true);
+                if (!knownDevices[deviceId].stop) {
+                    if (knownDevices[deviceId].reconnectTimeout) {
+                        clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                        knownDevices[deviceId].reconnectTimeout = null;
+                    }
+                    knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
+                        knownDevices[deviceId].device.connect().catch(err => {
+                            adapter.log.error(deviceId + ': ' + err);
+                        });
+                    }, 60000);
                 }
-                if (knownDevices[deviceId].pollingTimeout) {
-                    clearTimeout(knownDevices[deviceId].pollingTimeout);
-                    knownDevices[deviceId].pollingTimeout = null;
+                if (knownDevices[deviceId].connected) {
+                    knownDevices[deviceId].connected = false;
+                    connectedCount--;
                 }
-                if (knownDevices[deviceId].device) {
-                    knownDevices[deviceId].device.disconnect();
-                    knownDevices[deviceId].device = null;
+                if (connected && connectedCount === 0) setConnected(false);
+            });
+
+            knownDevices[deviceId].device.on('error', (err) => {
+                adapter.log.debug(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
+                knownDevices[deviceId].errorcount++;
+
+                if (knownDevices[deviceId].errorcount > 3) {
+                    knownDevices[deviceId].stop = true;
+                    if (knownDevices[deviceId].reconnectTimeout) {
+                        clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                        knownDevices[deviceId].reconnectTimeout = null;
+                    }
+                    if (knownDevices[deviceId].pollingTimeout) {
+                        clearTimeout(knownDevices[deviceId].pollingTimeout);
+                        knownDevices[deviceId].pollingTimeout = null;
+                    }
+                    if (knownDevices[deviceId].device) {
+                        knownDevices[deviceId].device.disconnect();
+                        knownDevices[deviceId].device = null;
+                    }
                 }
+            });
+
+            knownDevices[deviceId].device.connect().catch(err => {
+                adapter.log.error(deviceId + ': ' + err);
+            });
+
+            if (!knownDevices[deviceId].localKey) {
+                adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
+                pollDevice(deviceId);
             }
-        });
-
-        knownDevices[deviceId].device.connect().catch(err => {
-            adapter.log.error(deviceId + ': ' + err);
-        });
-
-        if (!knownDevices[deviceId].localKey) {
-            adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
-            pollDevice(deviceId);
         }
-
         callback && callback();
     });
 }
