@@ -240,7 +240,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         const id = obj.id;
         delete obj.id;
         let onChange;
-        if (!data.localKey) {
+        if (!data.localKey && !data.meshId) {
             obj.write = false;
         }
         if (obj.write) {
