@@ -92,7 +92,7 @@ When the adapter crashes or an other Code error happens, this error message that
 
 ## Changelog
 
-### 3.3.0 (2020-03-18)
+### 3.3.1 (2020-03-19)
 * (Apollon77) Many new schemas added
 
 ### 3.2.3 (2020-03-08)
