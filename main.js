@@ -405,6 +405,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
+        adapter.log.debug(deviceId + ': Objects ' + JSON.stringify(objs));
         initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
     }
