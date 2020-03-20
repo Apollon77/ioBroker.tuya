@@ -169,7 +169,6 @@ function startAdapter(options) {
         // Warning, state can be null if it was deleted
         adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
         objectHelper.handleStateChange(id, state);
-
     });
 
     adapter.on('message', function(msg) {
@@ -244,7 +243,9 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             obj.write = false;
         }
         if (obj.write) {
+            adapter.log.debug(deviceId + ' Register onChange for ' + id);
             onChange = (value) => {
+                adapter.log.debug(deviceId + ' onChange triggered for ' + id + ' and value ' + JSON.stringify(value));
                 if (!knownDevices[physicalDeviceId].device) {
                     adapter.log.debug(deviceId + 'Device communication not initialized ...');
                     return;
