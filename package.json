@@ -35,7 +35,7 @@
     "@iobroker/adapter-core": "^2.2.1",
     "@apollon/iobroker-tools": "^0.2.0",
     "@sentry/node": "^5.14.2",
-    "@sentry/integrations": "^5.14.2",
+    "@sentry/integrations": "5.14.2",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {
