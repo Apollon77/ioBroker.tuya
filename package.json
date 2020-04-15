@@ -42,7 +42,7 @@
     "gulp": "^4.0.2",
     "mocha": "^7.1.1",
     "chai": "^4.2.0",
-    "@iobroker/testing": "^2.1.0"
+    "@iobroker/testing": "^2.2.0"
   },
   "main": "main.js",
   "scripts": {
