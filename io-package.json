@@ -268,7 +268,8 @@
                 "pathWhitelist": ["@apollon"],
                 "errorBlacklist": ["SyntaxError"]
             }
-        }    },
+        }
+    },
     "native": {
         "pollingInterval": 60,
         "proxyPort": 8888,
