@@ -44,8 +44,8 @@ jobs:
 #          CI: true
       # - name: Lint TypeScript code
       #   run: npm run lint
-#      - name: Test package files
-#        run: npm run test:package
+      - name: Test package files
+        run: npm run test:package
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
