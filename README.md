@@ -87,7 +87,7 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 3.3.7 (2020-07-01)
 * (Apollon77) More schema information added
 
 ### 3.3.6 (2020-06-29)
