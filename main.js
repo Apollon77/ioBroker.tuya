@@ -442,6 +442,17 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 if (typeof data !== 'object' || !data || !data.dps) return;
                 adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
 
+                if (knownDevices[deviceId].deepCheckNextData) {
+                    const dataKeys = Object.keys(data.dps);
+                    const dummyFieldList = ["1", "2", "3", "101", "102", "103"];
+                    if (dataKeys.length === dummyFieldList.length && !dataKeys.find(key => !dummyFieldList.includes(key) || data.dps[key] !== null)) {
+                        // {"1":null,"2":null,"3":null,"101":null,"102":null,"103":null}
+                        adapter.log.debug(deviceId + ': Ignore invalid data (Counter: ' + knownDevices[deviceId].deepCheckNextData + ')');
+                        knownDevices[deviceId].deepCheckNextData--;
+                        return;
+                    }
+                }
+
                 if (!knownDevices[deviceId].objectsInitialized) {
                     adapter.log.info(deviceId + ': No schema exists, init basic states ...');
                     initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
@@ -495,6 +506,13 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
             knownDevices[deviceId].device.on('error', (err) => {
                 adapter.log.debug(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
+
+                if (err === 'json obj data unvalid') {
+                    // Special error case!
+                    knownDevices[deviceId].deepCheckNextData = knownDevices[deviceId].deepCheckNextData || 0;
+                    knownDevices[deviceId].deepCheckNextData++;
+                }
+
                 knownDevices[deviceId].errorcount++;
 
                 if (knownDevices[deviceId].errorcount > 3) {
