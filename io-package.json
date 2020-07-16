@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.3.8",
+        "version": "3.3.9",
         "news": {
+            "3.3.9": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена дополнительная информация о схеме",
+                "pt": "Mais informações do esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Ulteriori informazioni sullo schema aggiunte",
+                "es": "Se agregó más información de esquema",
+                "pl": "Dodano więcej informacji o schemacie",
+                "zh-cn": "添加了更多架构信息"
+            },
             "3.3.8": {
                 "en": "Work around invalid data that are returned by some devices\nMore schema information added",
                 "de": "Umgehen Sie ungültige Daten, die von einigen Geräten zurückgegeben werden\nWeitere Schemainformationen hinzugefügt",
@@ -230,18 +242,6 @@
                 "es": "modo compacto agregado, actualizaciones de esquemas y varias optimizaciones",
                 "pl": "dodano tryb kompaktowy, aktualizacje schematu i kilka optymalizacji",
                 "zh-cn": "添加了紧凑模式，模式更新和多项优化"
-            },
-            "2.0.4": {
-                "en": "tuya library updated to prevent memory leak",
-                "de": "Die Tuya-Bibliothek wurde aktualisiert, um einen Speicherverlust zu verhindern",
-                "ru": "Обновлена библиотека tuya для предотвращения утечки памяти",
-                "pt": "biblioteca tuya atualizada para evitar vazamento de memória",
-                "nl": "tuya-bibliotheek bijgewerkt om geheugenlekken te voorkomen",
-                "fr": "bibliothèque de tuya mise à jour pour éviter les fuites de mémoire",
-                "it": "libreria tuya aggiornata per evitare perdite di memoria",
-                "es": "Tuya Library actualizada para evitar pérdidas de memoria",
-                "pl": "biblioteka tuya zaktualizowana, aby zapobiec wyciekowi pamięci",
-                "zh-cn": "tuya库已更新，以防止内存泄漏"
             }
         },
         "title": "Tuya",
