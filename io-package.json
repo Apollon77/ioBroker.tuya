@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.3.9",
+        "version": "3.3.10",
         "news": {
+            "3.3.10": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена дополнительная информация о схеме",
+                "pt": "Mais informações do esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Ulteriori informazioni sullo schema aggiunte",
+                "es": "Se agregó más información de esquema",
+                "pl": "Dodano więcej informacji o schemacie",
+                "zh-cn": "添加了更多架构信息"
+            },
             "3.3.9": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema",
                 "pl": "Dodano więcej informacji o schemacie",
                 "zh-cn": "添加了更多架构信息"
-            },
-            "3.1.3": {
-                "en": "compact mode added, schema updates and several optimizations",
-                "de": "Kompaktmodus hinzugefügt, Schema-Updates und mehrere Optimierungen",
-                "ru": "добавлен компактный режим, обновления схемы и несколько оптимизаций",
-                "pt": "modo compacto adicionado, atualizações de esquema e várias otimizações",
-                "nl": "compacte modus toegevoegd, schema-updates en verschillende optimalisaties",
-                "fr": "mode compact ajouté, mises à jour de schéma et plusieurs optimisations",
-                "it": "aggiunta modalità compatta, aggiornamenti dello schema e diverse ottimizzazioni",
-                "es": "modo compacto agregado, actualizaciones de esquemas y varias optimizaciones",
-                "pl": "dodano tryb kompaktowy, aktualizacje schematu i kilka optymalizacji",
-                "zh-cn": "添加了紧凑模式，模式更新和多项优化"
             }
         },
         "title": "Tuya",
