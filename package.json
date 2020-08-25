@@ -34,14 +34,14 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^2.4.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^5.21.3",
-    "@sentry/integrations": "^5.21.3",
+    "@sentry/node": "^5.21.4",
+    "@sentry/integrations": "^5.21.4",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^1.4.1",
     "gulp": "^4.0.2",
-    "mocha": "^8.1.1",
+    "mocha": "^8.1.2",
     "chai": "^4.2.0",
     "@iobroker/testing": "^2.3.0"
   },
