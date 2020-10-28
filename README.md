@@ -90,7 +90,7 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 3.4.0 (2020-10-29)
 * (Apollon77) update tuya-api library
 
 ### 3.3.15 (2020-10-29)

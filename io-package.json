@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.3.15",
+        "version": "3.4.0",
         "news": {
+            "3.4.0": {
+                "en": "update tuya-api library",
+                "de": "Aktualisieren Sie die Tuya-API-Bibliothek",
+                "ru": "обновить библиотеку tuya-api",
+                "pt": "atualizar biblioteca tuya-api",
+                "nl": "update tuya-api bibliotheek",
+                "fr": "mettre à jour la bibliothèque tuya-api",
+                "it": "aggiorna la libreria tuya-api",
+                "es": "actualizar la biblioteca tuya-api",
+                "pl": "zaktualizuj bibliotekę tuya-api",
+                "zh-cn": "更新tuya-api库"
+            },
             "3.3.15": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -220,18 +232,6 @@
                 "zh-cn": "添加了更多架构信息"
             },
             "3.1.11": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações do esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.1.10": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
                 "ru": "Добавлена дополнительная информация о схеме",
