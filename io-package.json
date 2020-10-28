@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.3.14",
+        "version": "3.3.15",
         "news": {
+            "3.3.15": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена дополнительная информация о схеме",
+                "pt": "Mais informações de esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Aggiunte ulteriori informazioni sullo schema",
+                "es": "Se agregó más información de esquema",
+                "pl": "Dodano więcej informacji o schemacie",
+                "zh-cn": "添加了更多架构信息"
+            },
             "3.3.14": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -220,18 +232,6 @@
                 "zh-cn": "添加了更多架构信息"
             },
             "3.1.10": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações do esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.1.9": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
                 "ru": "Добавлена дополнительная информация о схеме",
