@@ -434,7 +434,8 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 id: deviceId,
                 key: knownDevices[deviceId].localKey || '0000000000000000',
                 ip: knownDevices[deviceId].ip,
-                version: knownDevices[deviceId].version
+                version: knownDevices[deviceId].version,
+                nullPayloadOnJSONError: true
             });
 
             knownDevices[deviceId].device.on('data', (data) => {
