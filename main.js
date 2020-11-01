@@ -579,7 +579,7 @@ function discoverLocalDevices() {
     });
     serverEncrypted.on('message', function (message, remote) {
         if (!discoveredEncryptedDevices[remote.address]) {
-            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message);
+            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message.toString('hex'));
             discoveredEncryptedDevices[remote.address] = message;
 
             // try to auto init devices when known already by using proxy
