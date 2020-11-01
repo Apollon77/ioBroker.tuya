@@ -21,6 +21,10 @@ const serveStatic = require('serve-static');
 const finalhandler = require('finalhandler');
 const mitm = require('http-mitm-proxy');
 
+const crypto = require('crypto');
+const UDP_KEY_STRING = 'yGAdlopoPVldABfn';
+const UDP_KEY = crypto.createHash('md5').update(UDP_KEY_STRING, 'utf8').digest();
+
 let server;
 let serverEncrypted;
 let proxyServer;
@@ -601,21 +605,34 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
     const foundIps = Object.keys(discoveredEncryptedDevices);
     adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages (#IPs: ' + foundIps.length + '): version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
     const parser = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: knownDevices[deviceId].localKey});
+    const parserDefault = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: UDP_KEY});
 
     for (let ip of foundIps) {
         if (discoveredEncryptedDevices[ip] === true) continue;
 
         let data;
+        // try Default Key
         try {
-            data = parser.parse(discoveredEncryptedDevices[ip])[0];
+            data = parserDefault.parse(discoveredEncryptedDevices[ip])[0];
         }
         catch (err) {
-            adapter.log.debug(deviceId + ': Error on decrypt try: ' + err);
-            continue;
+            adapter.log.debug(deviceId + ': Error on default decrypt try: ' + err);
         }
-        if (!data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
-            adapter.log.debug(deviceId + ': No relevant Data for decrypt try: ' + JSON.stringify(data));
-            continue;
+        if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
+            adapter.log.debug(deviceId + ': No relevant Data for default decrypt try: ' + JSON.stringify(data));
+
+            // try device key
+            try {
+                data = parser.parse(discoveredEncryptedDevices[ip])[0];
+            }
+            catch (err) {
+                adapter.log.debug(deviceId + ': Error on device decrypt try: ' + err);
+                continue;
+            }
+            if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
+                adapter.log.debug(deviceId + ': No relevant Data for device decrypt try: ' + JSON.stringify(data));
+                continue;
+            }
         }
         if (data.payload.gwId === deviceId) {
             discoveredEncryptedDevices[data.payload.ip] = true;
