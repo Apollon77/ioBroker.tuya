@@ -92,7 +92,7 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ### __WORK IN PROGRESS__
 * (Apollon77) More schema information added
-* (Apollon77) try to fix IP lookup via UDP
+* (Apollon77) fix IP lookup via UDP
 
 ### 3.4.0 (2020-10-29)
 * (Apollon77) update tuya-api library
