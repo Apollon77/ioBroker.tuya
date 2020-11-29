@@ -291,6 +291,11 @@
         "restartAdapters": [],
         "stopTimeout": 5000,
         "compact": true,
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ],
         "plugins": {
             "sentry": {
                 "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
