@@ -304,6 +304,28 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             };
             values[id] = valueHandler[deviceId + '.' + id](values[id]);
         }
+        if (obj.encoding) {
+            const dpEncoding = obj.encoding;
+            if (!valueHandler[deviceId + '.' + id]) {
+                valueHandler[deviceId + '.' + id] = (value) => {
+                    if (typeof value !== 'string') return value;
+                    try {
+                        switch (dpEncoding) {
+                            case 'base64:':
+                                return Buffer.from(value, 'base64').toString('utf-8');
+                            default:
+                                adapter.log.info('Unsupported encoding ' + dpEncoding + ' for ' + deviceId + '.' + id);
+                                return value;
+                        }
+                    } catch (err) {
+                        adapter.log.info('Error while decoding ' + dpEncoding + ' for ' + deviceId + '.' + id + ': ' + err);
+                        return value;
+                    }
+                };
+                values[id] = valueHandler[deviceId + '.' + id](values[id]);
+            }
+            delete obj.encoding;
+        }
         objectHelper.setOrUpdateObject(deviceId + '.' + id, {
             type: 'state',
             common: obj
