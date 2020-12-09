@@ -311,7 +311,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     if (typeof value !== 'string') return value;
                     try {
                         switch (dpEncoding) {
-                            case 'base64:':
+                            case 'base64':
                                 return Buffer.from(value, 'base64').toString('utf-8');
                             default:
                                 adapter.log.info('Unsupported encoding ' + dpEncoding + ' for ' + deviceId + '.' + id);
