@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.4.3",
+        "version": "3.5.0",
         "news": {
+            "3.5.0": {
+                "en": "More schema information added\nTry to decode \"raw\" values via base64",
+                "de": "Weitere Schemainformationen hinzugefügt\nVersuchen Sie, \"rohe\" Werte über base64 zu dekodieren",
+                "ru": "Добавлена дополнительная информация о схеме\nПопробуйте декодировать \"сырые\" значения через base64",
+                "pt": "Mais informações de esquema adicionadas\nTente decodificar valores \"brutos\" via base64",
+                "nl": "Meer schema-informatie toegevoegd\nProbeer \"ruwe\" waarden te decoderen via base64",
+                "fr": "Plus d'informations sur le schéma ajoutées\nEssayez de décoder les valeurs \"brutes\" via base64",
+                "it": "Aggiunte ulteriori informazioni sullo schema\nProva a decodificare i valori \"grezzi\" tramite base64",
+                "es": "Se agregó más información de esquema\nIntente decodificar valores \"sin procesar\" a través de base64",
+                "pl": "Dodano więcej informacji o schemacie\nSpróbuj zdekodować „surowe” wartości przez base64",
+                "zh-cn": "添加了更多架构信息\n尝试通过base64解码“原始”值"
+            },
             "3.4.3": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -220,18 +232,6 @@
                 "zh-cn": "添加了更多架构信息"
             },
             "3.1.16": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações do esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.1.15": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
                 "ru": "Добавлена дополнительная информация о схеме",
