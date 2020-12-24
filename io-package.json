@@ -1,20 +1,8 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.5.1",
+        "version": "3.5.0",
         "news": {
-            "3.5.1": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
             "3.5.0": {
                 "en": "More schema information added\nTry to decode \"raw\" values via base64",
                 "de": "Weitere Schemainformationen hinzugefügt\nVersuchen Sie, \"rohe\" Werte über base64 zu dekodieren",
