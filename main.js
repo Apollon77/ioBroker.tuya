@@ -519,6 +519,9 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                         knownDevices[deviceId].reconnectTimeout = null;
                     }
                     knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
+                        if (!knownDevices[deviceId].device) {
+                            return;
+                        }
                         knownDevices[deviceId].device.connect().catch(err => {
                             adapter.log.error(deviceId + ': ' + err);
                         });

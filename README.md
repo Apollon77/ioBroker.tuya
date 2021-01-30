@@ -90,6 +90,10 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Prevent crash cases (Sentry IOBROKER-TUYA-MG)
+* (Apollon77) More schema information added
+
 ### 3.5.3 (2021-01-13)
 * (Apollon77) More schema information added
 
