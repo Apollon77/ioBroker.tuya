@@ -280,7 +280,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     adapter.log.debug(deviceId + '.' + id + ': set value ' + value + ' via ' + physicalDeviceId);
                     pollDevice(deviceId, 2000);
                 }).catch((err) => {
-                    adapter.log.error(deviceId + '.' + id + ': ' + err);
+                    adapter.log.error(deviceId + '.' + id + ': ' + err.message);
                     pollDevice(deviceId, 2000);
                 });
             };
@@ -318,7 +318,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                                 return value;
                         }
                     } catch (err) {
-                        adapter.log.info('Error while decoding ' + dpEncoding + ' for ' + deviceId + '.' + id + ': ' + err);
+                        adapter.log.info('Error while decoding ' + dpEncoding + ' for ' + deviceId + '.' + id + ': ' + err.message);
                         return value;
                     }
                 };
@@ -349,7 +349,7 @@ function pollDevice(deviceId, overwriteDelay) {
             knownDevices[physicalDeviceId].device.get({
                 returnAsEvent: true
             }).catch(err => {
-                adapter.log.warn(deviceId + ' error on get: ' + err);
+                adapter.log.warn(deviceId + ' error on get: ' + err.message);
             });
         }
         pollDevice(deviceId);
@@ -523,7 +523,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                             return;
                         }
                         knownDevices[deviceId].device.connect().catch(err => {
-                            adapter.log.error(deviceId + ': ' + err);
+                            adapter.log.error(deviceId + ': ' + err.message);
                         });
                     }, 60000);
                 }
@@ -563,7 +563,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             });
 
             knownDevices[deviceId].device.connect().catch(err => {
-                adapter.log.error(deviceId + ': ' + err);
+                adapter.log.error(deviceId + ': ' + err.message);
             });
 
             if (!knownDevices[deviceId].localKey) {
@@ -641,7 +641,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
             data = parserDefault.parse(discoveredEncryptedDevices[ip])[0];
         }
         catch (err) {
-            adapter.log.debug(deviceId + ': Error on default decrypt try: ' + err);
+            adapter.log.debug(deviceId + ': Error on default decrypt try: ' + err.message);
         }
         if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
             adapter.log.debug(deviceId + ': No relevant Data for default decrypt try: ' + JSON.stringify(data));
@@ -651,7 +651,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
                 data = parser.parse(discoveredEncryptedDevices[ip])[0];
             }
             catch (err) {
-                adapter.log.debug(deviceId + ': Error on device decrypt try: ' + err);
+                adapter.log.debug(deviceId + ': Error on device decrypt try: ' + err.message);
                 continue;
             }
             if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
@@ -753,7 +753,7 @@ function startProxy(msg) {
                             response = JSON.parse(body);
                         }
                         catch (err) {
-                            adapter.log.debug('SSL-Proxy: error checking response: ' + err);
+                            adapter.log.debug('SSL-Proxy: error checking response: ' + err.message);
                             adapter.log.debug(body);
                         }
                         catchProxyInfo(response);
@@ -829,7 +829,7 @@ function startProxy(msg) {
                             }
                         }, 600000);
                     }).catch(err => {
-                        console.error(err);
+                        console.error(err.message);
                     });
                 }
                 else {

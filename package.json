@@ -34,15 +34,15 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^2.4.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.0.3",
-    "@sentry/integrations": "^6.0.3",
+    "@sentry/node": "^6.1.0",
+    "@sentry/integrations": "^6.1.0",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^1.8.3",
     "gulp": "^4.0.2",
     "mocha": "^8.2.1",
-    "chai": "^4.2.0",
+    "chai": "^4.3.0",
     "@iobroker/testing": "^2.4.2"
   },
   "main": "main.js",
