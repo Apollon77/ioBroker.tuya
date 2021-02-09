@@ -3,18 +3,6 @@
         "name": "tuya",
         "version": "3.5.5",
         "news": {
-            "3.5.5": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
             "3.5.4": {
                 "en": "Prevent crash cases (Sentry IOBROKER-TUYA-MG)\nMore schema information added",
                 "de": "Verhindern Sie Absturzfälle (Sentry IOBROKER-TUYA-MG)\nWeitere Schemainformationen hinzugefügt",
