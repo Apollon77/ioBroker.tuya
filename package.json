@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "request": "^2.88.2",
-    "tuyapi": "^6.1.4",
+    "tuyapi": "^6.1.5",
     "extend": "^3.0.2",
     "finalhandler": "^1.1.2",
     "http-mitm-proxy": "^0.9.0",
