@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.5.6",
+        "version": "3.5.7",
         "news": {
+            "3.5.7": {
+                "en": "Fix crash case (Sentry IOBROKER-TUYA-P9)\nMore schema information added",
+                "de": "Absturzfall behoben (Sentry IOBROKER-TUYA-P9)\nWeitere Schemainformationen hinzugefügt",
+                "ru": "Исправить сбой (Sentry IOBROKER-TUYA-P9)\nДобавлена дополнительная информация о схеме",
+                "pt": "Corrigir caso de falha (Sentry IOBROKER-TUYA-P9)\nMais informações de esquema adicionadas",
+                "nl": "Crashcase repareren (Sentry IOBROKER-TUYA-P9)\nMeer schema-informatie toegevoegd",
+                "fr": "Correction d'un cas de crash (Sentry IOBROKER-TUYA-P9)\nPlus d'informations sur le schéma ajoutées",
+                "it": "Risolto il crash case (Sentry IOBROKER-TUYA-P9)\nAggiunte ulteriori informazioni sullo schema",
+                "es": "Reparar caso de accidente (Sentry IOBROKER-TUYA-P9)\nSe agregó más información de esquema",
+                "pl": "Napraw przypadek awarii (Sentry IOBROKER-TUYA-P9)\nDodano więcej informacji o schemacie",
+                "zh-cn": "修复崩溃情况（Sentry IOBROKER-TUYA-P9）\n添加了更多架构信息"
+            },
             "3.5.6": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema",
                 "pl": "Dodano więcej informacji o schemacie",
                 "zh-cn": "添加了更多架构信息"
-            },
-            "3.3.5": {
-                "en": "More schema information added\nOptimizations and fixes",
-                "de": "Weitere Schemainformationen hinzugefügt\nOptimierungen und Korrekturen",
-                "ru": "Добавлена дополнительная информация о схеме\nОптимизации и исправления",
-                "pt": "Mais informações do esquema adicionadas\nOtimizações e correções",
-                "nl": "Meer schema-informatie toegevoegd\nOptimalisaties en oplossingen",
-                "fr": "Plus d'informations sur le schéma ajoutées\nOptimisations et correctifs",
-                "it": "Ulteriori informazioni sullo schema aggiunte\nOttimizzazioni e correzioni",
-                "es": "Se agregó más información de esquema\nOptimizaciones y arreglos",
-                "pl": "Dodano więcej informacji o schemacie\nOptymalizacje i poprawki",
-                "zh-cn": "添加了更多架构信息\n优化和修复"
             }
         },
         "title": "Tuya",
