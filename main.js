@@ -260,7 +260,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             adapter.log.debug(deviceId + ' Register onChange for ' + id);
             onChange = (value) => {
                 adapter.log.debug(deviceId + ' onChange triggered for ' + id + ' and value ' + JSON.stringify(value));
-                if (!knownDevices[physicalDeviceId].device) {
+                if (!knownDevices[physicalDeviceId] || !knownDevices[physicalDeviceId].device) {
                     adapter.log.debug(deviceId + 'Device communication not initialized ...');
                     return;
                 }
