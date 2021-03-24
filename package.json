@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "request": "^2.88.2",
-    "tuyapi": "^6.1.5",
+    "tuyapi": "^6.3.1",
     "extend": "^3.0.2",
     "finalhandler": "^1.1.2",
     "http-mitm-proxy": "^0.9.0",
@@ -34,8 +34,8 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^2.4.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.2.2",
-    "@sentry/integrations": "^6.2.2",
+    "@sentry/node": "^6.2.3",
+    "@sentry/integrations": "^6.2.3",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
