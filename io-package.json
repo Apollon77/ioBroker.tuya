@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.5.7",
+        "version": "3.5.8",
         "news": {
+            "3.5.8": {
+                "en": "More schema information added",
+                "de": "Weitere Schemainformationen hinzugefügt",
+                "ru": "Добавлена дополнительная информация о схеме",
+                "pt": "Mais informações de esquema adicionadas",
+                "nl": "Meer schema-informatie toegevoegd",
+                "fr": "Plus d'informations sur le schéma ajoutées",
+                "it": "Aggiunte ulteriori informazioni sullo schema",
+                "es": "Se agregó más información de esquema",
+                "pl": "Dodano więcej informacji o schemacie",
+                "zh-cn": "添加了更多架构信息"
+            },
             "3.5.7": {
                 "en": "Fix crash case (Sentry IOBROKER-TUYA-P9)\nMore schema information added",
                 "de": "Absturzfall behoben (Sentry IOBROKER-TUYA-P9)\nWeitere Schemainformationen hinzugefügt",
@@ -220,18 +232,6 @@
                 "zh-cn": "解决某些设备返回的无效数据\n添加了更多架构信息"
             },
             "3.3.7": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações do esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.3.6": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
                 "ru": "Добавлена дополнительная информация о схеме",
