@@ -464,7 +464,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 nullPayloadOnJSONError: true
             });
 
-            knownDevices[deviceId].device.on('data', (data) => {
+            const handleNewData = (data) => {
                 knownDevices[deviceId].errorcount = 0;
                 if (typeof data !== 'object' || !data || !data.dps) return;
                 adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
@@ -495,8 +495,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     }
                     adapter.setState(deviceId + '.' + id, value, true);
                 }
+            };
 
-            });
+            knownDevices[deviceId].device.on('data', handleNewData);
+            knownDevices[deviceId].device.on('dp-refresh', handleNewData);
 
             knownDevices[deviceId].device.on('connected', () => {
                 adapter.log.debug(deviceId + ': Connected to device');
@@ -716,6 +718,7 @@ function startProxy(msg) {
             adapter.log.warn('Invalid port set for Proxy. Reset to 8888');
             msg.message.proxyPort = 8888;
         }
+        msg.message.proxyWebPort = parseInt(msg.message.proxyWebPort, 10);
         if (isNaN(msg.message.proxyWebPort) || msg.message.proxyWebPort < 1024 || msg.message.proxyWebPort > 65535) {
             adapter.log.warn('Invalid port set for Proxy web port. Reset to 8889');
             msg.message.proxyWebPort = 8889;
