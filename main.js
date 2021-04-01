@@ -248,9 +248,11 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     if (!preserveFields) {
         preserveFields = [];
     }
+    const dpIdList = [];
     const physicalDeviceId = data.meshId || deviceId;
     objs.forEach((obj) => {
         const id = obj.id;
+        dpIdList.push(id);
         delete obj.id;
         let onChange;
         if (!data.localKey && !data.meshId) {
@@ -331,6 +333,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             common: obj
         }, preserveFields, values[id], onChange);
     });
+    return dpIdList;
 }
 
 function pollDevice(deviceId, overwriteDelay) {
@@ -341,16 +344,31 @@ function pollDevice(deviceId, overwriteDelay) {
         clearTimeout(knownDevices[deviceId].pollingTimeout);
         knownDevices[deviceId].pollingTimeout = null;
     }
-    knownDevices[deviceId].pollingTimeout = setTimeout(() => {
+    knownDevices[deviceId].pollingTimeout = setTimeout(async () => {
         knownDevices[deviceId].pollingTimeout = null;
 
         const physicalDeviceId = knownDevices[deviceId].data.meshId || deviceId;
         if (knownDevices[physicalDeviceId] && knownDevices[physicalDeviceId].device) {
-            knownDevices[physicalDeviceId].device.get({
-                returnAsEvent: true
-            }).catch(err => {
-                adapter.log.warn(deviceId + ' error on get: ' + err.message);
-            });
+            if (knownDevices[physicalDeviceId].useRefreshToGet && knownDevices[physicalDeviceId].dpIdList) {
+                try {
+                    knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].dpIdList; // TODO remove once fixed
+                    const data = await knownDevices[physicalDeviceId].device.refresh();
+                    // {
+                    //                         dps: knownDevices[physicalDeviceId].dpIdList
+                    //                     }
+                    knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
+                } catch (err) {
+                    adapter.log.warn(deviceId + ' error on refresh: ' + err.message);
+                }
+            } else {
+                try {
+                    await knownDevices[physicalDeviceId].device.get({
+                        returnAsEvent: true
+                    });
+                } catch(err) {
+                    adapter.log.warn(deviceId + ' error on get: ' + err.message);
+                }
+            }
         }
         pollDevice(deviceId);
     }, overwriteDelay);
@@ -445,7 +463,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
         adapter.log.debug(deviceId + ': Objects ' + JSON.stringify(objs));
-        initDeviceObjects(deviceId, data, objs, values, preserveFields);
+        knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
     }
 
@@ -482,7 +500,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
                 if (!knownDevices[deviceId].objectsInitialized) {
                     adapter.log.info(deviceId + ': No schema exists, init basic states ...');
-                    initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
+                    knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
                     knownDevices[deviceId].objectsInitialized = true;
                     objectHelper.processObjectQueue();
                     return;
@@ -495,6 +513,8 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     }
                     adapter.setState(deviceId + '.' + id, value, true);
                 }
+                pollDevice(deviceId); // lets poll in defined interall
+
             };
 
             knownDevices[deviceId].device.on('data', handleNewData);
@@ -510,6 +530,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 knownDevices[deviceId].connected = true;
                 connectedCount++;
                 if (!connected) setConnected(true);
+                pollDevice(deviceId, 1000);
             });
 
             knownDevices[deviceId].device.on('disconnected', () => {
@@ -543,6 +564,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     // Special error case!
                     knownDevices[deviceId].deepCheckNextData = knownDevices[deviceId].deepCheckNextData || 0;
                     knownDevices[deviceId].deepCheckNextData++;
+                    if (!knownDevices[deviceId].useRefreshToGet) {
+                        knownDevices[deviceId].useRefreshToGet = true;
+                        pollDevice(deviceId, 100); // next try with refresh
+                    }
                 }
 
                 knownDevices[deviceId].errorcount++;
@@ -1042,6 +1067,10 @@ function main() {
     objectHelper.init(adapter);
 
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
+    if (adapter.config.pollingInterval < 10) {
+        adapter.log.info(`Polling interval ${adapter.config.pollingInterval} too short, setting to 30s`);
+        adapter.config.pollingInterval = 30;
+    }
 
     adapter.getDevices((err, devices) => {
         let deviceCnt = 0;

@@ -33,7 +33,7 @@ https://youtu.be/bHaL9ftU2zc?t=275
 
 **Important: The Proxy is called "NodeMITMProxyCA" and no longer "Anyproxy" since 3.0.0!**
 
-**Important: SOme newer Android versions might NOT allow the self signed certificates anymore at all! So if you are sure you did anything correctly and it is still not working or only SSL errors are in the logs then please try an Android Emulator (see below)!**
+**Important: Some newer Android versions might NOT allow the self signed certificates anymore at all! So if you are sure you did anything correctly and it is still not working or only SSL errors are in the logs then please try an Android Emulator (see below)!**
 
 ### Install certificate
 
