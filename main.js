@@ -352,16 +352,19 @@ function pollDevice(deviceId, overwriteDelay) {
             if (knownDevices[physicalDeviceId].useRefreshToGet && knownDevices[physicalDeviceId].dpIdList) {
                 try {
                     knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].dpIdList; // TODO remove once fixed
+                    adapter.log.debug(deviceId + ' request data via refresh ...');
                     const data = await knownDevices[physicalDeviceId].device.refresh();
                     // {
                     //                         dps: knownDevices[physicalDeviceId].dpIdList
                     //                     }
+                    adapter.log.debug(deviceId + ' response from refresh: ' + JSON.stringify(data));
                     knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                 } catch (err) {
                     adapter.log.warn(deviceId + ' error on refresh: ' + err.message);
                 }
             } else {
                 try {
+                    adapter.log.debug(deviceId + ' request data via get ...');
                     await knownDevices[physicalDeviceId].device.get({
                         returnAsEvent: true
                     });
@@ -513,8 +516,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     }
                     adapter.setState(deviceId + '.' + id, value, true);
                 }
-                pollDevice(deviceId); // lets poll in defined interall
-
+                pollDevice(deviceId); // lets poll in defined interval
             };
 
             knownDevices[deviceId].device.on('data', handleNewData);
