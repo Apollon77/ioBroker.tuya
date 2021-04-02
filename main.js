@@ -356,7 +356,7 @@ function pollDevice(deviceId, overwriteDelay) {
                     }
                     if (knownDevices[physicalDeviceId].refreshDpList.length) {
                         knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].refreshDpList; // TODO remove once fixed
-                        adapter.log.debug(deviceId + ' request data via refresh'/* + JSON.stringify(knownDevices[physicalDeviceId].dpIdList)*/);
+                        adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].refreshDpList));
                         knownDevices[physicalDeviceId].waitingForRefrssh = true;
                         const data = await knownDevices[physicalDeviceId].device.refresh();
                         // {
@@ -367,8 +367,14 @@ function pollDevice(deviceId, overwriteDelay) {
                         knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                     }
                     else {
-                        adapter.log.debug(deviceId + ' polling not supported');
-                        return;
+                        adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
+                        const setOptions = {
+                            dps: knownDevices[physicalDeviceId].dpIdList,
+                            set: null
+                        };
+                        const data = await knownDevices[physicalDeviceId].device.set(setOptions);
+                        adapter.log.debug(deviceId + ' response from set-refresh: ' + JSON.stringify(data));
+                        // adapter.log.debug(deviceId + ' polling not supported');
                     }
                 } catch (err) {
                     adapter.log.warn(deviceId + ' error on refresh: ' + err.message);
