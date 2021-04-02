@@ -351,16 +351,25 @@ function pollDevice(deviceId, overwriteDelay) {
         if (knownDevices[physicalDeviceId] && knownDevices[physicalDeviceId].device) {
             if (knownDevices[physicalDeviceId].useRefreshToGet && knownDevices[physicalDeviceId].dpIdList) {
                 try {
-                    //knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].dpIdList; // TODO remove once fixed
-                    adapter.log.debug(deviceId + ' request data via refresh'/* + JSON.stringify(knownDevices[physicalDeviceId].dpIdList)*/);
-                    knownDevices[physicalDeviceId].waitingForRefrssh = true;
-                    const data = await knownDevices[physicalDeviceId].device.refresh();
-                    // {
-                    //                         dps: knownDevices[physicalDeviceId].dpIdList
-                    //                     }
-                    knownDevices[physicalDeviceId].waitingForRefrssh = false;
-                    adapter.log.debug(deviceId + ' response from refresh: ' + JSON.stringify(data));
-                    knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
+                    if (!knownDevices[physicalDeviceId].refreshDpList) {
+                        knownDevices[physicalDeviceId].refreshDpList = knownDevices[physicalDeviceId].dpIdList.filter(el => knownDevices[physicalDeviceId].device._dpRefreshIds.includes(el));
+                    }
+                    if (knownDevices[physicalDeviceId].refreshDpList.length) {
+                        knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].refreshDpList; // TODO remove once fixed
+                        adapter.log.debug(deviceId + ' request data via refresh'/* + JSON.stringify(knownDevices[physicalDeviceId].dpIdList)*/);
+                        knownDevices[physicalDeviceId].waitingForRefrssh = true;
+                        const data = await knownDevices[physicalDeviceId].device.refresh();
+                        // {
+                        //                         dps: knownDevices[physicalDeviceId].dpIdList
+                        //                     }
+                        knownDevices[physicalDeviceId].waitingForRefrssh = false;
+                        adapter.log.debug(deviceId + ' response from refresh: ' + JSON.stringify(data));
+                        knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
+                    }
+                    else {
+                        adapter.log.debug(deviceId + ' polling not supported');
+                        return;
+                    }
                 } catch (err) {
                     adapter.log.warn(deviceId + ' error on refresh: ' + err.message);
                 }
