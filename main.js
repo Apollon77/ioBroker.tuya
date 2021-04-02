@@ -352,7 +352,7 @@ function pollDevice(deviceId, overwriteDelay) {
             if (knownDevices[physicalDeviceId].useRefreshToGet && knownDevices[physicalDeviceId].dpIdList) {
                 try {
                     knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].dpIdList; // TODO remove once fixed
-                    adapter.log.debug(deviceId + ' request data via refresh ...');
+                    adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
                     const data = await knownDevices[physicalDeviceId].device.refresh();
                     // {
                     //                         dps: knownDevices[physicalDeviceId].dpIdList
