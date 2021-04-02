@@ -367,7 +367,7 @@ function pollDevice(deviceId, overwriteDelay) {
                         knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                     }
                     else {
-                        adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
+                        adapter.log.debug(deviceId + ' request data via set-refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
                         const setOptions = {
                             dps: knownDevices[physicalDeviceId].dpIdList,
                             set: null
@@ -557,7 +557,8 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 if (knownDevices[deviceId].waitingForRefresh) {
                     knownDevices[deviceId].waitingForRefresh = false;
                     knownDevices[deviceId].useRefreshToGet = false;
-                    adapter.log.debug(deviceId + ': ... seems like Refrssh not supported ... disabling');
+                    adapter.log.debug(deviceId + ': ... seems like Refresh not supported ... disable');
+                    // TODO check once such a case comes up
                 }
                 adapter.setState(deviceId + '.online', false, true);
                 if (!knownDevices[deviceId].stop) {
