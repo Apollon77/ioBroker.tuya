@@ -353,10 +353,12 @@ function pollDevice(deviceId, overwriteDelay) {
                 try {
                     knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].dpIdList; // TODO remove once fixed
                     adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
+                    knownDevices[physicalDeviceId].waitingForRefrssh = true;
                     const data = await knownDevices[physicalDeviceId].device.refresh();
                     // {
                     //                         dps: knownDevices[physicalDeviceId].dpIdList
                     //                     }
+                    knownDevices[physicalDeviceId].waitingForRefrssh = false;
                     adapter.log.debug(deviceId + ' response from refresh: ' + JSON.stringify(data));
                     knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                 } catch (err) {
@@ -537,6 +539,11 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
             knownDevices[deviceId].device.on('disconnected', () => {
                 adapter.log.debug(deviceId + ': Disconnected from device');
+                if (knownDevices[physicalDeviceId].waitingForRefresh) {
+                    knownDevices[physicalDeviceId].waitingForRefresh = false;
+                    knownDevices[physicalDeviceId].useRefreshToGet = false;
+                    adapter.log.debug(deviceId + ': ... seems like Refrssh not supported ... disabling');
+                }
                 adapter.setState(deviceId + '.online', false, true);
                 if (!knownDevices[deviceId].stop) {
                     if (knownDevices[deviceId].reconnectTimeout) {
@@ -566,7 +573,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     // Special error case!
                     knownDevices[deviceId].deepCheckNextData = knownDevices[deviceId].deepCheckNextData || 0;
                     knownDevices[deviceId].deepCheckNextData++;
-                    if (!knownDevices[deviceId].useRefreshToGet) {
+                    if (knownDevices[deviceId].useRefreshToGet === undefined) {
                         knownDevices[deviceId].useRefreshToGet = true;
                         pollDevice(deviceId, 100); // next try with refresh
                     }
