@@ -539,9 +539,9 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
             knownDevices[deviceId].device.on('disconnected', () => {
                 adapter.log.debug(deviceId + ': Disconnected from device');
-                if (knownDevices[physicalDeviceId].waitingForRefresh) {
-                    knownDevices[physicalDeviceId].waitingForRefresh = false;
-                    knownDevices[physicalDeviceId].useRefreshToGet = false;
+                if (knownDevices[deviceId].waitingForRefresh) {
+                    knownDevices[deviceId].waitingForRefresh = false;
+                    knownDevices[deviceId].useRefreshToGet = false;
                     adapter.log.debug(deviceId + ': ... seems like Refrssh not supported ... disabling');
                 }
                 adapter.setState(deviceId + '.online', false, true);
