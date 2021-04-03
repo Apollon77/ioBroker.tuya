@@ -238,6 +238,9 @@ function stopAll() {
             knownDevices[deviceId].device.disconnect();
             knownDevices[deviceId].device = null;
         }
+        if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
+            discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
+        }
     }
 }
 
@@ -263,7 +266,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             onChange = (value) => {
                 adapter.log.debug(deviceId + ' onChange triggered for ' + id + ' and value ' + JSON.stringify(value));
                 if (!knownDevices[physicalDeviceId] || !knownDevices[physicalDeviceId].device) {
-                    adapter.log.debug(deviceId + 'Device communication not initialized ...');
+                    adapter.log.debug(deviceId + ' Device communication not initialized ...');
                     return;
                 }
 
@@ -562,6 +565,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 }
                 adapter.setState(deviceId + '.online', false, true);
                 if (!knownDevices[deviceId].stop) {
+                    if (knownDevices[deviceId].pollingTimeout) {
+                        clearTimeout(knownDevices[deviceId].pollingTimeout);
+                        knownDevices[deviceId].pollingTimeout = null;
+                    }
                     if (knownDevices[deviceId].reconnectTimeout) {
                         clearTimeout(knownDevices[deviceId].reconnectTimeout);
                         knownDevices[deviceId].reconnectTimeout = null;
@@ -573,7 +580,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                         knownDevices[deviceId].device.connect().catch(err => {
                             adapter.log.error(deviceId + ': ' + err.message);
                         });
-                    }, 60000);
+                    }, 30000);
                 }
                 if (knownDevices[deviceId].connected) {
                     knownDevices[deviceId].connected = false;
@@ -610,6 +617,9 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                     if (knownDevices[deviceId].device) {
                         knownDevices[deviceId].device.disconnect();
                         knownDevices[deviceId].device = null;
+                    }
+                    if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
+                        discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
                     }
                 }
             });
