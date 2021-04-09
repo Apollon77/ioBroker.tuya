@@ -1,0 +1,12 @@
+{
+    "DiscoveredInfo": "",
+    "Polling Interval": "",
+    "Proxy Port": "",
+    "Proxy Web Info Port": "代理SSL-Zertifikat端口",
+    "Proxy-Info": "",
+    "ProxyInfoText": "由于Tuya的更改，代理同步仅适用于<3.14的Tuya（或兼容的Apps）。有关使用Android模拟器的说明，请参阅<a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">GitHub</a>信息。",
+    "ProxySteps": "",
+    "Start proxy": "",
+    "StatusInfo": "",
+    "Stop proxy": ""
+}

@@ -1,0 +1,12 @@
+{
+    "DiscoveredInfo": "Succes! %s apparaten en %s schema's ontdekt. Controleer het logboek als er nieuwe schema's moeten worden gemeld aan de ontwikkelaar. Proxy wordt binnen 10 seconden uitgeschakeld",
+    "Polling Interval": "Polling-interval (als apparaat niet met app was gesynchroniseerd)",
+    "Proxy Port": "Proxypoort",
+    "Proxy Web Info Port": "Proxy SSL-Zertifikat-poort",
+    "Proxy-Info": "Om realtime statusupdates te krijgen en apparaten te kunnen bedienen, moet u deze synchroniseren met de mobiele app waarop de apparaten zijn geregistreerd (bijvoorbeeld Smart Life). Dit gebeurt met behulp van de Adaptor Web-Proxy in uw WLAN-verbinding samen met een SSL-certificaat. Meer informatie in <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md\" target=\"_blank\"> README </a> <br/> <br/> De Tuya-app sluiten / sluiten. Start de proxy met de onderstaande knop en volg de aanvullende instructies.",
+    "ProxyInfoText": "Vanwege wijzigingen in Tuya is de proxy-synchronisatie alleen mogelijk met Tuya (of compatibele apps) <3.14. Raadpleeg de <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">GitHub-informatie</a> voor instructies over het gebruik van Android-simulator.",
+    "ProxySteps": "Gebruik de QR-code om het certificaat aan uw mobiele telefoon toe te voegen, voeg de proxy toe voor de WLAN-verbinding van uw mobiele telefoon en open één keer de Tuya-app (bijvoorbeeld Smart Life) of herlaad om de apparaten te synchroniseren",
+    "Start proxy": "Start proxy (wees geduldig, kan enkele seconden duren!)",
+    "StatusInfo": "Status: %s apparaten gevonden in netwerk, %s apparaten verbonden, %s met bekend schema, %s geïnitialiseerd voor realtime updates en om te besturen",
+    "Stop proxy": "Stop proxy"
+}

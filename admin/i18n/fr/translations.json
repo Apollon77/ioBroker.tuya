@@ -1,0 +1,12 @@
+{
+    "DiscoveredInfo": "Succès! %s périphériques et %s schémas découverts. Veuillez vérifier le journal si de nouveaux schémas doivent être signalés au développeur. Le proxy sera désactivé dans 10 secondes",
+    "Polling Interval": "Intervalle d'interrogation (si l'appareil n'a pas été synchronisé avec l'application)",
+    "Proxy Port": "Port proxy",
+    "Proxy Web Info Port": "Port proxy SSL-Zertifikat",
+    "Proxy-Info": "Pour pouvoir obtenir des mises à jour de statut en temps réel et contrôler des appareils, vous devez vous synchroniser ensuite avec l'application mobile sur laquelle les appareils sont enregistrés (par exemple, Smart Life). Pour ce faire, utilisez Adapter Web-Proxy dans votre connexion WLAN avec un certificat SSL. Plus d'informations dans <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md\" target=\"_blank\"> LISEZMOI </a> <br/> <br/> Fermez / éliminez l'application Tuya. Démarrez le proxy avec le bouton ci-dessous et suivez les instructions supplémentaires.",
+    "ProxyInfoText": "En raison des modifications apportées à Tuya, la synchronisation du proxy n'est possible qu'avec Tuya (ou des applications compatibles) <3.14. Pour obtenir des instructions sur l'utilisation du simulateur Android, consultez les <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">informations GitHub</a>.",
+    "ProxySteps": "Utilisez le code QR pour ajouter le certificat à votre téléphone mobile, ajouter le proxy pour la connexion WLAN de votre téléphone portable et ouvrir l'application Tuya (par exemple, Smart Life) ou recharger pour synchroniser les appareils.",
+    "Start proxy": "Démarrez le proxy (soyez patient, cela peut prendre quelques secondes!)",
+    "StatusInfo": "État: %s périphériques trouvés sur le réseau, %s périphériques connectés, %s avec un schéma connu, %s initialisé pour les mises à jour en temps réel et pour le contrôle",
+    "Stop proxy": "Stop proxy"
+}

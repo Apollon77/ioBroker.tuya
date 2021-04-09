@@ -1,0 +1,12 @@
+{
+    "DiscoveredInfo": "Sukces! % urządzeń i wykrytych %s schematów. Sprawdź dziennik, czy nowe schematy powinny zostać zgłoszone deweloperowi. Serwer proxy zostanie wyłączony za 10 sekund",
+    "Polling Interval": "Interwał odpytywania (jeśli urządzenie nie było zsynchronizowane z aplikacją)",
+    "Proxy Port": "Port proxy",
+    "Proxy Web Info Port": "Port proxy SSL-Zertifikat Port",
+    "Proxy-Info": "Aby móc uzyskać aktualizacje statusu w czasie rzeczywistym i kontrolować urządzenia, które należy zsynchronizować, a następnie z aplikacją mobilną, w której są zarejestrowane urządzenia (np. Smart Life). Odbywa się to za pomocą adaptera Web-Proxy adaptera w połączeniu WLAN z certyfikatem SSL. Więcej informacji w <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md\" target=\"_blank\"> README </a> <br/> <br/> Zamknij / Kill the Tuya App. Uruchom proxy za pomocą przycisku poniżej i postępuj zgodnie z dodatkowymi instrukcjami.",
+    "ProxyInfoText": "Ze względu na zmiany wprowadzone w Tuya synchronizacja proxy jest możliwa tylko z Tuya (lub zgodnymi aplikacjami) <3.14. Aby uzyskać instrukcje dotyczące korzystania z symulatora Androida, zobacz <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">informacje na temat GitHub</a>.",
+    "ProxySteps": "Użyj kodu QR, aby dodać certyfikat do telefonu komórkowego, dodaj serwer proxy do połączenia WLAN w telefonie komórkowym i otwórz aplikację Tuya (np. Smart Life) lub załaduj ponownie, aby zsynchronizować urządzenia",
+    "Start proxy": "Uruchom proxy (bądź cierpliwy, może zająć kilka sekund!)",
+    "StatusInfo": "Status: %s urządzenia znalezione w sieci, %s urządzenia połączone, %s ze znanym schematem, %s zainicjalizowane dla aktualizacji w czasie rzeczywistym i do kontroli",
+    "Stop proxy": "Zatrzymaj proxy"
+}

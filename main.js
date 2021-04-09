@@ -358,10 +358,11 @@ function pollDevice(deviceId, overwriteDelay) {
                         knownDevices[physicalDeviceId].refreshDpList = knownDevices[physicalDeviceId].dpIdList.filter(el => knownDevices[physicalDeviceId].device._dpRefreshIds.includes(el));
                     }
                     if (knownDevices[physicalDeviceId].refreshDpList.length) {
-                        knownDevices[physicalDeviceId].device._dpRefreshIds = knownDevices[physicalDeviceId].refreshDpList; // TODO remove once fixed
                         adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].refreshDpList));
                         knownDevices[physicalDeviceId].waitingForRefrssh = true;
-                        const data = await knownDevices[physicalDeviceId].device.refresh();
+                        const data = await knownDevices[physicalDeviceId].device.refresh({
+                            requestedDPS: knownDevices[physicalDeviceId].refreshDpList
+                        });
                         // {
                         //                         dps: knownDevices[physicalDeviceId].dpIdList
                         //                     }
