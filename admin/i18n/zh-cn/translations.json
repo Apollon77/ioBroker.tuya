@@ -1,12 +1,12 @@
 {
-    "DiscoveredInfo": "",
-    "Polling Interval": "",
-    "Proxy Port": "",
+    "DiscoveredInfo": "成功！",
+    "Polling Interval": "轮询间隔（如果设备未与App同步）",
+    "Proxy Port": "代理端口",
     "Proxy Web Info Port": "代理SSL-Zertifikat端口",
-    "Proxy-Info": "",
+    "Proxy-Info": "为了能够获取实时状态更新并控制设备，您需要先与设备注册所在的移动应用（例如Smart Life）同步。",
     "ProxyInfoText": "由于Tuya的更改，代理同步仅适用于<3.14的Tuya（或兼容的Apps）。有关使用Android模拟器的说明，请参阅<a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">GitHub</a>信息。",
-    "ProxySteps": "",
-    "Start proxy": "",
-    "StatusInfo": "",
-    "Stop proxy": ""
+    "ProxySteps": "使用QR码将证书添加到您的手机中，添加用于您的手机WLAN连接的代理，然后一次打开Tuya应用程序（例如Smart Life）或重新加载以同步设备",
+    "Start proxy": "启动代理（请耐心等待，可能需要花费几秒钟！）",
+    "StatusInfo": "状态：在网络中找到的％s设备，已连接的％s设备，具有已知架构的％s，已初始化以实时更新和控制的％s",
+    "Stop proxy": "停止代理"
 }

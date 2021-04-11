@@ -254,7 +254,8 @@
             "fr": "Tuya",
             "it": "Tuya",
             "es": "Tuya",
-            "pl": "Tuya"
+            "pl": "Tuya",
+            "zh-cn": "土雅"
         },
         "desc": {
             "en": "Tuya Adapter",
@@ -265,7 +266,8 @@
             "fr": "Adaptateur Tuya",
             "it": "Adattatore Tuya",
             "es": "Adaptador Tuya",
-            "pl": "Adapter Tuya"
+            "pl": "Adapter Tuya",
+            "zh-cn": "涂鸦适配器"
         },
         "license": "MIT",
         "authors": [
