@@ -1,12 +1,12 @@
 {
-    "DiscoveredInfo": "Success! %s devices and %s schemas discovered. Please check the log if new schemas should be reported to the developer. Proxy will be turned off in 10 seconds",
-    "Polling Interval": "Polling Interval (if device was not synced with App)",
+    "DiscoveredInfo": "Success! %s devices and %s schemas discovered. the proxy will be turned off in 10 seconds.",
+    "Polling Interval": "Data Polling Interval (for devices not synced with App)",
     "Proxy Port": "Proxy Port",
     "Proxy Web Info Port": "Proxy SSL-Zertifikat Port",
-    "Proxy-Info": "To be able to get realtime status updates and to control devices you need to sync then with the mobile App where the devices are registered (e.g. Smart Life). This is done by using the Adapter Web-Proxy in your WLAN connection together with a SSL certificate. More Information in <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md\" target=\"_blank\">README</a><br/><br/>Close/Kill the Tuya App. Start the proxy with the button below and follow the additional instructions.",
-    "ProxyInfoText": "Because of changes from Tuya the proxy sync is only possible with Tuya (or compatible Apps) < 3.14 . For instructions using Android simulator please see the <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">GitHub infos</a>.",
-    "ProxySteps": "Use the QR-Code to add the certificate to your mobile phone, add the proxy for your mobile phone WLAN connection and open the Tuya App (e.g. Smart Life) once or reload to sync the devices",
+    "Proxy-Info": "To be able to get realtime status updates and to control devices you need to sync then with the mobile App where the devices are registered (e.g. Smart Life App). This is done by using the Adapter Web-Proxy in your WLAN connection together with a SSL certificate. More Information in <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md\" target=\"_blank\">README</a>.<br/><br/>Close/Kill the Tuya App. Start the proxy with the button below and follow the additional instructions.",
+    "ProxyInfoText": "Because of changes from Tuya, the proxy sync is only possible with Tuya (or compatible Apps) < 3.14 . For instructions using Android simulator please see the <a href=\"https://github.com/Apollon77/ioBroker.tuya/blob/master/PROXY.md#detailed-step-by-step-guide-for-using-proxy-with-android-and-older-app-version\" target=\"_blank\">instructions on GitHub</a>.",
+    "ProxySteps": "Use the QR-Code to add the certificate to your mobile phone, activate it and add the proxy for your mobile phone WLAN connection and open the Tuya App (e.g. Smart Life) once or reload to sync the devices.",
     "Start proxy": "Start proxy (be patient, can take some seconds!)",
-    "StatusInfo": "Status: %s devices found in network, %s devices connected, %s with known schema, %s initialized for realtime updates and to control",
+    "StatusInfo": "Status: %s devices found in network, %s devices connected, %s with known schema, %s initialized for realtime updates and control",
     "Stop proxy": "Stop proxy"
 }
