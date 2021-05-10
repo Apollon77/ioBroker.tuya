@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.1",
+        "version": "3.6.2",
         "news": {
+            "3.6.2": {
+                "en": "type \"bitmap\" is a number\nMore schema information added",
+                "de": "Typ \"Bitmap\" ist eine Zahl\nWeitere Schemainformationen hinzugefügt",
+                "ru": "тип \"растровое изображение\" - это число\nДобавлена дополнительная информация о схеме",
+                "pt": "tipo \"bitmap\" é um número\nMais informações de esquema adicionadas",
+                "nl": "type \"bitmap\" is een getal\nMeer schema-informatie toegevoegd",
+                "fr": "type \"bitmap\" est un nombre\nPlus d'informations sur le schéma ajoutées",
+                "it": "il tipo \"bitmap\" è un numero\nAggiunte ulteriori informazioni sullo schema",
+                "es": "tipo \"mapa de bits\" es un número\nSe agregó más información de esquema",
+                "pl": "wpisz „bitmapa” to liczba\nDodano więcej informacji o schemacie",
+                "zh-cn": "类型“位图”是一个数字\n添加了更多架构信息"
+            },
             "3.6.1": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
@@ -227,18 +239,6 @@
                 "nl": "Meer schema-informatie toegevoegd",
                 "fr": "Plus d'informations sur le schéma ajoutées",
                 "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.3.10": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações do esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Ulteriori informazioni sullo schema aggiunte",
                 "es": "Se agregó más información de esquema",
                 "pl": "Dodano więcej informacji o schemacie",
                 "zh-cn": "添加了更多架构信息"
