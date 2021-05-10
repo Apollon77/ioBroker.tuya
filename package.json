@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "request": "^2.88.2",
-    "tuyapi": "^7.1.0",
+    "tuyapi": "^7.1.1",
     "extend": "^3.0.2",
     "finalhandler": "^1.1.2",
     "http-mitm-proxy": "^0.9.0",
@@ -34,15 +34,15 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^2.4.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.3.5",
-    "@sentry/integrations": "^6.3.5",
+    "@sentry/node": "^6.3.6",
+    "@sentry/integrations": "^6.3.6",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^1.10.0",
     "axios": "^0.21.1",
     "gulp": "^4.0.2",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "chai": "^4.3.4",
     "@iobroker/testing": "^2.4.4"
   },
