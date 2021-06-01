@@ -34,7 +34,7 @@
     "qrcode": "^1.4.4",
     "@iobroker/adapter-core": "^2.4.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.3.6",
+    "@sentry/node": "^6.5.0",
     "@sentry/integrations": "^6.3.6",
     "source-map-support": "^0.5.19"
   },
