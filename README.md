@@ -88,6 +88,10 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) More schema information added
+* (Apollon77) Update tuyapi
+
 ### 3.6.2 (2021-05-10)
 * (Apollon77) type "bitmap" is a number
 * (Apollon77) More schema information added

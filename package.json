@@ -26,16 +26,16 @@
   },
   "dependencies": {
     "request": "^2.88.2",
-    "tuyapi": "^7.1.1",
+    "tuyapi": "^7.2.0",
     "extend": "^3.0.2",
     "finalhandler": "^1.1.2",
     "http-mitm-proxy": "^0.9.0",
     "serve-static": "^1.14.1",
     "qrcode": "^1.4.4",
-    "@iobroker/adapter-core": "^2.4.0",
+    "@iobroker/adapter-core": "^2.5.0",
     "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.3.6",
-    "@sentry/integrations": "^6.3.6",
+    "@sentry/node": "^6.5.1",
+    "@sentry/integrations": "^6.5.1",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
