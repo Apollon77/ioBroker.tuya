@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.2",
+        "version": "3.6.3",
         "news": {
+            "3.6.3": {
+                "en": "More schema information added\nUpdate tuyapi",
+                "de": "Weitere Schemainformationen hinzugefügt\nTuyapi . aktualisieren",
+                "ru": "Добавлена дополнительная информация о схеме\nОбновить туяпи",
+                "pt": "Mais informações de esquema adicionadas\nAtualizar tuyapi",
+                "nl": "Meer schema-informatie toegevoegd\nUpdate tuyapi",
+                "fr": "Plus d'informations sur le schéma ajoutées\nMettre à jour tuyapi",
+                "it": "Aggiunte ulteriori informazioni sullo schema\nAggiorna tuyapi",
+                "es": "Se agregó más información de esquema\nActualizar tuyapi",
+                "pl": "Dodano więcej informacji o schemacie\nZaktualizuj tuyapi",
+                "zh-cn": "添加了更多架构信息\n更新图亚皮"
+            },
             "3.6.2": {
                 "en": "type \"bitmap\" is a number\nMore schema information added",
                 "de": "Typ \"Bitmap\" ist eine Zahl\nWeitere Schemainformationen hinzugefügt",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema\nCaso de choque evitado (Sentry IOBROKER-TUYA-89)",
                 "pl": "Dodano więcej informacji o schemacie\nZapobiegano awariom (Sentry IOBROKER-TUYA-89)",
                 "zh-cn": "添加了更多架构信息\n避免发生崩溃情况（Sentry IOBROKER-TUYA-89）"
-            },
-            "3.3.11": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
             }
         },
         "title": "Tuya",

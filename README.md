@@ -88,7 +88,7 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 3.6.3 (2021-06-04)
 * (Apollon77) More schema information added
 * (Apollon77) Update tuyapi
 
