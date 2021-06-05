@@ -302,7 +302,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 if (value === undefined) return undefined;
                 for (const key in obj.states) {
                     if (!obj.states.hasOwnProperty(key)) continue;
-                    if (obj.states[key] === value) return key;
+                    if (obj.states[key] === value) return parseInt(key);
                 }
                 adapter.log.warn(deviceId + '.' + id + ': Value from device not defined in Schema: ' + value);
                 return null;
