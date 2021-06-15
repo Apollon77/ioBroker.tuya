@@ -69,7 +69,7 @@ The sync is only needed initially or after you added new devices to your App.
 Some images for some mobile OS can be found at the [Proxy-Page](PROXY.md).
 
 ## Not for Battery powered devices
-Battery powered devices are normally NOT supported by this adapter! The reason is that they are not online all the time to save power. Whenever they get a signal, thay go online, send the update to the the Tuya cloud servers and go offline again. They do not emit any UDP packages or are online long enough so that the adapter could connect to them. 
+Battery powered devices are normally NOT supported by this adapter! The reason is that they are not online all the time to save power. Whenever they get a signal, they go online, send the update to the the Tuya cloud servers and go offline again. They do not emit any UDP packages or are online long enough so that the adapter could connect to them. 
 A soon as someone finds a way to directly fetch data from the Tuya cloud this may change.
 
 
