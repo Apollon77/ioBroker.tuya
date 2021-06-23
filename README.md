@@ -88,7 +88,7 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
-### __WORK IN PROGRESS__
+### 3.6.5 (2021-06-23)
 * (Apollon77) Make sure for enums values are set with correct type
 * (Apollon77) More schema information added
 
