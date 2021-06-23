@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.3",
+        "version": "3.6.4",
         "news": {
+            "3.6.4": {
+                "en": "Make sure for enums values are set with correct type\nMore schema information added",
+                "de": "Stellen Sie sicher, dass für Enums-Werte der richtige Typ eingestellt ist\nWeitere Schemainformationen hinzugefügt",
+                "ru": "Убедитесь, что значения перечислений установлены с правильным типом\nДобавлена дополнительная информация о схеме",
+                "pt": "Certifique-se de que os valores enums estão configurados com o tipo correto\nMais informações de esquema adicionadas",
+                "nl": "Zorg ervoor dat voor opsommingen waarden zijn ingesteld met het juiste type\nMeer schema-informatie toegevoegd",
+                "fr": "Assurez-vous que les valeurs enums sont définies avec le type correct\nPlus d'informations sur le schéma ajoutées",
+                "it": "Assicurati che i valori di enum siano impostati con il tipo corretto\nAggiunte ulteriori informazioni sullo schema",
+                "es": "Asegúrese de que los valores de enumeración estén configurados con el tipo correcto\nSe agregó más información de esquema",
+                "pl": "Upewnij się, że wartości wyliczenia są ustawione z poprawnym typem\nDodano więcej informacji o schemacie",
+                "zh-cn": "确保使用正确的类型设置枚举值\n添加了更多架构信息"
+            },
             "3.6.3": {
                 "en": "More schema information added\nUpdate tuyapi",
                 "de": "Weitere Schemainformationen hinzugefügt\nTuyapi . aktualisieren",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema",
                 "pl": "Dodano więcej informacji o schemacie",
                 "zh-cn": "添加了更多架构信息"
-            },
-            "3.3.12": {
-                "en": "More schema information added\nCrash case prevented (Sentry IOBROKER-TUYA-89)",
-                "de": "Weitere Schemainformationen hinzugefügt\nAbsturzfall verhindert (Sentry IOBROKER-TUYA-89)",
-                "ru": "Добавлена дополнительная информация о схеме\nПредотвращена авария (Sentry IOBROKER-TUYA-89)",
-                "pt": "Mais informações de esquema adicionadas\nCaso de falha evitado (Sentry IOBROKER-TUYA-89)",
-                "nl": "Meer schema-informatie toegevoegd\nCrashcase voorkomen (Sentry IOBROKER-TUYA-89)",
-                "fr": "Plus d'informations sur le schéma ajoutées\nCrash case évité (Sentry IOBROKER-TUYA-89)",
-                "it": "Aggiunte ulteriori informazioni sullo schema\nCrash case prevenuto (Sentry IOBROKER-TUYA-89)",
-                "es": "Se agregó más información de esquema\nCaso de choque evitado (Sentry IOBROKER-TUYA-89)",
-                "pl": "Dodano więcej informacji o schemacie\nZapobiegano awariom (Sentry IOBROKER-TUYA-89)",
-                "zh-cn": "添加了更多架构信息\n避免发生崩溃情况（Sentry IOBROKER-TUYA-89）"
             }
         },
         "title": "Tuya",
