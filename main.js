@@ -660,7 +660,7 @@ function discoverLocalDevices() {
             return;
         }
         if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
-        if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device) return;
+        if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device && !knownDevices[data.payload.gwId].reconnectTimeout) return;
         initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
     });
     server.on('error', err => {

@@ -88,6 +88,9 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ## Changelog
 
+### __WORK IN PROGRESS__
+* (Apollon77) Another fix on reconnect handling
+
 ### 3.6.6 (2021-07-17)
 * (Apollon77) Fix reconnect handling
 * (Apollon77) More schema information added
