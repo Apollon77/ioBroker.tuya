@@ -398,6 +398,22 @@ function pollDevice(deviceId, overwriteDelay) {
     }, overwriteDelay);
 }
 
+function handleReconnect(delay) {
+    delay = delay || 30000;
+    if (knownDevices[deviceId].reconnectTimeout) {
+        clearTimeout(knownDevices[deviceId].reconnectTimeout);
+        knownDevices[deviceId].reconnectTimeout = null;
+    }
+    knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
+        if (!knownDevices[deviceId].device) {
+            return;
+        }
+        knownDevices[deviceId].device.connect().catch(err => {
+            adapter.log.warn(deviceId + ': Error on Reconnect' + err.message);
+            handleReconnect();
+        });
+    }, delay);
+}
 
 function initDevice(deviceId, productKey, data, preserveFields, callback) {
     if (!preserveFields) {
@@ -570,18 +586,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                         clearTimeout(knownDevices[deviceId].pollingTimeout);
                         knownDevices[deviceId].pollingTimeout = null;
                     }
-                    if (knownDevices[deviceId].reconnectTimeout) {
-                        clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                        knownDevices[deviceId].reconnectTimeout = null;
-                    }
-                    knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
-                        if (!knownDevices[deviceId].device) {
-                            return;
-                        }
-                        knownDevices[deviceId].device.connect().catch(err => {
-                            adapter.log.error(deviceId + ': ' + err.message);
-                        });
-                    }, 30000);
+                    handleReconnect();
                 }
                 if (knownDevices[deviceId].connected) {
                     knownDevices[deviceId].connected = false;
