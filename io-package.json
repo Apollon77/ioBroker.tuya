@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.5",
+        "version": "3.6.6",
         "news": {
+            "3.6.6": {
+                "en": "Fix reconnect handling\nMore schema information added",
+                "de": "Reconnect-Handling behoben Fix\nWeitere Schemainformationen hinzugefügt",
+                "ru": "Исправить обработку переподключения\nДобавлена дополнительная информация о схеме",
+                "pt": "Corrigir manuseio de reconexão\nMais informações de esquema adicionadas",
+                "nl": "Afhandeling opnieuw verbinden oplossen\nMeer schema-informatie toegevoegd",
+                "fr": "Correction de la gestion des reconnexions\nPlus d'informations sur le schéma ajoutées",
+                "it": "Correggi la gestione della riconnessione\nAggiunte ulteriori informazioni sullo schema",
+                "es": "Arreglar el manejo de reconexión\nSe agregó más información de esquema",
+                "pl": "Napraw obsługę ponownego łączenia\nDodano więcej informacji o schemacie",
+                "zh-cn": "修复重新连接处理\n添加了更多架构信息"
+            },
             "3.6.5": {
                 "en": "Make sure for enums values are set with correct type\nMore schema information added",
                 "de": "Stellen Sie sicher, dass für Enums-Werte der richtige Typ eingestellt ist\nWeitere Schemainformationen hinzugefügt",
@@ -220,18 +232,6 @@
                 "zh-cn": "更新tuya-api库"
             },
             "3.3.15": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.3.14": {
                 "en": "More schema information added",
                 "de": "Weitere Schemainformationen hinzugefügt",
                 "ru": "Добавлена дополнительная информация о схеме",
