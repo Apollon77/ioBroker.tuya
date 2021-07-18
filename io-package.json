@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.8",
+        "version": "3.6.9",
         "news": {
+            "3.6.9": {
+                "en": "Adjust reconnect handling on initialization",
+                "de": "Passen Sie die Wiederverbindungsbehandlung bei der Initialisierung an",
+                "ru": "Настройте обработку повторного подключения при инициализации",
+                "pt": "Ajuste o manuseio de reconexão na inicialização",
+                "nl": "Afhandeling van opnieuw verbinden aanpassen bij initialisatie",
+                "fr": "Ajuster la gestion de la reconnexion à l'initialisation",
+                "it": "Regola la gestione della riconnessione all'inizializzazione",
+                "es": "Ajustar el manejo de reconexión en la inicialización",
+                "pl": "Dostosuj obsługę ponownego łączenia podczas inicjalizacji",
+                "zh-cn": "调整初始化时的重新连接处理"
+            },
             "3.6.8": {
                 "en": "Another fix on reconnect handling",
                 "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema",
                 "pl": "Dodano więcej informacji o schemacie",
                 "zh-cn": "添加了更多架构信息"
-            },
-            "3.4.1": {
-                "en": "More schema information added\nfix IP lookup via UDP",
-                "de": "Weitere Schemainformationen hinzugefügt\nIP-Suche über UDP korrigieren",
-                "ru": "Добавлена дополнительная информация о схеме\nисправить поиск IP через UDP",
-                "pt": "Mais informações de esquema adicionadas\ncorrigir pesquisa de IP via UDP",
-                "nl": "Meer schema-informatie toegevoegd\nIP-lookup repareren via UDP",
-                "fr": "Plus d'informations sur le schéma ajoutées\ncorriger la recherche IP via UDP",
-                "it": "Aggiunte ulteriori informazioni sullo schema\ncorreggere la ricerca IP tramite UDP",
-                "es": "Se agregó más información de esquema\narreglar la búsqueda de IP a través de UDP",
-                "pl": "Dodano więcej informacji o schemacie\nnaprawić wyszukiwanie IP przez UDP",
-                "zh-cn": "添加了更多架构信息\n通过UDP修复IP查找"
             }
         },
         "title": "Tuya",
