@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "tuya",
-        "version": "3.6.7",
+        "version": "3.6.8",
         "news": {
+            "3.6.8": {
+                "en": "Another fix on reconnect handling",
+                "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
+                "ru": "Еще одно исправление при обработке переподключения",
+                "pt": "Outra correção no manuseio de reconexão",
+                "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
+                "fr": "Un autre correctif sur la gestion de la reconnexion",
+                "it": "Un'altra correzione sulla gestione della riconnessione",
+                "es": "Otra corrección en el manejo de reconexión",
+                "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
+                "zh-cn": "重新连接处理的另一个修复"
+            },
             "3.6.7": {
                 "en": "Another fix on reconnect handling",
                 "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
@@ -230,18 +242,6 @@
                 "es": "Se agregó más información de esquema\narreglar la búsqueda de IP a través de UDP",
                 "pl": "Dodano więcej informacji o schemacie\nnaprawić wyszukiwanie IP przez UDP",
                 "zh-cn": "添加了更多架构信息\n通过UDP修复IP查找"
-            },
-            "3.4.0": {
-                "en": "update tuya-api library",
-                "de": "Aktualisieren Sie die Tuya-API-Bibliothek",
-                "ru": "обновить библиотеку tuya-api",
-                "pt": "atualizar biblioteca tuya-api",
-                "nl": "update tuya-api bibliotheek",
-                "fr": "mettre à jour la bibliothèque tuya-api",
-                "it": "aggiorna la libreria tuya-api",
-                "es": "actualizar la biblioteca tuya-api",
-                "pl": "zaktualizuj bibliotekę tuya-api",
-                "zh-cn": "更新tuya-api库"
             }
         },
         "title": "Tuya",
