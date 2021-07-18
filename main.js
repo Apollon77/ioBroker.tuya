@@ -632,6 +632,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
             knownDevices[deviceId].device.connect().catch(err => {
                 adapter.log.error(deviceId + ': ' + err.message);
+                handleReconnect(deviceId);
             });
 
             if (!knownDevices[deviceId].localKey) {
