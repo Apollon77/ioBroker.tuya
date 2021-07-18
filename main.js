@@ -398,7 +398,7 @@ function pollDevice(deviceId, overwriteDelay) {
     }, overwriteDelay);
 }
 
-function handleReconnect(delay) {
+function handleReconnect(deviceId, delay) {
     delay = delay || 30000;
     if (knownDevices[deviceId].reconnectTimeout) {
         clearTimeout(knownDevices[deviceId].reconnectTimeout);
@@ -410,7 +410,7 @@ function handleReconnect(delay) {
         }
         knownDevices[deviceId].device.connect().catch(err => {
             adapter.log.warn(deviceId + ': Error on Reconnect' + err.message);
-            handleReconnect();
+            handleReconnect(deviceId);
         });
     }, delay);
 }
@@ -586,7 +586,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                         clearTimeout(knownDevices[deviceId].pollingTimeout);
                         knownDevices[deviceId].pollingTimeout = null;
                     }
-                    handleReconnect();
+                    handleReconnect(deviceId);
                 }
                 if (knownDevices[deviceId].connected) {
                     knownDevices[deviceId].connected = false;
