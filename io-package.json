@@ -1,345 +1,189 @@
 {
-    "common": {
-        "name": "tuya",
-        "version": "3.6.11",
-        "news": {
-            "3.6.11": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.6.10": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.6.9": {
-                "en": "Adjust reconnect handling on initialization",
-                "de": "Passen Sie die Wiederverbindungsbehandlung bei der Initialisierung an",
-                "ru": "Настройте обработку повторного подключения при инициализации",
-                "pt": "Ajuste o manuseio de reconexão na inicialização",
-                "nl": "Afhandeling van opnieuw verbinden aanpassen bij initialisatie",
-                "fr": "Ajuster la gestion de la reconnexion à l'initialisation",
-                "it": "Regola la gestione della riconnessione all'inizializzazione",
-                "es": "Ajustar el manejo de reconexión en la inicialización",
-                "pl": "Dostosuj obsługę ponownego łączenia podczas inicjalizacji",
-                "zh-cn": "调整初始化时的重新连接处理"
-            },
-            "3.6.8": {
-                "en": "Another fix on reconnect handling",
-                "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
-                "ru": "Еще одно исправление при обработке переподключения",
-                "pt": "Outra correção no manuseio de reconexão",
-                "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
-                "fr": "Un autre correctif sur la gestion de la reconnexion",
-                "it": "Un'altra correzione sulla gestione della riconnessione",
-                "es": "Otra corrección en el manejo de reconexión",
-                "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
-                "zh-cn": "重新连接处理的另一个修复"
-            },
-            "3.6.7": {
-                "en": "Another fix on reconnect handling",
-                "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
-                "ru": "Еще одно исправление при обработке переподключения",
-                "pt": "Outra correção no manuseio de reconexão",
-                "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
-                "fr": "Un autre correctif sur la gestion de la reconnexion",
-                "it": "Un'altra correzione sulla gestione della riconnessione",
-                "es": "Otra corrección en el manejo de reconexión",
-                "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
-                "zh-cn": "重新连接处理的另一个修复"
-            },
-            "3.6.6": {
-                "en": "Fix reconnect handling\nMore schema information added",
-                "de": "Reconnect-Handling behoben Fix\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Исправить обработку переподключения\nДобавлена дополнительная информация о схеме",
-                "pt": "Corrigir manuseio de reconexão\nMais informações de esquema adicionadas",
-                "nl": "Afhandeling opnieuw verbinden oplossen\nMeer schema-informatie toegevoegd",
-                "fr": "Correction de la gestion des reconnexions\nPlus d'informations sur le schéma ajoutées",
-                "it": "Correggi la gestione della riconnessione\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Arreglar el manejo de reconexión\nSe agregó más información de esquema",
-                "pl": "Napraw obsługę ponownego łączenia\nDodano więcej informacji o schemacie",
-                "zh-cn": "修复重新连接处理\n添加了更多架构信息"
-            },
-            "3.6.5": {
-                "en": "Make sure for enums values are set with correct type\nMore schema information added",
-                "de": "Stellen Sie sicher, dass für Enums-Werte der richtige Typ eingestellt ist\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Убедитесь, что значения перечислений установлены с правильным типом\nДобавлена дополнительная информация о схеме",
-                "pt": "Certifique-se de que os valores enums estão configurados com o tipo correto\nMais informações de esquema adicionadas",
-                "nl": "Zorg ervoor dat voor opsommingen waarden zijn ingesteld met het juiste type\nMeer schema-informatie toegevoegd",
-                "fr": "Assurez-vous que les valeurs enums sont définies avec le type correct\nPlus d'informations sur le schéma ajoutées",
-                "it": "Assicurati che i valori di enum siano impostati con il tipo corretto\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Asegúrese de que los valores de enumeración estén configurados con el tipo correcto\nSe agregó más información de esquema",
-                "pl": "Upewnij się, że wartości wyliczenia są ustawione z poprawnym typem\nDodano więcej informacji o schemacie",
-                "zh-cn": "确保使用正确的类型设置枚举值\n添加了更多架构信息"
-            },
-            "3.6.4": {
-                "en": "Make sure for enums values are set with correct type\nMore schema information added",
-                "de": "Stellen Sie sicher, dass für Enums-Werte der richtige Typ eingestellt ist\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Убедитесь, что значения перечислений установлены с правильным типом\nДобавлена дополнительная информация о схеме",
-                "pt": "Certifique-se de que os valores enums estão configurados com o tipo correto\nMais informações de esquema adicionadas",
-                "nl": "Zorg ervoor dat voor opsommingen waarden zijn ingesteld met het juiste type\nMeer schema-informatie toegevoegd",
-                "fr": "Assurez-vous que les valeurs enums sont définies avec le type correct\nPlus d'informations sur le schéma ajoutées",
-                "it": "Assicurati che i valori di enum siano impostati con il tipo corretto\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Asegúrese de que los valores de enumeración estén configurados con el tipo correcto\nSe agregó más información de esquema",
-                "pl": "Upewnij się, że wartości wyliczenia są ustawione z poprawnym typem\nDodano więcej informacji o schemacie",
-                "zh-cn": "确保使用正确的类型设置枚举值\n添加了更多架构信息"
-            },
-            "3.6.3": {
-                "en": "More schema information added\nUpdate tuyapi",
-                "de": "Weitere Schemainformationen hinzugefügt\nTuyapi . aktualisieren",
-                "ru": "Добавлена дополнительная информация о схеме\nОбновить туяпи",
-                "pt": "Mais informações de esquema adicionadas\nAtualizar tuyapi",
-                "nl": "Meer schema-informatie toegevoegd\nUpdate tuyapi",
-                "fr": "Plus d'informations sur le schéma ajoutées\nMettre à jour tuyapi",
-                "it": "Aggiunte ulteriori informazioni sullo schema\nAggiorna tuyapi",
-                "es": "Se agregó más información de esquema\nActualizar tuyapi",
-                "pl": "Dodano więcej informacji o schemacie\nZaktualizuj tuyapi",
-                "zh-cn": "添加了更多架构信息\n更新图亚皮"
-            },
-            "3.6.2": {
-                "en": "type \"bitmap\" is a number\nMore schema information added",
-                "de": "Typ \"Bitmap\" ist eine Zahl\nWeitere Schemainformationen hinzugefügt",
-                "ru": "тип \"растровое изображение\" - это число\nДобавлена дополнительная информация о схеме",
-                "pt": "tipo \"bitmap\" é um número\nMais informações de esquema adicionadas",
-                "nl": "type \"bitmap\" is een getal\nMeer schema-informatie toegevoegd",
-                "fr": "type \"bitmap\" est un nombre\nPlus d'informations sur le schéma ajoutées",
-                "it": "il tipo \"bitmap\" è un numero\nAggiunte ulteriori informazioni sullo schema",
-                "es": "tipo \"mapa de bits\" es un número\nSe agregó más información de esquema",
-                "pl": "wpisz „bitmapa” to liczba\nDodano więcej informacji o schemacie",
-                "zh-cn": "类型“位图”是一个数字\n添加了更多架构信息"
-            },
-            "3.6.1": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.6.0": {
-                "en": "Fix broken data updates because of tuyaapi change\nOptimize \"json unvalid\" cases by refreshing data manually differently \nMore schema information added",
-                "de": "Beheben Sie fehlerhafte Datenaktualisierungen aufgrund von Tuyaapi-Änderungen\nOptimieren Sie \"json unvalid\" -Fälle, indem Sie die Daten manuell anders aktualisieren\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Исправить неработающие обновления данных из-за изменения tuyaapi\nОптимизируйте случаи \"недопустимого json\", обновляя данные вручную по-разному\nДобавлена дополнительная информация о схеме",
-                "pt": "Corrigir atualizações de dados quebradas devido à mudança de tuyaapi\nOtimize os casos de \"json inválido\" atualizando os dados manualmente de maneira diferente\nMais informações de esquema adicionadas",
-                "nl": "Herstel kapotte gegevensupdates vanwege tuyaapi-wijziging\nOptimaliseer \"json unvalid\" cases door gegevens handmatig op een andere manier te vernieuwen\nMeer schema-informatie toegevoegd",
-                "fr": "Correction des mises à jour de données cassées en raison du changement de tuyaapi\nOptimiser les cas \"json non valide\" en actualisant les données manuellement différemment\nPlus d'informations sur le schéma ajoutées",
-                "it": "Risolvi gli aggiornamenti dei dati interrotti a causa della modifica di tuyaapi\nOttimizza i casi \"json non valido\" aggiornando i dati manualmente in modo diverso\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Arregle las actualizaciones de datos rotas debido al cambio de tuyaapi\nOptimice los casos de \"json no válido\" actualizando los datos manualmente de forma diferente\nSe agregó más información de esquema",
-                "pl": "Napraw uszkodzone aktualizacje danych z powodu zmiany Tuyaapi\nZoptymalizuj przypadki „json unvalid”, odświeżając dane ręcznie w inny sposób\nDodano więcej informacji o schemacie",
-                "zh-cn": "修复由于tuyaapi更改而导致的数据更新中断\n通过以不同方式手动刷新数据来优化“ json无效”的情况\n添加了更多架构信息"
-            },
-            "3.5.9": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.5.8": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.5.7": {
-                "en": "Fix crash case (Sentry IOBROKER-TUYA-P9)\nMore schema information added",
-                "de": "Absturzfall behoben (Sentry IOBROKER-TUYA-P9)\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Исправить сбой (Sentry IOBROKER-TUYA-P9)\nДобавлена дополнительная информация о схеме",
-                "pt": "Corrigir caso de falha (Sentry IOBROKER-TUYA-P9)\nMais informações de esquema adicionadas",
-                "nl": "Crashcase repareren (Sentry IOBROKER-TUYA-P9)\nMeer schema-informatie toegevoegd",
-                "fr": "Correction d'un cas de crash (Sentry IOBROKER-TUYA-P9)\nPlus d'informations sur le schéma ajoutées",
-                "it": "Risolto il crash case (Sentry IOBROKER-TUYA-P9)\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Reparar caso de accidente (Sentry IOBROKER-TUYA-P9)\nSe agregó más información de esquema",
-                "pl": "Napraw przypadek awarii (Sentry IOBROKER-TUYA-P9)\nDodano więcej informacji o schemacie",
-                "zh-cn": "修复崩溃情况（Sentry IOBROKER-TUYA-P9）\n添加了更多架构信息"
-            },
-            "3.5.6": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.5.4": {
-                "en": "Prevent crash cases (Sentry IOBROKER-TUYA-MG)\nMore schema information added",
-                "de": "Verhindern Sie Absturzfälle (Sentry IOBROKER-TUYA-MG)\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Предотвращение аварийных ситуаций (Sentry IOBROKER-TUYA-MG)\nДобавлена дополнительная информация о схеме",
-                "pt": "Previna casos de travamento (Sentry IOBROKER-TUYA-MG)\nMais informações de esquema adicionadas",
-                "nl": "Voorkom crashgevallen (Sentry IOBROKER-TUYA-MG)\nMeer schema-informatie toegevoegd",
-                "fr": "Prévenir les cas de crash (Sentry IOBROKER-TUYA-MG)\nPlus d'informations sur le schéma ajoutées",
-                "it": "Prevenire i casi di crash (Sentry IOBROKER-TUYA-MG)\nAggiunte ulteriori informazioni sullo schema",
-                "es": "Prevenir casos de accidentes (Sentry IOBROKER-TUYA-MG)\nSe agregó más información de esquema",
-                "pl": "Zapobiegaj przypadkom awarii (Sentry IOBROKER-TUYA-MG)\nDodano więcej informacji o schemacie",
-                "zh-cn": "防止发生崩溃情况（Sentry IOBROKER-TUYA-MG）\n添加了更多架构信息"
-            },
-            "3.5.3": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.5.2": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息"
-            },
-            "3.5.0": {
-                "en": "More schema information added\nTry to decode \"raw\" values via base64",
-                "de": "Weitere Schemainformationen hinzugefügt\nVersuchen Sie, \"rohe\" Werte über base64 zu dekodieren",
-                "ru": "Добавлена дополнительная информация о схеме\nПопробуйте декодировать \"сырые\" значения через base64",
-                "pt": "Mais informações de esquema adicionadas\nTente decodificar valores \"brutos\" via base64",
-                "nl": "Meer schema-informatie toegevoegd\nProbeer \"ruwe\" waarden te decoderen via base64",
-                "fr": "Plus d'informations sur le schéma ajoutées\nEssayez de décoder les valeurs \"brutes\" via base64",
-                "it": "Aggiunte ulteriori informazioni sullo schema\nProva a decodificare i valori \"grezzi\" tramite base64",
-                "es": "Se agregó más información de esquema\nIntente decodificar valores \"sin procesar\" a través de base64",
-                "pl": "Dodano więcej informacji o schemacie\nSpróbuj zdekodować „surowe” wartości przez base64",
-                "zh-cn": "添加了更多架构信息\n尝试通过base64解码“原始”值"
-            }
-        },
-        "title": "Tuya",
-        "titleLang": {
-            "en": "Tuya",
-            "de": "Tuya",
-            "ru": "Tuya",
-            "pt": "Tuya",
-            "nl": "Tuya",
-            "fr": "Tuya",
-            "it": "Tuya",
-            "es": "Tuya",
-            "pl": "Tuya",
-            "zh-cn": "土雅"
-        },
-        "desc": {
-            "en": "Tuya Adapter",
-            "de": "Tuya Adapter",
-            "ru": "Tuya адаптер",
-            "pt": "Adaptador Tuya",
-            "nl": "Tuya-adapter",
-            "fr": "Adaptateur Tuya",
-            "it": "Adattatore Tuya",
-            "es": "Adaptador Tuya",
-            "pl": "Adapter Tuya",
-            "zh-cn": "涂鸦适配器"
-        },
-        "license": "MIT",
-        "authors": [
-            "Apollon77 <iobroker@fischer-ka.de>"
-        ],
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "icon": "tuya.png",
-        "messagebox": true,
-        "subscribe": "messagebox",
-        "materialize": true,
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
-        "keywords": [
-            "Tuya",
-            "switch",
-            "smarthome",
-            "iobroker"
-        ],
-        "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
-        "loglevel": "info",
-        "type": "iot-systems",
-        "restartAdapters": [],
-        "stopTimeout": 5000,
-        "compact": true,
-        "dependencies": [
-            {
-                "js-controller": ">=2.0.0"
-            }
-        ],
-        "connectionType": "local",
-        "dataSource": "push",
-        "tier": 2,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
-                "pathWhitelist": [
-                    "@apollon"
-                ],
-                "errorBlacklist": [
-                    "SyntaxError"
-                ]
-            }
-        }
+  "common": {
+    "name": "tuya",
+    "version": "3.6.12",
+    "news": {
+      "3.6.12": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息"
+      },
+      "3.6.11": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息"
+      },
+      "3.6.10": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息"
+      },
+      "3.6.9": {
+        "en": "Adjust reconnect handling on initialization",
+        "de": "Passen Sie die Wiederverbindungsbehandlung bei der Initialisierung an",
+        "ru": "Настройте обработку повторного подключения при инициализации",
+        "pt": "Ajuste o manuseio de reconexão na inicialização",
+        "nl": "Afhandeling van opnieuw verbinden aanpassen bij initialisatie",
+        "fr": "Ajuster la gestion de la reconnexion à l'initialisation",
+        "it": "Regola la gestione della riconnessione all'inizializzazione",
+        "es": "Ajustar el manejo de reconexión en la inicialización",
+        "pl": "Dostosuj obsługę ponownego łączenia podczas inicjalizacji",
+        "zh-cn": "调整初始化时的重新连接处理"
+      },
+      "3.6.8": {
+        "en": "Another fix on reconnect handling",
+        "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
+        "ru": "Еще одно исправление при обработке переподключения",
+        "pt": "Outra correção no manuseio de reconexão",
+        "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
+        "fr": "Un autre correctif sur la gestion de la reconnexion",
+        "it": "Un'altra correzione sulla gestione della riconnessione",
+        "es": "Otra corrección en el manejo de reconexión",
+        "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
+        "zh-cn": "重新连接处理的另一个修复"
+      },
+      "3.6.7": {
+        "en": "Another fix on reconnect handling",
+        "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
+        "ru": "Еще одно исправление при обработке переподключения",
+        "pt": "Outra correção no manuseio de reconexão",
+        "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
+        "fr": "Un autre correctif sur la gestion de la reconnexion",
+        "it": "Un'altra correzione sulla gestione della riconnessione",
+        "es": "Otra corrección en el manejo de reconexión",
+        "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
+        "zh-cn": "重新连接处理的另一个修复"
+      },
+      "3.6.6": {
+        "en": "Fix reconnect handling\nMore schema information added",
+        "de": "Reconnect-Handling behoben Fix\nWeitere Schemainformationen hinzugefügt",
+        "ru": "Исправить обработку переподключения\nДобавлена дополнительная информация о схеме",
+        "pt": "Corrigir manuseio de reconexão\nMais informações de esquema adicionadas",
+        "nl": "Afhandeling opnieuw verbinden oplossen\nMeer schema-informatie toegevoegd",
+        "fr": "Correction de la gestion des reconnexions\nPlus d'informations sur le schéma ajoutées",
+        "it": "Correggi la gestione della riconnessione\nAggiunte ulteriori informazioni sullo schema",
+        "es": "Arreglar el manejo de reconexión\nSe agregó más información de esquema",
+        "pl": "Napraw obsługę ponownego łączenia\nDodano więcej informacji o schemacie",
+        "zh-cn": "修复重新连接处理\n添加了更多架构信息"
+      }
     },
-    "native": {
-        "pollingInterval": 60,
-        "proxyPort": 8888,
-        "proxyWebPort": 8889
+    "title": "Tuya",
+    "titleLang": {
+      "en": "Tuya",
+      "de": "Tuya",
+      "ru": "Tuya",
+      "pt": "Tuya",
+      "nl": "Tuya",
+      "fr": "Tuya",
+      "it": "Tuya",
+      "es": "Tuya",
+      "pl": "Tuya",
+      "zh-cn": "土雅"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "If connected to Tuya devices",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "Tuya Adapter",
+      "de": "Tuya Adapter",
+      "ru": "Tuya адаптер",
+      "pt": "Adaptador Tuya",
+      "nl": "Tuya-adapter",
+      "fr": "Adaptateur Tuya",
+      "it": "Adattatore Tuya",
+      "es": "Adaptador Tuya",
+      "pl": "Adapter Tuya",
+      "zh-cn": "涂鸦适配器"
+    },
+    "license": "MIT",
+    "authors": [
+      "Apollon77 <iobroker@fischer-ka.de>"
+    ],
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "tuya.png",
+    "messagebox": true,
+    "subscribe": "messagebox",
+    "materialize": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
+    "keywords": [
+      "Tuya",
+      "switch",
+      "smarthome",
+      "iobroker"
+    ],
+    "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
+    "loglevel": "info",
+    "type": "iot-systems",
+    "restartAdapters": [],
+    "stopTimeout": 5000,
+    "compact": true,
+    "dependencies": [
+      {
+        "js-controller": ">=2.0.0"
+      }
+    ],
+    "connectionType": "local",
+    "dataSource": "push",
+    "tier": 2,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
+        "pathWhitelist": [
+          "@apollon"
+        ],
+        "errorBlacklist": [
+          "SyntaxError"
+        ]
+      }
+    }
+  },
+  "native": {
+    "pollingInterval": 60,
+    "proxyPort": 8888,
+    "proxyWebPort": 8889
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "If connected to Tuya devices",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
