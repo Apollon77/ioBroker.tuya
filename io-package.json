@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.6.13",
+    "version": "3.6.14",
     "news": {
+      "3.6.14": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息"
+      },
       "3.6.13": {
         "en": "More schema information added",
         "de": "Weitere Schemainformationen hinzugefügt",
@@ -74,18 +86,6 @@
         "es": "Otra corrección en el manejo de reconexión",
         "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
         "zh-cn": "重新连接处理的另一个修复"
-      },
-      "3.6.6": {
-        "en": "Fix reconnect handling\nMore schema information added",
-        "de": "Reconnect-Handling behoben Fix\nWeitere Schemainformationen hinzugefügt",
-        "ru": "Исправить обработку переподключения\nДобавлена дополнительная информация о схеме",
-        "pt": "Corrigir manuseio de reconexão\nMais informações de esquema adicionadas",
-        "nl": "Afhandeling opnieuw verbinden oplossen\nMeer schema-informatie toegevoegd",
-        "fr": "Correction de la gestion des reconnexions\nPlus d'informations sur le schéma ajoutées",
-        "it": "Correggi la gestione della riconnessione\nAggiunte ulteriori informazioni sullo schema",
-        "es": "Arreglar el manejo de reconexión\nSe agregó más información de esquema",
-        "pl": "Napraw obsługę ponownego łączenia\nDodano więcej informacji o schemacie",
-        "zh-cn": "修复重新连接处理\n添加了更多架构信息"
       }
     },
     "title": "Tuya",
