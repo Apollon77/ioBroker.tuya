@@ -399,6 +399,7 @@ function pollDevice(deviceId, overwriteDelay) {
 }
 
 function handleReconnect(deviceId, delay) {
+    if (!knownDevices[deviceId]) return;
     delay = delay || 30000;
     if (knownDevices[deviceId].reconnectTimeout) {
         clearTimeout(knownDevices[deviceId].reconnectTimeout);
@@ -793,7 +794,18 @@ function startProxy(msg) {
 
         const dataDir = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir());
         const configPath = path.join(dataDir, adapter.namespace.replace('.', '_'));
-        if (!fs.existsSync(configPath)) {
+        const certPath = path.join(configPath, 'certs/ca.pm');
+        if (fs.existsSync(configPath)) {
+            try {
+                const certStat = fs.statSync(certPath);
+                if (certStat && Date.now() - certStat.ctimeMs > 90 * 24 * 60 * 60 * 1000) { // > 90d
+                    fs.unlinkSync(certPath);
+                    adapter.log.info(`Proxy certificates recreated. YOu need to load new certificate!`);
+                }
+            } catch (err) {
+                adapter.log.info(`Could not check/recreate proxy certificates`);
+            }
+        } else {
             fs.mkdirSync(configPath);
         }
 
