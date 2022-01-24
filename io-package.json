@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.6.14",
+    "version": "3.6.15",
     "news": {
+      "3.6.15": {
+        "en": "More schema information added\nRecreate Proxy SSL certificates once older than 3 months to prevent ssl errors",
+        "de": "Weitere Schemainformationen hinzugefügt\nProxy-SSL-Zertifikate neu erstellen, wenn sie älter als 3 Monate sind, um SSL-Fehler zu vermeiden",
+        "ru": "Добавлена дополнительная информация о схеме\nВоссоздавайте прокси-сертификаты SSL один раз старше 3 месяцев, чтобы предотвратить ошибки ssl.",
+        "pt": "Mais informações de esquema adicionadas\nRecrie certificados SSL de proxy uma vez com mais de 3 meses para evitar erros de SSL",
+        "nl": "Meer schema-informatie toegevoegd\nMaak Proxy SSL-certificaten opnieuw aan die ouder zijn dan 3 maanden om SSL-fouten te voorkomen",
+        "fr": "Plus d'informations sur le schéma ajoutées\nRecréez les certificats Proxy SSL datant de plus de 3 mois pour éviter les erreurs SSL",
+        "it": "Ulteriori informazioni sullo schema aggiunte\nRicrea i certificati SSL proxy una volta più vecchi di 3 mesi per prevenire errori SSL",
+        "es": "Se agregó más información del esquema\nVuelva a crear los certificados Proxy SSL una vez que tengan más de 3 meses para evitar errores SSL",
+        "pl": "Dodano więcej informacji o schemacie\nOdtwórz certyfikaty Proxy SSL raz starsze niż 3 miesiące, aby zapobiec błędom SSL",
+        "zh-cn": "添加了更多架构信息\n重新创建超过 3 个月的代理 SSL 证书以防止 ssl 错误"
+      },
       "3.6.14": {
         "en": "More schema information added",
         "de": "Weitere Schemainformationen hinzugefügt",
@@ -64,18 +76,6 @@
         "zh-cn": "调整初始化时的重新连接处理"
       },
       "3.6.8": {
-        "en": "Another fix on reconnect handling",
-        "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
-        "ru": "Еще одно исправление при обработке переподключения",
-        "pt": "Outra correção no manuseio de reconexão",
-        "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
-        "fr": "Un autre correctif sur la gestion de la reconnexion",
-        "it": "Un'altra correzione sulla gestione della riconnessione",
-        "es": "Otra corrección en el manejo de reconexión",
-        "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
-        "zh-cn": "重新连接处理的另一个修复"
-      },
-      "3.6.7": {
         "en": "Another fix on reconnect handling",
         "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
         "ru": "Еще одно исправление при обработке переподключения",

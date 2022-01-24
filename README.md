@@ -87,7 +87,7 @@ Please use GitHub issues for this.
 Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column Log level). Then please get the logfile from disk (subdirectory "log" in ioBroker installation directory and not from Admin because Admin cuts the lines). If you do not like providing it in GitHub issue you can also send it to me via email (iobroker@fischer-ka.de). Please add a reference to the relevant GitHub issue AND also describe what I see in the log at which time.
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 3.6.15 (2022-01-24)
 * (Apollon77) More schema information added
 * (Apollon77) Recreate Proxy SSL certificates once older than 3 months to prevent ssl errors
 
