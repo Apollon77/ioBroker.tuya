@@ -16,7 +16,7 @@ ioBroker adapter to connect to several small and cheap Wifi devices that care co
 Tuya devices are ESP8266MOD WiFi smart devices from Shenzhen Xenon.
 
 Beside devices usable with the Smart Live App the use of the Jinvoo Smart App, Xenon Smart app, eFamilyCloud, io.e (Luminea or such) app should also be possible. Please report back if successfull.
-<img src="https://https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/warning.png" width="50" height="50"> **The Adapter only works with Tuya and compatible apps as long as their version is <3.14 (!!)**
+<img src="https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/warning.png" width="50" height="50"> **The Adapter only works with Tuya and compatible apps as long as their version is <3.14 (!!)**
 
 The adapter is proofed to work very well with all devices that are "always in wifi". Devices that only come online when there is an event, send their data and go offline again are not supported. This means that **battery powered devices usually DO NOT work!**
 
