@@ -1,5 +1,5 @@
 {
-    "DiscoveredInfo": "成功！",
+    "DiscoveredInfo": "成功！已经监测到%s个设备。代理服务器将在10秒后关闭",
     "Polling Interval": "轮询间隔（如果设备未与App同步）",
     "Proxy Port": "代理端口",
     "Proxy Web Info Port": "代理SSL-Zertifikat端口",
