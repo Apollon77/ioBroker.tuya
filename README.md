@@ -22,6 +22,10 @@ The adapter is proofed to work very well with all devices that are "always in wi
 
 One adapter instance can handle all devices in one network that routes UDP packages.
 
+## Disclaimer
+**All product and company names or logos are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them or any associated subsidiaries! This personal project is maintained in spare time and has no business goal.**
+**TUYA is a trademark of Tuya Global Inc.**
+
 ## Compatible Mobile Apps and versions
 The currently versions of the Tuya Smart and also Smartlife App are **no longer compatible** with the way the adapter works because Tuya encrypted all traffic that the adapter could sniff. For now still some older versions of the Apps work ...
 
