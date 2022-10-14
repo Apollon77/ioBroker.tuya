@@ -13,13 +13,13 @@ const mapper = require('./lib/mapper'); // Get common adapter utils
 const dgram = require('dgram');
 const {MessageParser, CommandType} = require('tuyapi/lib/message-parser.js');
 const extend = require('extend');
-const fs = require('fs');
+const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 const http = require('http');
 const serveStatic = require('serve-static');
 const finalhandler = require('finalhandler');
-const mitm = require('http-mitm-proxy');
+let mitm;
 
 const crypto = require('crypto');
 const UDP_KEY_STRING = 'yGAdlopoPVldABfn';
@@ -410,7 +410,7 @@ function handleReconnect(deviceId, delay) {
             return;
         }
         knownDevices[deviceId].device.connect().catch(err => {
-            adapter.log.warn(deviceId + ': Error on Reconnect' + err.message);
+            adapter.log.warn(deviceId + ': Error on Reconnect: ' + err.message);
             handleReconnect(deviceId);
         });
     }, delay);
@@ -771,7 +771,7 @@ function startProxy(msg) {
     for (const eth in ifaces) {
         if (!ifaces.hasOwnProperty(eth)) continue;
         for (let num = 0; num < ifaces[eth].length; num++) {
-            if (ifaces[eth][num].family !== 'IPv6' && ifaces[eth][num].address !== '127.0.0.1' && ifaces[eth][num].address !== '0.0.0.0') {
+            if (ifaces[eth][num].family !== 'IPv6' && ifaces[eth][num].family !== 6 && ifaces[eth][num].address !== '127.0.0.1' && ifaces[eth][num].address !== '0.0.0.0') {
                 ownIp = ifaces[eth][num].address;
                 adapter.log.debug('Use first network interface (' + ownIp + ')');
                 break;
@@ -792,21 +792,24 @@ function startProxy(msg) {
             msg.message.proxyWebPort = 8889;
         }
 
-        const dataDir = path.normalize(utils.controllerDir + '/' + require(utils.controllerDir + '/lib/tools').getDefaultDataDir());
-        const configPath = path.join(dataDir, adapter.namespace.replace('.', '_'));
+        const configPath = path.join(utils.getAbsoluteDefaultDataDir(), adapter.namespace.replace('.', '_'));
         const certPath = path.join(configPath, 'certs/ca.pm');
+        const checkerFilePath = path.join(configPath, 'checker');
         if (fs.existsSync(configPath)) {
             try {
                 const certStat = fs.statSync(certPath);
-                if (certStat && Date.now() - certStat.ctimeMs > 90 * 24 * 60 * 60 * 1000) { // > 90d
-                    fs.unlinkSync(certPath);
-                    adapter.log.info(`Proxy certificates recreated. YOu need to load new certificate!`);
+                if ((certStat && Date.now() - certStat.ctimeMs > 90 * 24 * 60 * 60 * 1000) || !fs.existsSync(checkerFilePath)) { // > 90d
+                    fs.removeSync(configPath);
+                    fs.mkdirSync(configPath);
+                    fs.writeFileSync(checkerFilePath, '1');
+                    adapter.log.info(`Proxy certificates recreated. You need to load the new certificate!`);
                 }
             } catch (err) {
-                adapter.log.info(`Could not check/recreate proxy certificates`);
+                adapter.log.info(`Could not check/recreate proxy certificates: ${err.message}`);
             }
         } else {
             fs.mkdirSync(configPath);
+            fs.writeFileSync(checkerFilePath, '1');
         }
 
         // Create proxy server
@@ -1118,6 +1121,28 @@ function getDeviceInfo(msg) {
 
 function main() {
     setConnected(false);
+
+    try {
+        const mitmCaFile = require.resolve('http-mitm-proxy/lib/ca.js');
+        if (mitmCaFile) {
+            const fileContent = fs.readFileSync(mitmCaFile, 'utf-8');
+            if (fileContent && fileContent.includes('.validity.notBefore.getFullYear() + 2);')) {
+                // hacky workaround ... replace twice because should be included two times
+                fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
+                fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
+                fs.writeFileSync(mitmCaFile, fileContent);
+                adapter.log.info('http-mitm-proxy/lib/ca.js patched to only generate 1 year long certificates');
+            } else {
+                adapter.log.debug('http-mitm-proxy/lib/ca.js already patched to only generate 1 year long certificates');
+            }
+        } else {
+            adapter.log.info('http-mitm-proxy/lib/ca.js not found');
+        }
+    } catch (e) {
+        adapter.log.warn('Cannot patch http-mitm-proxy/lib/ca.js: ' + e);
+    }
+    mitm = require('http-mitm-proxy');
+
     objectHelper.init(adapter);
 
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;

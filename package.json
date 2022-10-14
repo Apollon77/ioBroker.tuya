@@ -25,28 +25,29 @@
     "url": "https://github.com/Apollon77/ioBroker.tuya"
   },
   "dependencies": {
-    "request": "^2.88.2",
-    "tuyapi": "^7.2.1",
+    "@apollon/iobroker-tools": "^0.2.1",
+    "@iobroker/adapter-core": "^2.6.7",
+    "@sentry/integrations": "^7.15.0",
+    "@sentry/node": "^7.15.0",
+    "@tuya/tuya-connector-nodejs": "^2.1.2",
     "extend": "^3.0.2",
-    "finalhandler": "^1.1.2",
+    "finalhandler": "^1.2.0",
     "http-mitm-proxy": "^0.9.0",
-    "serve-static": "^1.14.2",
-    "qrcode": "^1.5.0",
-    "@iobroker/adapter-core": "^2.5.1",
-    "@apollon/iobroker-tools": "^0.2.0",
-    "@sentry/node": "^6.17.3",
-    "@sentry/integrations": "^6.17.3",
-    "source-map-support": "^0.5.21"
+    "qrcode": "^1.5.1",
+    "request": "^2.88.2",
+    "serve-static": "^1.15.0",
+    "source-map-support": "^0.5.21",
+    "tuyapi": "^7.4.0",
+    "fs-extra": "^10.1.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.9",
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
-    "axios": "^0.27.2",
-    "gulp": "^4.0.2",
-    "mocha": "^9.2.2",
-    "chai": "^4.3.6",
-    "@iobroker/testing": "^2.6.0"
+    "@iobroker/adapter-dev": "^1.1.0",
+    "@iobroker/testing": "^4.1.0",
+    "mocha": "^10.0.0",
+    "chai": "^4.3.6"
   },
   "main": "main.js",
   "scripts": {
@@ -54,7 +55,8 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "release": "release-script"
+    "release": "release-script",
+    "translate": "translate-adapter"
   },
   "bugs": {
     "url": "https://github.com/Apollon77/ioBroker.tuya/issues"
