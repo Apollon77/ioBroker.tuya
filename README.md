@@ -94,8 +94,9 @@ Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Optimizations for Proxy mode to prevent certificate issues
-* (Apollon77) More schema information added
+* (Apollon77) Allow to also "click" on the certificate to download the certificate file
 * (Apollon77) Adjust min/max values if a scale is defined
+* (Apollon77) More schema information added
 
 ### 3.6.15 (2022-01-24)
 * (Apollon77) More schema information added

@@ -75,7 +75,7 @@ function initSentry(callback) {
     }
 
     Sentry.init({
-        release: adapter.pack.name + '@' + adapter.pack.version,
+        release: `${adapter.pack.name}@${adapter.pack.version}`,
         dsn: sentryConfig.dsn,
         integrations: [
             new SentryIntegrations.Dedupe()
@@ -150,8 +150,8 @@ function setConnected(isConnected) {
         connected = isConnected;
         adapter && adapter.setState('info.connection', connected, true, (err) => {
             // analyse if the state could be set (because of permissions)
-            if (err && adapter && adapter.log) adapter.log.error('Can not update connected state: ' + err);
-            else if (adapter && adapter.log) adapter.log.debug('connected set to ' + connected);
+            if (err && adapter && adapter.log) adapter.log.error(`Can not update connected state: ${err}`);
+            else if (adapter && adapter.log) adapter.log.debug(`connected set to ${connected}`);
         });
     }
 }
@@ -177,7 +177,7 @@ function startAdapter(options) {
 
     adapter.on('stateChange', function(id, state) {
         // Warning, state can be null if it was deleted
-        adapter.log.debug('stateChange ' + id + ' ' + JSON.stringify(state));
+        adapter.log.debug(`stateChange ${id} ${JSON.stringify(state)}`);
         objectHelper.handleStateChange(id, state);
     });
 
@@ -200,25 +200,23 @@ function startAdapter(options) {
     return adapter;
 }
 
-process.on('SIGINT', function() {
-    stopAll();
-    stopProxy();
-    setConnected(false);
-});
-
-process.on('uncaughtException', function(err) {
-    console.log('Exception: ' + err + '/' + err.toString());
-    if (adapter && adapter.log) {
-        adapter.log.warn('Exception: ' + err);
-    }
-    stopAll();
-    stopProxy();
-    setConnected(false);
-});
-
 function stopAll() {
-    server && server.close();
-    serverEncrypted && serverEncrypted.close();
+    if (server) {
+        try {
+            server.close();
+        } catch (e) {
+            // ignore
+        }
+    }
+    server = null;
+    if (serverEncrypted) {
+        try {
+            serverEncrypted.close();
+        } catch (e) {
+            // ignore
+        }
+    }
+    serverEncrypted = null;
     if (proxyStopTimeout) {
         clearTimeout(proxyStopTimeout);
         proxyStopTimeout = null;
@@ -262,11 +260,11 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             obj.write = false;
         }
         if (obj.write) {
-            adapter.log.debug(deviceId + ' Register onChange for ' + id);
+            adapter.log.debug(`${deviceId} Register onChange for ${id}`);
             onChange = (value) => {
-                adapter.log.debug(deviceId + ' onChange triggered for ' + id + ' and value ' + JSON.stringify(value));
+                adapter.log.debug(`${deviceId} onChange triggered for ${id} and value ${JSON.stringify(value)}`);
                 if (!knownDevices[physicalDeviceId] || !knownDevices[physicalDeviceId].device) {
-                    adapter.log.debug(deviceId + ' Device communication not initialized ...');
+                    adapter.log.debug(`${deviceId} Device communication not initialized ...`);
                     return;
                 }
 
@@ -282,56 +280,56 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     'set': value,
                     'devId': deviceId
                 }).then(() => {
-                    adapter.log.debug(deviceId + '.' + id + ': set value ' + value + ' via ' + physicalDeviceId);
+                    adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId}`);
                     pollDevice(deviceId, 2000);
                 }).catch((err) => {
-                    adapter.log.error(deviceId + '.' + id + ': ' + err.message);
+                    adapter.log.error(`${deviceId}.${id}: ${err.message}`);
                     pollDevice(deviceId, 2000);
                 });
             };
         }
         if (obj.scale) {
-            valueHandler[deviceId + '.' + id] = (value) => {
+            valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
                 return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
             };
-            values[id] = valueHandler[deviceId + '.' + id](values[id]);
+            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         }
         else if (obj.states) {
-            valueHandler[deviceId + '.' + id] = (value) => {
+            valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
                 for (const key in obj.states) {
                     if (!obj.states.hasOwnProperty(key)) continue;
                     if (obj.states[key] === value) return parseInt(key);
                 }
-                adapter.log.warn(deviceId + '.' + id + ': Value from device not defined in Schema: ' + value);
+                adapter.log.warn(`${deviceId}.${id}: Value from device not defined in Schema: ${value}`);
                 return null;
             };
-            values[id] = valueHandler[deviceId + '.' + id](values[id]);
+            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         }
         if (obj.encoding) {
             const dpEncoding = obj.encoding;
-            if (!valueHandler[deviceId + '.' + id]) {
-                valueHandler[deviceId + '.' + id] = (value) => {
+            if (!valueHandler[`${deviceId}.${id}`]) {
+                valueHandler[`${deviceId}.${id}`] = (value) => {
                     if (typeof value !== 'string') return value;
                     try {
                         switch (dpEncoding) {
                             case 'base64':
                                 return Buffer.from(value, 'base64').toString('utf-8');
                             default:
-                                adapter.log.info('Unsupported encoding ' + dpEncoding + ' for ' + deviceId + '.' + id);
+                                adapter.log.info(`Unsupported encoding ${dpEncoding} for ${deviceId}.${id}`);
                                 return value;
                         }
                     } catch (err) {
-                        adapter.log.info('Error while decoding ' + dpEncoding + ' for ' + deviceId + '.' + id + ': ' + err.message);
+                        adapter.log.info(`Error while decoding ${dpEncoding} for ${deviceId}.${id}: ${err.message}`);
                         return value;
                     }
                 };
-                values[id] = valueHandler[deviceId + '.' + id](values[id]);
+                values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
             }
             delete obj.encoding;
         }
-        objectHelper.setOrUpdateObject(deviceId + '.' + id, {
+        objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',
             common: obj
         }, preserveFields, values[id], onChange);
@@ -358,7 +356,7 @@ function pollDevice(deviceId, overwriteDelay) {
                         knownDevices[physicalDeviceId].refreshDpList = knownDevices[physicalDeviceId].dpIdList.filter(el => knownDevices[physicalDeviceId].device._dpRefreshIds.includes(el));
                     }
                     if (knownDevices[physicalDeviceId].refreshDpList.length) {
-                        adapter.log.debug(deviceId + ' request data via refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].refreshDpList));
+                        adapter.log.debug(`${deviceId} request data via refresh for ${JSON.stringify(knownDevices[physicalDeviceId].refreshDpList)}`);
                         knownDevices[physicalDeviceId].waitingForRefrssh = true;
                         const data = await knownDevices[physicalDeviceId].device.refresh({
                             requestedDPS: knownDevices[physicalDeviceId].refreshDpList
@@ -367,30 +365,30 @@ function pollDevice(deviceId, overwriteDelay) {
                         //                         dps: knownDevices[physicalDeviceId].dpIdList
                         //                     }
                         knownDevices[physicalDeviceId].waitingForRefrssh = false;
-                        adapter.log.debug(deviceId + ' response from refresh: ' + JSON.stringify(data));
+                        adapter.log.debug(`${deviceId} response from refresh: ${JSON.stringify(data)}`);
                         knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                     }
                     else {
-                        adapter.log.debug(deviceId + ' request data via set-refresh for ' + JSON.stringify(knownDevices[physicalDeviceId].dpIdList));
+                        adapter.log.debug(`${deviceId} request data via set-refresh for ${JSON.stringify(knownDevices[physicalDeviceId].dpIdList)}`);
                         const setOptions = {
                             dps: knownDevices[physicalDeviceId].dpIdList,
                             set: null
                         };
                         const data = await knownDevices[physicalDeviceId].device.set(setOptions);
-                        adapter.log.debug(deviceId + ' response from set-refresh: ' + JSON.stringify(data));
+                        adapter.log.debug(`${deviceId} response from set-refresh: ${JSON.stringify(data)}`);
                         // adapter.log.debug(deviceId + ' polling not supported');
                     }
                 } catch (err) {
-                    adapter.log.warn(deviceId + ' error on refresh: ' + err.message);
+                    adapter.log.warn(`${deviceId} error on refresh: ${err.message}`);
                 }
             } else {
                 try {
-                    adapter.log.debug(deviceId + ' request data via get ...');
+                    adapter.log.debug(`${deviceId} request data via get ...`);
                     await knownDevices[physicalDeviceId].device.get({
                         returnAsEvent: true
                     });
                 } catch(err) {
-                    adapter.log.warn(deviceId + ' error on get: ' + err.message);
+                    adapter.log.warn(`${deviceId} error on get: ${err.message}`);
                 }
             }
         }
@@ -410,7 +408,7 @@ function handleReconnect(deviceId, delay) {
             return;
         }
         knownDevices[deviceId].device.connect().catch(err => {
-            adapter.log.warn(deviceId + ': Error on Reconnect: ' + err.message);
+            adapter.log.warn(`${deviceId}: Error on Reconnect: ${err.message}`);
             handleReconnect(deviceId);
         });
     }, delay);
@@ -429,7 +427,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     // {"ip":"192.168.178.85","gwId":"34305060807d3a1d7178","active":2,"ability":0,"mode":0,"encrypt":true,"productKey":"8FAPq5h6gdV51Vcr","version":"3.1"}
     if (!data.schema) {
         const known = mapper.getSchema(productKey);
-        adapter.log.debug(deviceId + ': Schema found for ' + productKey + ': ' + JSON.stringify(known));
+        adapter.log.debug(`${deviceId}: Schema found for ${productKey}: ${JSON.stringify(known)}`);
         if (known) {
             data.schema = known.schema;
             data.schemaExt = known.schemaExt;
@@ -472,15 +470,15 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
         knownDevices[deviceId].ip = data.ip;
     }
 
-    adapter.log.debug(deviceId + ': Create device objects if not exist');
+    adapter.log.debug(`${deviceId}: Create device objects if not exist`);
     objectHelper.setOrUpdateObject(deviceId, {
         type: 'device',
         common: {
-            name: data.name || 'Device ' + deviceId
+            name: data.name || `Device ${deviceId}`
         },
         native: data
     }, preserveFields);
-    !data.meshId && objectHelper.setOrUpdateObject(deviceId + '.online', {
+    !data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.online`, {
         type: 'state',
         common: {
             name: 'Device online status',
@@ -490,7 +488,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             write: false
         }
     }, false);
-    !data.meshId && objectHelper.setOrUpdateObject(deviceId + '.ip', {
+    !data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.ip`, {
         type: 'state',
         common: {
             name: 'Device IP',
@@ -503,7 +501,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
 
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
-        adapter.log.debug(deviceId + ': Objects ' + JSON.stringify(objs));
+        adapter.log.debug(`${deviceId}: Objects ${JSON.stringify(objs)}`);
         knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
     }
@@ -513,7 +511,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             if (!knownDevices[deviceId].ip) {
                 return checkDiscoveredEncryptedDevices(deviceId, callback);
             }
-            adapter.log.info(deviceId + ' Init with IP=' + knownDevices[deviceId].ip + ', Key=' + knownDevices[deviceId].localKey + ', Version=' + knownDevices[deviceId].version);
+            adapter.log.info(`${deviceId} Init with IP=${knownDevices[deviceId].ip}, Key=${knownDevices[deviceId].localKey}, Version=${knownDevices[deviceId].version}`);
             knownDevices[deviceId].stop = false;
             knownDevices[deviceId].device = new TuyaDevice({
                 id: deviceId,
@@ -526,21 +524,21 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             const handleNewData = (data) => {
                 knownDevices[deviceId].errorcount = 0;
                 if (typeof data !== 'object' || !data || !data.dps) return;
-                adapter.log.debug(deviceId + ': Received data: ' + JSON.stringify(data.dps));
+                adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
 
                 if (knownDevices[deviceId].deepCheckNextData) {
                     const dataKeys = Object.keys(data.dps);
                     const dummyFieldList = ["1", "2", "3", "101", "102", "103"];
                     if (dataKeys.length === dummyFieldList.length && !dataKeys.find(key => !dummyFieldList.includes(key) || data.dps[key] !== null)) {
                         // {"1":null,"2":null,"3":null,"101":null,"102":null,"103":null}
-                        adapter.log.debug(deviceId + ': Ignore invalid data (Counter: ' + knownDevices[deviceId].deepCheckNextData + ')');
+                        adapter.log.debug(`${deviceId}: Ignore invalid data (Counter: ${knownDevices[deviceId].deepCheckNextData})`);
                         knownDevices[deviceId].deepCheckNextData--;
                         return;
                     }
                 }
 
                 if (!knownDevices[deviceId].objectsInitialized) {
-                    adapter.log.info(deviceId + ': No schema exists, init basic states ...');
+                    adapter.log.info(`${deviceId}: No schema exists, init basic states ...`);
                     knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
                     knownDevices[deviceId].objectsInitialized = true;
                     objectHelper.processObjectQueue();
@@ -549,10 +547,10 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 for (const id in data.dps) {
                     if (!data.dps.hasOwnProperty(id)) continue;
                     let value = data.dps[id];
-                    if (valueHandler[deviceId + '.' + id]) {
-                        value = valueHandler[deviceId + '.' + id](value);
+                    if (valueHandler[`${deviceId}.${id}`]) {
+                        value = valueHandler[`${deviceId}.${id}`](value);
                     }
-                    adapter.setState(deviceId + '.' + id, value, true);
+                    adapter.setState(`${deviceId}.${id}`, value, true);
                 }
                 pollDevice(deviceId); // lets poll in defined interval
             };
@@ -561,8 +559,8 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             knownDevices[deviceId].device.on('dp-refresh', handleNewData);
 
             knownDevices[deviceId].device.on('connected', () => {
-                adapter.log.debug(deviceId + ': Connected to device');
-                adapter.setState(deviceId + '.online', true, true);
+                adapter.log.debug(`${deviceId}: Connected to device`);
+                adapter.setState(`${deviceId}.online`, true, true);
                 if (knownDevices[deviceId].reconnectTimeout) {
                     clearTimeout(knownDevices[deviceId].reconnectTimeout);
                     knownDevices[deviceId].reconnectTimeout = null;
@@ -574,14 +572,14 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             });
 
             knownDevices[deviceId].device.on('disconnected', () => {
-                adapter.log.debug(deviceId + ': Disconnected from device');
+                adapter.log.debug(`${deviceId}: Disconnected from device`);
                 if (knownDevices[deviceId].waitingForRefresh) {
                     knownDevices[deviceId].waitingForRefresh = false;
                     knownDevices[deviceId].useRefreshToGet = false;
-                    adapter.log.debug(deviceId + ': ... seems like Refresh not supported ... disable');
+                    adapter.log.debug(`${deviceId}: ... seems like Refresh not supported ... disable`);
                     // TODO check once such a case comes up
                 }
-                adapter.setState(deviceId + '.online', false, true);
+                adapter.setState(`${deviceId}.online`, false, true);
                 if (!knownDevices[deviceId].stop) {
                     if (knownDevices[deviceId].pollingTimeout) {
                         clearTimeout(knownDevices[deviceId].pollingTimeout);
@@ -597,7 +595,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             });
 
             knownDevices[deviceId].device.on('error', (err) => {
-                adapter.log.debug(deviceId + ': Error from device (' + knownDevices[deviceId].errorcount + '): App still open on your mobile phone? ' + err);
+                adapter.log.debug(`${deviceId}: Error from device (${knownDevices[deviceId].errorcount}): App still open on your mobile phone? ${err}`);
 
                 if (err === 'json obj data unvalid') {
                     // Special error case!
@@ -632,12 +630,12 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             });
 
             knownDevices[deviceId].device.connect().catch(err => {
-                adapter.log.error(deviceId + ': ' + err.message);
+                adapter.log.error(`${deviceId}: ${err.message}`);
                 handleReconnect(deviceId);
             });
 
             if (!knownDevices[deviceId].localKey) {
-                adapter.log.info(deviceId + ': No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!');
+                adapter.log.info(`${deviceId}: No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!`);
                 pollDevice(deviceId);
             }
         }
@@ -654,7 +652,7 @@ function discoverLocalDevices() {
     });
     const normalParser = new MessageParser({version: 3.1});
     server.on('message', function (message, remote) {
-        adapter.log.debug('Discovered device: ' + remote.address + ':' + remote.port + ' - ' + message);
+        adapter.log.debug(`Discovered device: ${remote.address}:${remote.port} - ${message}`);
         let data;
         try {
             data = normalParser.parse(message)[0];
@@ -666,7 +664,7 @@ function discoverLocalDevices() {
         initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
     });
     server.on('error', err => {
-        adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
+        adapter.log.warn(`Can not Listen for Encrypted UDP packages: ${err}`);
     });
     server.bind(6666);
 
@@ -678,7 +676,7 @@ function discoverLocalDevices() {
     });
     serverEncrypted.on('message', function (message, remote) {
         if (!discoveredEncryptedDevices[remote.address]) {
-            adapter.log.debug('Discovered encrypted device and store for later usage: ' + remote.address + ':' + remote.port + ' - ' + message.toString('hex'));
+            adapter.log.debug(`Discovered encrypted device and store for later usage: ${remote.address}:${remote.port} - ${message.toString('hex')}`);
             discoveredEncryptedDevices[remote.address] = message;
 
             // try to auto init devices when known already by using proxy
@@ -691,14 +689,14 @@ function discoverLocalDevices() {
         }
     });
     serverEncrypted.on('error', err => {
-        adapter.log.warn('Can not Listen for Encrypted UDP packages: ' + err);
+        adapter.log.warn(`Can not Listen for Encrypted UDP packages: ${err}`);
     });
     serverEncrypted.bind(6667);
 }
 
 function checkDiscoveredEncryptedDevices(deviceId, callback) {
     const foundIps = Object.keys(discoveredEncryptedDevices);
-    adapter.log.debug(deviceId + ': Try to initialize encrypted device with received UDP messages (#IPs: ' + foundIps.length + '): version=' + knownDevices[deviceId].version + ', key=' + knownDevices[deviceId].localKey);
+    adapter.log.debug(`${deviceId}: Try to initialize encrypted device with received UDP messages (#IPs: ${foundIps.length}): version=${knownDevices[deviceId].version}, key=${knownDevices[deviceId].localKey}`);
     const parser = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: knownDevices[deviceId].localKey});
     const parserDefault = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: UDP_KEY});
 
@@ -711,21 +709,21 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
             data = parserDefault.parse(discoveredEncryptedDevices[ip])[0];
         }
         catch (err) {
-            adapter.log.debug(deviceId + ': Error on default decrypt try: ' + err.message);
+            adapter.log.debug(`${deviceId}: Error on default decrypt try: ${err.message}`);
         }
         if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
-            adapter.log.debug(deviceId + ': No relevant Data for default decrypt try: ' + JSON.stringify(data));
+            adapter.log.debug(`${deviceId}: No relevant Data for default decrypt try: ${JSON.stringify(data)}`);
 
             // try device key
             try {
                 data = parser.parse(discoveredEncryptedDevices[ip])[0];
             }
             catch (err) {
-                adapter.log.debug(deviceId + ': Error on device decrypt try: ' + err.message);
+                adapter.log.debug(`${deviceId}: Error on device decrypt try: ${err.message}`);
                 continue;
             }
             if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
-                adapter.log.debug(deviceId + ': No relevant Data for device decrypt try: ' + JSON.stringify(data));
+                adapter.log.debug(`${deviceId}: No relevant Data for device decrypt try: ${JSON.stringify(data)}`);
                 continue;
             }
         }
@@ -735,7 +733,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
             return true;
         }
     }
-    adapter.log.info(deviceId + ': None of the discovered devices matches :-(');
+    adapter.log.info(`${deviceId}: None of the discovered devices matches :-(`);
     callback && callback();
 }
 
@@ -748,7 +746,7 @@ function initDone() {
 }
 
 function processMessage(msg) {
-    adapter.log.debug('Message: ' + JSON.stringify(msg));
+    adapter.log.debug(`Message: ${JSON.stringify(msg)}`);
     switch (msg.command) {
         case 'startProxy':
             startProxy(msg);
@@ -773,7 +771,7 @@ function startProxy(msg) {
         for (let num = 0; num < ifaces[eth].length; num++) {
             if (ifaces[eth][num].family !== 'IPv6' && ifaces[eth][num].family !== 6 && ifaces[eth][num].address !== '127.0.0.1' && ifaces[eth][num].address !== '0.0.0.0') {
                 ownIp = ifaces[eth][num].address;
-                adapter.log.debug('Use first network interface (' + ownIp + ')');
+                adapter.log.debug(`Use first network interface (${ownIp})`);
                 break;
             }
         }
@@ -838,7 +836,7 @@ function startProxy(msg) {
                             response = JSON.parse(body);
                         }
                         catch (err) {
-                            adapter.log.debug('SSL-Proxy: error checking response: ' + err.message);
+                            adapter.log.debug(`SSL-Proxy: error checking response: ${err.message}`);
                             adapter.log.debug(body);
                         }
                         catchProxyInfo(response);
@@ -863,7 +861,7 @@ function startProxy(msg) {
         });
 
         proxyServer.onError((ctx, err) => {
-            adapter.log.error('SSL-Proxy ERROR: ' + err);
+            adapter.log.error(`SSL-Proxy ERROR: ${err}`);
             adapter.log.error(err.stack);
         });
 
@@ -881,7 +879,7 @@ function startProxy(msg) {
             });
 
             staticServer.on('error', err => {
-                adapter.log.error('SSL-Proxy could not be started: ' + err);
+                adapter.log.error(`SSL-Proxy could not be started: ${err}`);
                 adapter.log.error(err.stack);
             });
 
@@ -897,11 +895,13 @@ function startProxy(msg) {
                 }
                 if (QRCode) {
                     let qrCodeCert;
-                    QRCode.toDataURL('http://' + ownIp + ':' + msg.message.proxyWebPort + '/ca.pem').then((url) => {
+                    const certUrl = `http://${ownIp}:${msg.message.proxyWebPort}/ca.pem`;
+                    QRCode.toDataURL(certUrl).then((url) => {
                         qrCodeCert = url;
                         adapter.sendTo(msg.from, msg.command, {
                             result: {
-                                qrcodeCert: qrCodeCert
+                                qrcodeCert: qrCodeCert,
+                                certUrl
                             },
                             error: null
                         }, msg.callback);
@@ -958,9 +958,17 @@ function startProxy(msg) {
 
 function stopProxy(msg) {
     if (proxyServer) {
-        proxyServer.close();
-        staticServer.close();
+        try {
+            proxyServer.close();
+        } catch (e) {
+            // ignore
+        }
         proxyServer = null;
+        try {
+            staticServer.close();
+        } catch (e) {
+            // ignore
+        }
         staticServer = null;
     }
     if (msg && adapter) {
@@ -987,15 +995,15 @@ function catchProxyInfo(data) {
     });
 
     if (deviceInfos && deviceInfos.length) {
-        adapter.log.debug('Found ' + deviceInfos.length + ' device schema information');
+        adapter.log.debug(`Found ${deviceInfos.length} device schema information`);
         deviceInfos.forEach((deviceInfo) => {
             if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
-                adapter.log.info('new Schema added for product type ' + deviceInfo.id + '. Please send next line from logfile on disk to developer!');
+                adapter.log.info(`new Schema added for product type ${deviceInfo.id}. Please send next line from logfile on disk to developer!`);
                 adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
                 Sentry && Sentry.withScope(scope => {
                     scope.setLevel('info');
-                    scope.setExtra("schema", '"' + deviceInfo.id + '": ' + JSON.stringify(deviceInfo.schemaInfo));
-                    Sentry.captureMessage('Schema ' + deviceInfo.id, 'info');
+                    scope.setExtra("schema", `"${deviceInfo.id}": ${JSON.stringify(deviceInfo.schemaInfo)}`);
+                    Sentry.captureMessage(`Schema ${deviceInfo.id}`, 'info');
                 });
             }
         });
@@ -1005,7 +1013,7 @@ function catchProxyInfo(data) {
     }
 
     if (devices && devices.length) {
-        adapter.log.debug('Found ' + devices.length + ' devices');
+        adapter.log.debug(`Found ${devices.length} devices`);
         devices.forEach((device) => {
             delete device.ip;
             device.schema = false;
@@ -1125,12 +1133,12 @@ function main() {
     try {
         const mitmCaFile = require.resolve('http-mitm-proxy/lib/ca.js');
         if (mitmCaFile) {
-            const fileContent = fs.readFileSync(mitmCaFile, 'utf-8');
+            let fileContent = fs.readFileSync(mitmCaFile, 'utf-8');
             if (fileContent && fileContent.includes('.validity.notBefore.getFullYear() + 2);')) {
                 // hacky workaround ... replace twice because should be included two times
-                fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
-                fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
-                fs.writeFileSync(mitmCaFile, fileContent);
+                fileContent = fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
+                fileContent = fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
+                fs.writeFileSync(mitmCaFile, fileContent, 'utf-8');
                 adapter.log.info('http-mitm-proxy/lib/ca.js patched to only generate 1 year long certificates');
             } else {
                 adapter.log.debug('http-mitm-proxy/lib/ca.js already patched to only generate 1 year long certificates');
@@ -1139,7 +1147,7 @@ function main() {
             adapter.log.info('http-mitm-proxy/lib/ca.js not found');
         }
     } catch (e) {
-        adapter.log.warn('Cannot patch http-mitm-proxy/lib/ca.js: ' + e);
+        adapter.log.warn(`Cannot patch http-mitm-proxy/lib/ca.js: ${e}`);
     }
     mitm = require('http-mitm-proxy');
 
@@ -1154,7 +1162,7 @@ function main() {
     adapter.getDevices((err, devices) => {
         let deviceCnt = 0;
         if (devices && devices.length) {
-            adapter.log.debug('init ' + devices.length + ' known devices');
+            adapter.log.debug(`init ${devices.length} known devices`);
             devices.forEach((device) => {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);

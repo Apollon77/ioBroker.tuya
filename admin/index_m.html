@@ -95,6 +95,7 @@
                 }, function (response) {
                     if (response.result && response.result.qrcodeCert) {
                         $('#certImage').attr("src", response.result.qrcodeCert);
+                        $('#certUrl').attr("href", response.result.certUrl);
                         $('#proxy-dialog').modal('open');
                     }
 
@@ -204,7 +205,7 @@
                 <div class="progress showOnStart">
                     <div class="indeterminate"></div>
                 </div>
-                <p style="text-align:center;"><i id="success" class="material-icons large hideOnStart">check</i><img id="certImage" class="showOnStart" src="" width="164" height="164" /></p>
+                <p style="text-align:center;"><i id="success" class="material-icons large hideOnStart">check</i><a id="certUrl" href=""><img id="certImage" class="showOnStart" src="" width="164" height="164" /></a></p>
                 <div id="proxyDone" class="input-field col s12 hideOnStart">
                     <b><span id="proxyResult"></span></b>
                 </div>
