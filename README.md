@@ -91,8 +91,7 @@ Please use GitHub issues for this.
 Best is to set the adapter to Debug log mode (Instances -> Expert mode -> Column Log level). Then please get the logfile from disk (subdirectory "log" in ioBroker installation directory and not from Admin because Admin cuts the lines). If you do not like providing it in GitHub issue you can also send it to me via email (iobroker@fischer-ka.de). Please add a reference to the relevant GitHub issue AND also describe what I see in the log at which time.
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.7.0 (2022-10-22)
 * (Apollon77) Optimizations for Proxy mode to prevent certificate issues
 * (Apollon77) Allow to also "click" on the certificate to download the certificate file
 * (Apollon77) Adjust min/max values if a scale is defined

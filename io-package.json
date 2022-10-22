@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.6.15",
+    "version": "3.7.0",
     "news": {
+      "3.7.0": {
+        "en": "Optimizations for Proxy mode to prevent certificate issues\nAllow to also \"click\" on the certificate to download the certificate file\nAdjust min/max values if a scale is defined\nMore schema information added",
+        "de": "Optimierungen für Proxy-Modus, um Zertifikatsprobleme zu verhindern\nLassen Sie auch auf das Zertifikat klicken, um die Zertifikatsdatei herunterzuladen\nEinstellen von min/max Werten, wenn eine Skala definiert ist\nWeitere Schemainformationen hinzugefügt",
+        "ru": "Оптимизация для режима Proxy для предотвращения вопросов сертификатов\nРазрешить также нажать на сертификат, чтобы скачать файл сертификата\nОтрегулируйте значения мин/макс если масштаб определен\nДополнительная информация по схеме добавлена",
+        "pt": "Otimizações para o modo Proxy para evitar problemas de certificado\nPermitir também clicar no certificado para baixar o arquivo de certificado\nAjuste valores min/max se uma escala for definida\nMais informações de esquema adicionadas",
+        "nl": "Optimisatie voor Proxy Mode om certificaatproblemen te voorkomen\nSta toe om ook op het certificaat te klikmen om het certificaat te downloaden\nAanpassen min/max waarden als een schaal wordt bepaald\nMeer schema informatie toegevoegd",
+        "fr": "Optimisations pour le mode Proxy pour prévenir les problèmes de certificat\nPermettre également de cliquer sur le certificat pour télécharger le fichier de certificat\nAjuster les valeurs min/max si une échelle est définie\nPlus d'informations sur le schéma ajoutés",
+        "it": "Ottimizzazione della modalità Proxy per prevenire i problemi di certificazione\nConsentire di cliccare anche sul certificato per scaricare il file di certificato\nRegolare i valori min/max se viene definita una scala\nUlteriori informazioni sugli schemi aggiunti",
+        "es": "Optimizaciones para el modo Proxy para evitar problemas de certificado\nPermitir también hacer clic en el certificado para descargar el archivo certificado\nAjuste los valores min/max si se define una escala\nMás información de esquema añadido",
+        "pl": "Optymizacja trybu Proxy\nAllow, by także kliknąć na certyfikat do pobrania certyfikatu pliku\nAdjust min/max value jeśli skala jest zdefiniowana\nWięcej informacji na temat schemy",
+        "uk": "Оптимізація режиму Proxy для запобігання проблем з сертифікатами\nДля того щоб завантажити файл сертифіката\nРегульувати значення min/max, якщо визначено масштаб\nБільше інформації про схему",
+        "zh-cn": "采用预防证明问题的方式\n也可点击证书以下载证书档案\n如果界定一个规模,那么调整的min/max数值\n增加的schema信息"
+      },
       "3.6.15": {
         "en": "More schema information added\nRecreate Proxy SSL certificates once older than 3 months to prevent ssl errors",
         "de": "Weitere Schemainformationen hinzugefügt\nProxy-SSL-Zertifikate neu erstellen, wenn sie älter als 3 Monate sind, um SSL-Fehler zu vermeiden",
@@ -74,18 +87,6 @@
         "es": "Ajustar el manejo de reconexión en la inicialización",
         "pl": "Dostosuj obsługę ponownego łączenia podczas inicjalizacji",
         "zh-cn": "调整初始化时的重新连接处理"
-      },
-      "3.6.8": {
-        "en": "Another fix on reconnect handling",
-        "de": "Ein weiterer Fix für die Wiederverbindungsbehandlung",
-        "ru": "Еще одно исправление при обработке переподключения",
-        "pt": "Outra correção no manuseio de reconexão",
-        "nl": "Nog een oplossing voor de afhandeling van opnieuw verbinden",
-        "fr": "Un autre correctif sur la gestion de la reconnexion",
-        "it": "Un'altra correzione sulla gestione della riconnessione",
-        "es": "Otra corrección en el manejo de reconexión",
-        "pl": "Kolejna poprawka dotycząca obsługi ponownego łączenia",
-        "zh-cn": "重新连接处理的另一个修复"
       }
     },
     "title": "Tuya",
