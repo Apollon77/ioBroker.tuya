@@ -3,19 +3,6 @@
     "name": "tuya",
     "version": "3.7.1",
     "news": {
-      "3.7.1": {
-        "en": "Prevent warnings for invalid min/max values",
-        "de": "Warnungen für ungültige Min/Max-Werte verhindern",
-        "ru": "Предотвращение предупреждений о недействительных значениях мин/макс",
-        "pt": "Evite avisos para valores inválidos min/max",
-        "nl": "Vertaling:",
-        "fr": "Prévenir les avertissements pour les valeurs invalides min/max",
-        "it": "Prevenire avvisi per valori minimi/max non validi",
-        "es": "Prevenir advertencias para valores min/max inválidos",
-        "pl": "Prevent warning for invalid min/max value (ang.)",
-        "uk": "Запобігання попереджень про недійсні значення мінімуму",
-        "zh-cn": "对无效的min/max数值的预防措施"
-      },
       "3.7.0": {
         "en": "Optimizations for Proxy mode to prevent certificate issues\nAllow to also \"click\" on the certificate to download the certificate file\nAdjust min/max values if a scale is defined\nMore schema information added",
         "de": "Optimierungen für Proxy-Modus, um Zertifikatsprobleme zu verhindern\nLassen Sie auch auf das Zertifikat klicken, um die Zertifikatsdatei herunterzuladen\nEinstellen von min/max Werten, wenn eine Skala definiert ist\nWeitere Schemainformationen hinzugefügt",
