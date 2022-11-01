@@ -63,7 +63,7 @@
                         onChange();
                     });
                 } else {
-                    $key.val($key.attr('type') === 'password' && settings[id] ? decrypt(secret, settings[id]) : settings[id]).change(function () {
+                    $key.val(settings[id]).change(function () {
                         onChange();
                     }).keyup(function () {
                         onChange();
@@ -137,8 +137,6 @@
                 var $this = $(this);
                 if ($this.attr('type') === 'checkbox') {
                     obj[$this.attr('id')] = $this.prop('checked');
-                } else if ($this.attr('type') === 'password') {
-                    obj[$this.attr('id')] = encrypt(secret, $this.val());
                 } else {
                     obj[$this.attr('id')] = $this.val();
                 }
