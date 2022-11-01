@@ -1128,53 +1128,80 @@ function getDeviceInfo(msg) {
 }
 
 async function cloudLogin() {
-  const Cloud = require(".lib/tuyaapi_cloud");
+  const Cloud = require('./lib/tuyaapi_cloud');
   const apiKeys = {
-    key: "3fjrekuxank9eaej3gcx",
-    certSign: "93:21:9F:C2:73:E2:20:0F:4A:DE:E5:F7:19:1D:C6:56:BA:2A:2D:7B:2F:F5:D2:4C:D5:5C:4B:61:55:00:1E:40",
-    secret2: "vay9g59g9g99qf3rtqptmc3emhkanwkx",
-    secret: "aq7xvqcyqcnegvew793pqjmhv77rneqc",
+    key: '3fjrekuxank9eaej3gcx',
+    certSign: '93:21:9F:C2:73:E2:20:0F:4A:DE:E5:F7:19:1D:C6:56:BA:2A:2D:7B:2F:F5:D2:4C:D5:5C:4B:61:55:00:1E:40',
+    secret2: 'vay9g59g9g99qf3rtqptmc3emhkanwkx',
+    secret: 'aq7xvqcyqcnegvew793pqjmhv77rneqc',
   };
   try {
-  adapter.api = new Cloud({
-    key: apiKeys.key,
-    secret: apiKeys.secret,
-    secret2: apiKeys.secret2,
-    certSign: apiKeys.certSign,
-    apiEtVersion: "0.0.1",
-    region: "49"
-  })
-} catch (e) {
-    adapter.log.error("Error creating cloud API: " + e);
+    adapter.api = new Cloud({
+      key: apiKeys.key,
+      secret: apiKeys.secret,
+      secret2: apiKeys.secret2,
+      certSign: apiKeys.certSign,
+      apiEtVersion: '0.0.1',
+      region: '49',
+      adapter: adapter,
+    });
+  } catch (e) {
+    adapter.log.error('Error creating cloud API: ' + e);
     return;
-    }
+  }
 
-  await adapter.api.loginEx({ email: adapter.config.cloudUsername, password: adapter.config.cloudPassword }).then(async (sid) => {
-    adapter.log.debug(`Cloud sid:  ${sid} `);
-    return sid;
-  }).catch((err) => {
-    adapter.log.error(`Cloud login failed: ${err}`);
-    return null;
+  await adapter.api
+    .loginEx({ email: adapter.config.cloudUsername, password: adapter.config.cloudPassword })
+    .then(async (sid) => {
+      adapter.log.debug(`Cloud sid:  ${sid} `);
+      return sid;
+    })
+    .catch((err) => {
+      adapter.log.error(`Cloud login failed: ${err}`);
+      return null;
     });
 }
 async function receiveCloudDevices() {
-  await adapter.api.request({ action: "tuya.m.location.list" }).then(async (groups) => {
+  await adapter.api.request({ action: 'tuya.m.location.list' }).then(async (groups) => {
+    let deviceList = [];
+    let deviceListInfo = [];
     for (const group of groups) {
-      await adapter.api.request({ action: "tuya.m.my.group.device.list"}).then(async (devicesArr) => {
-        for (const device of devicesArr) {
-          console.log('group: "%s"\tdevice: "%s"\tdevId: "%s"', group.name, device.name, device.devId);
-        }
-      }).catch((err) => {
-        adapter.log.error(`Error: ${err}`);
+      const resultDevices = await adapter.api
+        .request({ action: 'tuya.m.my.group.device.list', gid: group.groupId })
+        .catch((err) => {
+          adapter.log.error(`Error: ${err}`);
         });
+      deviceList = [...deviceList, ...resultDevices];
+      const resultInfo = await adapter.api
+        .request({ action: 'tuya.m.device.ref.info.my.list', gid: group.groupId, v: '2.0' })
+        .catch((err) => {
+          adapter.log.error(`Error: ${err}`);
+        });
+      deviceListInfo = [...deviceListInfo, ...resultInfo];
     }
-  }).catch((err) => {
-    adapter.log.error(`Error: ${err}`);
+    catchProxyInfo({
+      result: [
+        {
+          a: 'tuya.m.my.group.device.list',
+          success: true,
+          v: '1.0',
+          status: 'ok',
+          result: deviceList,
+        },
+        {
+          a: 'tuya.m.device.ref.info.my.list',
+          success: true,
+          v: '2.0',
+          status: 'ok',
+          result: deviceListInfo,
+        },
+      ],
     });
+  });
 }
-
 async function main() {
     setConnected(false);
+    objectHelper.init(adapter);
     if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
         adapter.log.info("Try to login with cloud credentials");
         await cloudLogin();
@@ -1201,7 +1228,7 @@ async function main() {
     }
     mitm = require('http-mitm-proxy');
 
-    objectHelper.init(adapter);
+  
 
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
     if (adapter.config.pollingInterval < 10) {
