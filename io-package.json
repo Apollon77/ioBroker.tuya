@@ -116,9 +116,7 @@
       "zh-cn": "涂鸦适配器"
     },
     "license": "MIT",
-    "authors": [
-      "Apollon77 <iobroker@fischer-ka.de>"
-    ],
+    "authors": ["Apollon77 <iobroker@fischer-ka.de>"],
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "icon": "tuya.png",
@@ -127,12 +125,7 @@
     "materialize": true,
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
-    "keywords": [
-      "Tuya",
-      "switch",
-      "smarthome",
-      "iobroker"
-    ],
+    "keywords": ["Tuya", "switch", "smarthome", "iobroker"],
     "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
     "loglevel": "info",
     "type": "iot-systems",
@@ -150,19 +143,19 @@
     "plugins": {
       "sentry": {
         "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
-        "pathWhitelist": [
-          "@apollon"
-        ],
-        "errorBlacklist": [
-          "SyntaxError"
-        ]
+        "pathWhitelist": ["@apollon"],
+        "errorBlacklist": ["SyntaxError"]
       }
     }
   },
+  "encryptedNative": ["cloudPassword"],
+  "protectedNative": ["cloudPassword"],
   "native": {
     "pollingInterval": 60,
     "proxyPort": 8888,
-    "proxyWebPort": 8889
+    "proxyWebPort": 8889,
+    "cloudUsername": "",
+    "cloudPassword": ""
   },
   "objects": [],
   "instanceObjects": [
