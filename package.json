@@ -27,7 +27,7 @@
   "dependencies": {
     "@apollon/iobroker-tools": "^0.2.1",
     "@iobroker/adapter-core": "^2.6.7",
-    "@sentry/integrations": "^7.16.0",
+    "@sentry/integrations": "^7.17.3",
     "@sentry/node": "^7.16.0",
     "@tuya/tuya-connector-nodejs": "^2.1.2",
     "extend": "^3.0.2",
