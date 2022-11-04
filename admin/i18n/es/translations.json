@@ -26,7 +26,7 @@
     "Region": "Región",
     "Reinitialize App Cloud Data": "¿Deberían renovarse los datos de App Cloud (Device-ID, Session y otros datos Meta)?\"",
     "Start proxy": "Inicie el proxy (sea paciente, ¡puede tomar algunos segundos!)",
-    "StatusInfo": "Estado: %s dispositivos encontrados en la red, %s dispositivos conectados, %s con esquema conocido, %s inicializado para control y actualizaciones locales en tiempo real.",
+    "StatusInfo": "Estado: %s dispositivos encontrados en la red, %s dispositivos conectados localmente, %s con esquema conocido, %s inicializado para control y actualizaciones locales en tiempo real.",
     "Stop proxy": "Detener proxy",
     "Sync devices with cloud one time": "Sincronice los dispositivos con la nube una vez (ingrese las credenciales a continuación)",
     "Tuya Cloud Sync": "Nube Tuya y sincronización",

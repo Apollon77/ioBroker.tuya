@@ -26,7 +26,7 @@
     "Region": "Regio",
     "Reinitialize App Cloud Data": "Moeten de App Cloud Data (Device-ID, Session en andere Meta data vernieuwd worden?",
     "Start proxy": "Proxy starten (wees geduldig, kan enkele seconden duren!)",
-    "StatusInfo": "Status: %s apparaten gevonden in netwerk, %s apparaten aangesloten, %s met bekend schema, %s geïnitialiseerd voor lokale realtime updates en controle.",
+    "StatusInfo": "Status: %s apparaten gevonden in netwerk, %s apparaten lokaal verbonden, %s met bekend schema, %s geïnitialiseerd voor lokale realtime updates en controle.",
     "Stop proxy": "Proxy stoppen",
     "Sync devices with cloud one time": "Apparaten eenmalig synchroniseren met de cloud (voer hieronder inloggegevens in)",
     "Tuya Cloud Sync": "Tuya Cloud & Synchronisatie",

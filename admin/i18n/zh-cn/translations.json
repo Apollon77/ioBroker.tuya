@@ -26,7 +26,7 @@
     "Region": "地区",
     "Reinitialize App Cloud Data": "是否应重新更新应用Cloud数据(Device-ID,会议和其他气象数据)?",
     "Start proxy": "启动代理（请耐心等待，可能需要几秒钟！）",
-    "StatusInfo": "状态：在网络中发现 %s 个设备，已连接 %s 个设备，%s 具有已知架构，%s 已为本地实时更新和控制进行了初始化。",
+    "StatusInfo": "状态：在网络中找到 %s 台设备，在本地连接 %s 台设备，%s 具有已知架构，为本地实时更新和控制初始化 %s。",
     "Stop proxy": "停止代理",
     "Sync devices with cloud one time": "将设备与云同步一次（在下面输入凭据）",
     "Tuya Cloud Sync": "涂鸦云同步",
