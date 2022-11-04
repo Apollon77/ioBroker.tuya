@@ -33,10 +33,15 @@
         #stopProxy:hover {
             cursor: pointer;
         }
+
+        #startCloudSync:hover {
+            cursor: pointer;
+        }
     </style>
 
     <script type="text/javascript">
         var active = false;
+        var loadedData = null;
 
         function sprintf(format) {
             var args = Array.prototype.slice.call(arguments, 1);
@@ -49,12 +54,24 @@
         function getDeviceInfos() {
             sendTo(null, 'getDeviceInfo', null, function (response) {
                 var text = sprintf(systemDictionary['StatusInfo'][systemLang], response.result.devices, response.result.devicesConnected, response.result.devicesWithSchema, response.result.devicesWithLocalKey);
-                $('#deviceInfo').text(text);
+                $('#deviceInfo1').text(text);
+                $('#deviceInfo2').text(text);
+                $('#deviceInfo3').text(text);
             });
             setTimeout(getDeviceInfos, 60000);
         }
         function load(settings, onChange) {
             if (!settings) return;
+            settings.storeCloudCredentials = !!(settings.cloudUsername && settings.cloudPassword);
+            if (settings.region === undefined) {
+                settings.region = 'EU';
+            }
+            if (settings.appType === undefined) {
+                settings.appType = 'smart_life';
+            }
+            settings.reInitializeAppData = false;
+
+            loadedData = settings;
             $('.value').each(function () {
                 var $key = $(this);
                 var id = $key.attr('id');
@@ -63,7 +80,7 @@
                         onChange();
                     });
                 } else {
-                    $key.val($key.attr('type') === 'password' && settings[id] ? decrypt(secret, settings[id]) : settings[id]).change(function () {
+                    $key.val(settings[id]).change(function () {
                         onChange();
                     }).keyup(function () {
                         onChange();
@@ -113,13 +130,60 @@
                                 $('#proxyDone').fadeOut('slow');
                                 $('#proxy-dialog').modal('close');
                             });
-                        }, 15000);
+                        }, 10000);
                     });
                 });
             });
             $('#stopProxy').click(function () {
                 sendTo(null, 'stopProxy', null, function (response) {
                     $('#proxy-dialog').modal('close');
+                });
+            });
+
+            $('#cloudsync-dialog').modal();
+
+            $('#startCloudSync').click(function () {
+                if (!active) {
+                    showMessage(_('You have to start the adapter before you can start the proxy!!'), 'Warning');
+                    return;
+                }
+                if (!$('#cloudUsername').val() || !$('#cloudPassword').val()) {
+                    showMessage(_('You have to enter your cloud credentials before you can start the sync!!'), 'Warning');
+                    return;
+                }
+                $('#cloudSyncResult').text('');
+                $('.hideOnCloudSyncStart').each(function () {
+                    $(this).toggle(false);
+                });
+                $('.showOnCloudSyncStart').each(function () {
+                    $(this).toggle(true);
+                });
+                $('#cloudsync-dialog').modal('open');
+                sendTo(null, 'cloudSync', {
+                    cloudUsername: $('#cloudUsername').val(),
+                    cloudPassword: $('#cloudPassword').val(),
+                    region: $('#region').val(),
+                    appType: $('#appType').val()
+                }, function (response) {
+                    if (response.error) {
+                        $('#cloudSyncRunning').fadeOut('slow');
+                        $('.cloudSyncProgress').toggle();
+                        $('#cloudsync-dialog').modal('close');
+                        showMessage(_('Error happened during cloud sync: ' + response.error), 'Warning');
+                        getDeviceInfos();
+                    } else {
+                        var text = sprintf(systemDictionary['DiscoveredCloudInfo'][systemLang], response.result.deviceCount, response.result.schemaCount);
+                        $('#cloudSyncResult').text(text);
+                        $('#cloudSyncRunning').fadeOut('slow');
+                        $('#cloudSuccess').fadeIn('slow');
+                        $('#cloudSyncDone').toggle();
+                        $('.cloudSyncProgress').toggle();
+                        getDeviceInfos();
+                        setTimeout(function () {
+                            $('#cloudSyncDone').fadeOut('slow');
+                            $('#cloudsync-dialog').modal('close');
+                        }, 10000);
+                    }
                 });
             });
 
@@ -130,19 +194,34 @@
             });
         }
 
-
         function save(callback) {
             var obj = {};
             $('.value').each(function () {
                 var $this = $(this);
                 if ($this.attr('type') === 'checkbox') {
                     obj[$this.attr('id')] = $this.prop('checked');
-                } else if ($this.attr('type') === 'password') {
-                    obj[$this.attr('id')] = encrypt(secret, $this.val());
                 } else {
                     obj[$this.attr('id')] = $this.val();
                 }
             });
+            if (!obj.storeCloudCredentials) {
+                obj.cloudUsername = '';
+                obj.cloudPassword = '';
+            }
+            // settings.cloudUsername && settings.cloudPassword
+            if (
+                obj.reInitializeAppData ||
+                (loadedData &&
+                    (loadedData.cloudUsername !== obj.cloudUsername || loadedData && loadedData.cloudPassword !== obj.cloudPassword)
+                )
+            ) {
+                obj.appDeviceId = '';
+                obj.appSessionId = '';
+                obj.appRegion = '';
+                obj.appEndpoint = '';
+                obj.appPhoneCode = '';
+            }
+            delete obj.reInitializeAppData;
             callback(obj);
         }
 
@@ -152,47 +231,205 @@
 <body>
     <div class="m adapter-container">
         <div class="row">
-            <div class="col s12 page">
+            <div class="col s12">
+                <!-- Tabs definieren -->
+                <ul class="tabs">
+                    <!-- Tab1 General-->
+                    <li class="tab col s4">
+                        <a href="#tab-local" class="translate">Local Connections</a>
+                    </li>
+                    <!-- Tab2 Tuya Cloud Sync -->
+                    <li class="tab col s4">
+                        <a href="#tab-cloudSync" class="translate">Tuya Cloud Sync</a>
+                    </li>
+                    <!-- Tab3 Proxy Sync -->
+                    <li class="tab col s4">
+                        <a href="#tab-proxySync" class="translate">Proxy Sync</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="tab-local" class="col s12 page">
                 <div class="row">
-                    <div class="col s6 m4 l2">
+                    <div class="col s12 m4 l2">
                         <img src="tuya.png" class="logo">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s6">
-                        <h6 class="title translate">General</h6>
-                        <input class="value" id="pollingInterval" type="number" />
-                        <label for="pollingInterval" class="translate">Polling Interval</label>
-                    </div>
-                    <div class="col s6">
-                        <h6 class="title translate">Proxy</h6>
-                        <input class="value" id="proxyPort" type="number" />
-                        <label for="proxyPort" class="translate">Proxy Port</label>
+                    <div class="col s12">
+                        <b><span class="translate">generalDescription</span></b>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s6">
-                        <b><span id="deviceInfo"></span></b>
+                    <div class="col s12">
+                        <b><span class="translate">cloudDescription</span></b>
                     </div>
-                    <div class="col s6">
-                        <input class="value" id="proxyWebPort" type="number" />
-                        <label for="proxyWebPort" class="translate">Proxy Web Info Port</label>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <b><span class="translate">iotCloudDescription</span></b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6><b><span id="deviceInfo1"></span></b></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6 class="title translate">Local-Polling settings</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input class="value" id="pollingInterval" type="number" min="10" max="100000"/>
+                        <label for="pollingInterval" class="translate">Polling Interval</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6 class="title translate">Cloud-Polling settings</h6>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
+                        <input id="cloudPollingWhenNotConnected" type="checkbox" class="value" />
+                        <span for="cloudPollingWhenNotConnected" class="translate">cloudPollingWhenNotConnected</span>
+                    </div>
+                    <div class="input-field col s6">
+                        <input class="value" id="cloudPollingInterval" type="number" min="60" max="100000"/>
+                        <label for="cloudPollingInterval" class="translate">Cloud Polling Interval</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-cloudSync" class="col s12 page">
+                <div class="row">
+                    <div class="col s12">
+                        <span class="translate">cloudDescription</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <span class="translate">iotCloudDescription</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6><b><span id="deviceInfo2"></span></b></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6 class="title translate">Cloud-App-Login</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <span style="font-weight:bold" class="translate">appCloudLoginInfo</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <i id="startCloudSync" class="material-icons prefix">play_circle_filled</i>
+                        <label class="translate">Sync devices with cloud one time</label>
+                        <br/>
+                        <br/>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="storeCloudCredentials" type="checkbox" class="value" />
+                        <span for="storeCloudCredentials" class="translate">storeCloudCredentials</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 input-field">
+                        <select id="region" class="value">
+                            <option class="translate" value="EU">Europe</option>
+                            <option class="translate" value="AZ">America</option>
+                            <option class="translate" value="AY">Asia</option>
+                            <option class="translate" value="IN">India</option>
+                        </select>
+                        <label for="region" class="translate">Region</label>
+                    </div>
+                    <div class="col s6 input-field">
+                        <select id="appType" class="value">
+                            <option value="smart_life">SmartLife</option>
+                            <option value="tuya_smart">Tuya Smart</option>
+                        </select>
+                        <label for="region" class="translate">Mobile app Account Type</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input class="value" id="cloudUsername" type="text" />
+                        <label for="cloudUsername" class="translate">Cloud Username</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input class="value" id="cloudPassword" type="password" />
+                        <label for="cloudPassword" class="translate">Cloud Password</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="reInitializeAppData" type="checkbox" class="value" />
+                        <span for="reInitializeAppData" class="translate">Reinitialize App Cloud Data</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <h6 class="title translate">iotCloud-Login</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row">
+                        <div class="col s12">
+                            <span class="translate">iotCloudRegisterInfo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input class="value" id="iotCloudAccessId" type="text" />
+                        <label for="iotCloudAccessId" class="translate">Access-ID</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input class="value" id="iotCloudAccessSecret" type="password" />
+                        <label for="iotCloudAccessSecret" class="translate">Access-Secret</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-proxySync" class="col s12 page">
+                <div class="row">
+                    <div class="col s12">
+                        <h6><b><span id="deviceInfo3"></span></b></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
                         <span class="translate">Proxy-Info</span>
                     </div>
+                </div>
+                <div class="row">
                     <div class="input-field col s6">
                         <i id="startProxy" class="material-icons prefix">play_circle_filled</i>
                         <label class="translate">Start proxy</label>
-                        <br>
-                        <br>
-                        <br>
-                        <p>
-                            <img src="warning.png" width="50" height="50">
-                            <b class="translate">ProxyInfoText</b>
-                        </p>
+                        <br/>
+                        <br/>
+                    </div>
+                    <div class="col s6">
+                        <img src="warning.png" width="50" height="50" align="left">
+                        <b class="translate">ProxyInfoText</b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input class="value" id="proxyPort" type="number" />
+                        <label for="proxyPort" class="translate">Proxy Port</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input class="value" id="proxyWebPort" type="number" />
+                        <label for="proxyWebPort" class="translate">Proxy Web Info Port</label>
                     </div>
                 </div>
             </div>
@@ -201,7 +438,7 @@
             <div class="modal-content">
                 <h6 class="title translate">Proxy Information</h6>
                 <br>
-                <span class="translate showOnStart">ProxySteps</span>
+                <span class="translate showOnStart">ProxySteps</span><br/><br/>
                 <div class="progress showOnStart">
                     <div class="indeterminate"></div>
                 </div>
@@ -212,6 +449,21 @@
             </div>
             <div class="modal-footer">
                 <a id="stopProxy" class="btn-close modal-action modal-close waves-effect waves-green btn-flat translate">Stop Proxy</a>
+            </div>
+        </div>
+        <div id="cloudsync-dialog" class="modal">
+            <div class="modal-content">
+                <h6 class="title translate">Cloud Sync Title</h6>
+                <br>
+                <span class="translate showOnCloudSyncStart">Cloud Sync Information</span><br/><br/>
+                <span style="font-weight:bold" class="translate showOnCloudSyncStart">appCloudLoginInfo</span><br/><br/>
+                <div class="progress cloudSyncProgress showOnCloudSyncStart">
+                    <div class="indeterminate"></div>
+                </div>
+                <p style="text-align:center;"><i id="cloudSuccess" class="material-icons large hideOnCloudSyncStart">check</i></p>
+                <div id="cloudSyncDone" class="input-field col s12 hideOnCloudSyncStart">
+                    <b><span id="cloudSyncResult"></span></b>
+                </div>
             </div>
         </div>
     </div>

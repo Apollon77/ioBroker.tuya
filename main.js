@@ -40,6 +40,12 @@ const valueHandler = {};
 let connected = null;
 let connectedCount = 0;
 let adapterInitDone = false;
+let AppCloud;
+let appCloudApi = null;
+const cloudDeviceGroups = {};
+let cloudPollingTimeout = null;
+let cloudPollingErrorCounter = 0;
+let cloudMqtt = null;
 
 let Sentry;
 let SentryIntegrations;
@@ -146,11 +152,14 @@ function initSentry(callback) {
 }
 
 function setConnected(isConnected) {
+    if (!isConnected && (cloudMqtt || cloudPollingTimeout)){
+        isConnected = true;
+    }
     if (connected !== isConnected) {
         connected = isConnected;
         adapter && adapter.setState('info.connection', connected, true, (err) => {
             // analyse if the state could be set (because of permissions)
-            if (err && adapter && adapter.log) adapter.log.error(`Can not update connected state: ${err}`);
+            if (err && adapter && adapter.log) adapter.log.warn(`Can not update connected state: ${err}`);
             else if (adapter && adapter.log) adapter.log.debug(`connected set to ${connected}`);
         });
     }
@@ -165,6 +174,16 @@ function startAdapter(options) {
 
     adapter.on('unload', function(callback) {
         try {
+            cloudPollingTimeout && clearTimeout(cloudPollingTimeout);
+            if (cloudMqtt) {
+                try {
+                    cloudMqtt.stop();
+                    cloudMqtt = null;
+                } catch (err) {
+                    adapter.log.error(`Cannot stop cloud mqtt: ${err}`);
+                }
+            }
+            appCloudApi = null;
             stopAll();
             stopProxy();
             setConnected(false);
@@ -261,12 +280,8 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         }
         if (obj.write) {
             adapter.log.debug(`${deviceId} Register onChange for ${id}`);
-            onChange = (value) => {
+            onChange = async (value) => {
                 adapter.log.debug(`${deviceId} onChange triggered for ${id} and value ${JSON.stringify(value)}`);
-                if (!knownDevices[physicalDeviceId] || !knownDevices[physicalDeviceId].device) {
-                    adapter.log.debug(`${deviceId} Device communication not initialized ...`);
-                    return;
-                }
 
                 if (obj.scale) {
                     value *= Math.pow(10, obj.scale);
@@ -275,17 +290,38 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     value = obj.states[value.toString()];
                 }
 
-                knownDevices[physicalDeviceId].device.set({
-                    'dps': id,
-                    'set': value,
-                    'devId': deviceId
-                }).then(() => {
-                    adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId}`);
-                    pollDevice(deviceId, 2000);
-                }).catch((err) => {
-                    adapter.log.error(`${deviceId}.${id}: ${err.message}`);
-                    pollDevice(deviceId, 2000);
-                });
+                if (knownDevices[deviceId].device && knownDevices[deviceId].connected) {
+                    try {
+                        await knownDevices[physicalDeviceId].device.set({
+                            'dps': id,
+                            'set': value,
+                            'devId': deviceId
+                        });
+                        adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local)`);
+                        pollDevice(deviceId, 2000);
+                        return;
+                    } catch (err) {
+                        adapter.log.warn(`${deviceId}.${id}: ${err.message}.${appCloudApi ? ' Try to use cloud.' : ''}`);
+                    }
+                }
+                if (appCloudApi) {
+                    const dps = {};
+                    dps[id] = value;
+                    try {
+                        await appCloudApi.set(knownDevices[deviceId].gid, deviceId, dps);
+                        adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud)`);
+                        if (!cloudMqtt) {
+                            updateValuesFromCloud(knownDevices[deviceId].gid);
+                        }
+                    } catch (err) {
+                        adapter.log.warn(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud) failed: ${err.code} - ${err.message}`);
+                        if (!cloudMqtt) {
+                            updateValuesFromCloud(knownDevices[deviceId].gid);
+                        }
+                    }
+                } else {
+                    adapter.log.debug(`${deviceId} Device communication not initialized ...`);
+                }
             };
         }
         if (obj.scale) {
@@ -408,7 +444,11 @@ function handleReconnect(deviceId, delay) {
             return;
         }
         knownDevices[deviceId].device.connect().catch(err => {
-            adapter.log.warn(`${deviceId}: Error on Reconnect: ${err.message}`);
+            if (!cloudMqtt && !appCloudApi) {
+                adapter.log.warn(`${deviceId}: Error on Reconnect: ${err.message}`);
+            } else  {
+                adapter.log.info(`${deviceId}: Error on Reconnect: ${err.message}`);
+            }
             handleReconnect(deviceId);
         });
     }, delay);
@@ -432,6 +472,14 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             data.schema = known.schema;
             data.schemaExt = known.schemaExt;
         }
+    }
+
+    if (knownDevices[deviceId] && knownDevices[deviceId].device && data.localKey === knownDevices[deviceId].localKey) {
+        adapter.log.debug(`${deviceId}: Device already connected and localKey did not changed`);
+        if (callback) {
+            callback();
+        }
+        return;
     }
 
     knownDevices[deviceId] = extend(true, {}, knownDevices[deviceId] || {}, {
@@ -630,7 +678,11 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             });
 
             knownDevices[deviceId].device.connect().catch(err => {
-                adapter.log.error(`${deviceId}: ${err.message}`);
+                if (!cloudMqtt && !appCloudApi) {
+                    adapter.log.warn(`${deviceId}: ${err.message}`);
+                } else {
+                    adapter.log.info(`${deviceId}: ${err.message}`);
+                }
                 handleReconnect(deviceId);
             });
 
@@ -737,12 +789,68 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
     callback && callback();
 }
 
+async function syncDevicesWithAppCloud() {
+    adapter.log.info("Try to sync devices from Cloud using stored cloud credentials");
+    appCloudApi = await cloudLogin(adapter.config.cloudUsername, adapter.config.cloudPassword, adapter.config.region, adapter.config.appType, adapter.config.appDeviceId, adapter.config.appSessionId, adapter.config.appRegion, adapter.config.appEndpoint);
+    if (appCloudApi) {
+        if ((!adapter.config.appDeviceId && appCloudApi.cloudApi.deviceID) || (!adapter.config.appSessionId && appCloudApi.cloudApi.sid) || (adapter.config.appSessionId && adapter.config.appSessionId !== appCloudApi.cloudApi.sid)) {
+            adapter.extendForeignObject(`system.adapter.${adapter.namespace}`, {
+                native: {
+                    appDeviceId: appCloudApi.cloudApi.deviceID,
+                    appSessionId: appCloudApi.cloudApi.sid,
+                    appRegion: appCloudApi.cloudApi.region,
+                    appEndpoint: appCloudApi.cloudApi.endpoint,
+                    appPhoneCode: appCloudApi.lastLoginResult ? appCloudApi.lastLoginResult.phoneCode: null,
+                }
+            });
+            adapter.log.info(`Set data for ${adapter.namespace} to appDeviceId=${appCloudApi.cloudApi.deviceID} / sid=${appCloudApi.cloudApi.sid}. Restart adapter now!`);
+            return;
+        }
+
+        try {
+            await receiveCloudDevices(appCloudApi);
+        } catch (err) {
+            adapter.log.error(`Error to receive cloud devices: ${err.message}`);
+        }
+
+
+        if (cloudMqtt) {
+            try {
+                cloudMqtt.stop();
+            } catch (err) {
+                adapter.log.error(`Error to stop Cloud MQTT: ${err.message}`);
+            }
+            cloudMqtt = null;
+        }
+        try {
+            cloudMqtt = await connectMqtt();
+        } catch (err) {
+            adapter.log.error(`Error to connect to Cloud MQTT: ${err.message}`);
+            return;
+        }
+        if (cloudMqtt) {
+            adapter.log.info(`Cloud MQTT connection established.`);
+            return;
+        }
+
+        if (adapter.config.cloudPollingWhenNotConnected) {
+            cloudPollingTimeout = setTimeout(() => {
+                cloudPollingTimeout = null;
+                updateValuesFromCloud();
+            }, adapter.config.cloudPollingInterval * 1000);
+        }
+    }
+}
+
 function initDone() {
     adapter.log.info('Existing devices initialized');
     discoverLocalDevices();
     adapter.subscribeStates('*');
     discoveredEncryptedDevices = {}; // Clean discovered devices to reset auto detection
     adapterInitDone = true;
+    if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
+        syncDevicesWithAppCloud();
+    }
 }
 
 function processMessage(msg) {
@@ -750,6 +858,9 @@ function processMessage(msg) {
     switch (msg.command) {
         case 'startProxy':
             startProxy(msg);
+            break;
+        case 'cloudSync':
+            cloudSync(msg);
             break;
         case 'stopProxy':
             stopProxy(msg);
@@ -760,6 +871,25 @@ function processMessage(msg) {
         case 'getDeviceInfo':
             getDeviceInfo(msg);
             break;
+    }
+}
+
+async function cloudSync(msg) {
+    adapter.log.info("Try to sync devices from Cloud using cloud credentials from Admin");
+    try {
+        const cloudSyncApi = await cloudLogin(msg.message.cloudUsername, msg.message.cloudPassword, msg.message.region, msg.message.appType);
+        if (cloudSyncApi) {
+            proxyAdminMessageCallback = msg;
+            await receiveCloudDevices(cloudSyncApi);
+        } else {
+            adapter.sendTo(msg.from, msg.command, {
+                error: 'Login failed',
+            }, msg.callback);
+        }
+    } catch (err) {
+        adapter.sendTo(msg.from, msg.command, {
+            error: `Failed getting cloud Devices: ${err.message}`,
+        }, msg.callback);
     }
 }
 
@@ -861,8 +991,8 @@ function startProxy(msg) {
         });
 
         proxyServer.onError((ctx, err) => {
-            adapter.log.error(`SSL-Proxy ERROR: ${err}`);
-            adapter.log.error(err.stack);
+            adapter.log.warn(`SSL-Proxy ERROR: ${err}`);
+            adapter.log.warn(err.stack);
         });
 
         proxyServer.listen({
@@ -879,8 +1009,8 @@ function startProxy(msg) {
             });
 
             staticServer.on('error', err => {
-                adapter.log.error(`SSL-Proxy could not be started: ${err}`);
-                adapter.log.error(err.stack);
+                adapter.log.warn(`SSL-Proxy could not be started: ${err}`);
+                adapter.log.warn(err.stack);
             });
 
             // Listen
@@ -985,6 +1115,7 @@ function catchProxyInfo(data) {
     let devices = [];
     let deviceInfos = [];
 
+    adapter.log.debug(`Process found devices: ${JSON.stringify(data.result)}`);
     data.result.forEach((obj) => {
         if (obj.a === 'tuya.m.my.group.device.list') {
             devices = obj.result;
@@ -993,6 +1124,7 @@ function catchProxyInfo(data) {
             deviceInfos = obj.result;
         }
     });
+
 
     if (deviceInfos && deviceInfos.length) {
         adapter.log.debug(`Found ${deviceInfos.length} device schema information`);
@@ -1127,6 +1259,265 @@ function getDeviceInfo(msg) {
 
 }
 
+async function cloudLogin(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint) {
+    if (!AppCloud) {
+        AppCloud = require('./lib/appcloud');
+    }
+
+    let cloudInstance;
+    try {
+        cloudInstance = new AppCloud(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint);
+    } catch (err) {
+        adapter.log.error(`Error creating cloud API: ${err.message}`);
+        return null;
+    }
+    if (appSessionId) {
+        try {
+            await cloudInstance.getTime();
+            adapter.log.debug(`Reuse existing session id: ${appSessionId}`);
+            return cloudInstance;
+        } catch (err) {
+            adapter.log.debug(`Session id ${appSessionId} is not valid anymore. Try to login again`);
+            appSessionId = null;
+        }
+    }
+
+    try {
+        const sid = await cloudInstance.login();
+        adapter.log.debug(`Cloud sid: ${sid} for Device-ID ${cloudInstance.cloudApi.deviceID}`);
+
+        return cloudInstance;
+    } catch (err) {
+        adapter.log.error(`Cloud login failed: ${err.message}`);
+        adapter.log.error('Please check your cloud credentials in the adapter configuration!');
+        return null;
+    }
+}
+
+async function receiveCloudDevices(cloudApiInstance) {
+    const groups = await cloudApiInstance.getLocationList();
+    let deviceList = [];
+    let deviceListInfo = [];
+    for (const group of groups) {
+        try {
+            const resultDevices = await cloudApiInstance.getGroupDevices(group.groupId);
+            deviceList = [...deviceList, ...resultDevices];
+            for (const device of resultDevices) {
+                cloudDeviceGroups[device.devId] = group.groupId;
+            }
+        } catch (err) {
+            adapter.log.warn(`Error fetching device list for group ${group.groupId}: ${err}`);
+        }
+        try {
+            const resultInfo = await cloudApiInstance.getGroupSchemas(group.groupId);
+            deviceListInfo = [...deviceListInfo, ...resultInfo];
+        } catch (err) {
+            adapter.log.error(`Error fetching device info for group ${group.groupId}: ${err}`);
+        }
+    }
+
+    catchProxyInfo({
+        result: [
+            {
+                a: 'tuya.m.my.group.device.list',
+                success: true,
+                v: '1.0',
+                status: 'ok',
+                result: deviceList,
+            },
+            {
+                a: 'tuya.m.device.ref.info.my.list',
+                success: true,
+                v: '2.0',
+                status: 'ok',
+                result: deviceListInfo,
+            },
+        ],
+    });
+}
+
+async function updateValuesFromCloud(groupId, retry = false) {
+    if (cloudMqtt) {
+        return;
+    }
+    if (typeof groupId === 'boolean') {
+        retry = groupId;
+        groupId = null;
+    }
+    const groups = [];
+    if (groupId === undefined) {
+        Object.keys(cloudDeviceGroups).forEach(devId => {
+            if (knownDevices[devId] && !knownDevices[devId].connected && knownDevices[devId].objectsInitialized) {
+                const groupId = cloudDeviceGroups[devId];
+                if (!groups.includes(groupId)) {
+                    groups.push(groupId);
+                }
+            }
+        });
+    } else {
+        groups.push(groupId);
+    }
+    if (groups.length === 0) {
+        adapter.log.debug('No devices to update from cloud');
+        if (!cloudMqtt) {
+            cloudPollingTimeout = setTimeout(() => {
+                cloudPollingTimeout = null;
+                updateValuesFromCloud();
+            }, adapter.config.cloudPollingInterval * 1000);
+        }
+        return;
+    }
+    let deviceList = [];
+    let errorsThisRun = 0;
+    for (const groupId of groups) {
+        try {
+            const resultDevices = await appCloudApi.getGroupDevices(groupId);
+            deviceList = [...deviceList, ...resultDevices];
+        } catch (err) {
+            adapter.log.warn(`Error fetching device list for group ${groupId}: ${err}`);
+            errorsThisRun++;
+        }
+    }
+    for (const device of deviceList) {
+        const deviceId = device.devId;
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
+            for (const id in device.dps) {
+                if (!device.dps.hasOwnProperty(id)) continue;
+                let value = device.dps[id];
+                if (valueHandler[`${deviceId}.${id}`]) {
+                    value = valueHandler[`${deviceId}.${id}`](value);
+                }
+                adapter.setState(`${deviceId}.${id}`, value, true);
+            }
+        }
+    }
+    if (groupId !== undefined) {
+        return;
+    }
+    cloudPollingErrorCounter += errorsThisRun;
+    if (retry && errorsThisRun > 0) {
+        adapter.log.error(`Cloud polling failed ${errorsThisRun} times, even after a relogin. Disabling cloud polling.`);
+        return;
+    }
+    if (errorsThisRun === 0) {
+        cloudPollingErrorCounter = 0;
+    }
+    if (cloudPollingErrorCounter > 10) {
+        adapter.log.error('Too many errors while updating devices from cloud, try a relogin');
+        appCloudApi = await cloudLogin(adapter.config.username, adapter.config.password, adapter.config.region, adapter.config.appType, adapter.config.appDeviceId, adapter.config.appSessionId, adapter.config.appRegion, adapter.config.appEndpoint);
+        if (appCloudApi) {
+            updateValuesFromCloud(true);
+        } else {
+            adapter.log.error('Relogin failed, disabling cloud polling');
+        }
+        return;
+    }
+    if (!cloudMqtt) {
+        cloudPollingTimeout = setTimeout(() => {
+            cloudPollingTimeout = null;
+            updateValuesFromCloud();
+        }, adapter.config.cloudPollingInterval * 1000);
+    }
+}
+
+async function connectMqtt() {
+    if (!adapter.config.iotCloudAccessId || !adapter.config.iotCloudAccessSecret) {
+        adapter.log.info('IOT Cloud ID/Secret not configured, disabling real time State updates from Cloud MQTT');
+        return null;
+    }
+
+    const TuyaSHOpenAPI = require('./lib/tuya/lib/tuyashopenapi');
+    const TuyaOpenMQ = require('./lib/tuya/lib/tuyamqttapi');
+
+    const api = new TuyaSHOpenAPI(
+        adapter.config.iotCloudAccessId,
+        adapter.config.iotCloudAccessSecret,
+        adapter.config.cloudUsername,
+        adapter.config.cloudPassword,
+        adapter.config.appPhoneCode || 49,
+        adapter.config.appType === 'tuya_smart' ? 'tuyaSmart' : 'smartLife',
+        {log: adapter.log.debug.bind(this)},
+    );
+
+    try {
+        await api._refreshAccessTokenIfNeed('/');
+    } catch (err) {
+        adapter.log.error(`Login for MQTT failed: ${err}`);
+        return;
+    }
+
+    /*
+    try {
+        devices = await api.getDevices()
+    } catch (e) {
+        // this.log.log(JSON.stringify(e.message));
+        adapter.log.debug('Failed to get device information. Please check if the config.json is correct.')
+        return;
+    }
+    */
+
+    const type = '1.0'; // config.options.projectType == "1" ? "2.0" : "1.0"
+    const cloudMqtt = new TuyaOpenMQ(api, type, {log: adapter.log.debug.bind(this)});
+    cloudMqtt.addMessageListener(onMQTTMessage);
+    try {
+        cloudMqtt.start();
+    } catch (err) {
+        adapter.log.error(`MQTT connection failed: ${err.message}`);
+        adapter.log.error('MQTT connection disabled');
+        return null;
+    }
+    cloudPollingTimeout && clearTimeout(cloudPollingTimeout);
+    return cloudMqtt;
+}
+
+//Handle device deletion, addition, status update
+async function onMQTTMessage(message) {
+    if (message.bizCode) {
+        /*if (message.bizCode == 'delete') {
+            const uuid = this.api.hap.uuid.generate(message.devId);
+            const homebridgeAccessory = this.accessories.get(uuid);
+            this.removeAccessory(homebridgeAccessory)
+        } else if (message.bizCode == 'bindUser') {
+            let deviceInfo = await tuyaOpenApi.getDeviceInfo(message.bizData.devId)
+            let functions = await tuyaOpenApi.getDeviceFunctions(message.bizData.devId)
+            let device = Object.assign(deviceInfo, functions);
+            this.addAccessory(device)
+        }*/
+        adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
+    } else {
+        const deviceId = message.devId;
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
+            for (const dpData of message.status) {
+                const ts = dpData.t * 1000;
+                delete dpData.t;
+                delete dpData.code;
+                delete dpData.value;
+                let dp = Object.keys(dpData);
+                let dpId;
+                let value;
+                if (!dp.length) {
+                    continue;
+                }
+                if (dp.length > 1) {
+                    dp = dp.filter(d => isFinite(d))
+                }
+                if (dp.length === 1) {
+                    dpId = dp[0];
+                    value = dpData[dpId];
+                } else {
+                    continue;
+                }
+                if (dpId && value !== undefined) {
+                    if (valueHandler[`${deviceId}.${dpId}`]) {
+                        value = valueHandler[`${deviceId}.${dpId}`](value);
+                    }
+                    adapter.setState(`${deviceId}.${dpId}`, {val: value, ts, ack: true});
+                }
+            }
+        }
+    }
+}
+
 function main() {
     setConnected(false);
 
@@ -1151,13 +1542,23 @@ function main() {
     }
     mitm = require('http-mitm-proxy');
 
-    objectHelper.init(adapter);
-
+    adapter.config.cloudPollingWhenNotConnected = !!adapter.config.cloudPollingWhenNotConnected;
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
-    if (adapter.config.pollingInterval < 10) {
+    if (isNaN(adapter.config.pollingInterval) || adapter.config.pollingInterval < 10) {
         adapter.log.info(`Polling interval ${adapter.config.pollingInterval} too short, setting to 30s`);
         adapter.config.pollingInterval = 30;
+    } else if (adapter.config.pollingInterval > 2147482) {
+        adapter.config.pollingInterval = 3600;
     }
+    adapter.config.cloudPollingInterval = parseInt(adapter.config.cloudPollingInterval, 10) || 120;
+    if (isNaN(adapter.config.cloudPollingInterval) || adapter.config.cloudPollingInterval < 6) {
+        adapter.config.cloudPollingWhenNotConnected && adapter.log.info('Cloud polling interval is too low. Set to 60 seconds');
+        adapter.config.cloudPollingInterval = 60;
+    } else if (adapter.config.cloudPollingInterval > 2147482) {
+        adapter.config.cloudPollingInterval = 3600;
+    }
+
+    objectHelper.init(adapter);
 
     adapter.getDevices((err, devices) => {
         let deviceCnt = 0;
