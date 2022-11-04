@@ -36,6 +36,6 @@
     "generalDescription": "Met deze adapter kunt u Tuya-apparaten aansturen in uw lokale netwerk of via de Tuya Cloud als er geen lokale verbinding tot stand kan worden gebracht. Om realtime statusupdates te kunnen krijgen en apparaten te kunnen bedienen, moet u de lijst met apparaten minstens één keer ophalen uit de Tuya Cloud Systems of uw Tuya App Cloud-inloggegevens opslaan. Ga hiervoor naar het tabblad \"Tuya Cloud & Synchronisatie\".",
     "iotCloud-Login": "Instellingen voor inloggen op Tuya IoT Platform",
     "iotCloudDescription": "Ter ondersteuning van realtime updates van apparaten die niet lokaal zijn aangesloten, en ook b.v. op batterijen gebaseerde apparaten, kunt u bovendien een account registreren op het Tuya IoT-platform en uw app-account koppelen en een Cloud-MQTT-verbinding gebruiken.",
-    "iotCloudRegisterInfo": "Volg de instructies op <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a> om een ​​account op het Tuya IoT Platform te registreren.",
+    "iotCloudRegisterInfo": "Volg de instructies op <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a> om een ​​account op het Tuya IoT Platform te registreren. De IoT Platform Account is maar een tijdje actief en moet maandelijks verlengd worden!",
     "storeCloudCredentials": "Moeten Cloud-inloggegevens worden opgeslagen en gebruikt voor automatische synchronisatie bij het starten van de adapter?"
 }

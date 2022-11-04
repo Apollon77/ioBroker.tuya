@@ -36,6 +36,6 @@
     "generalDescription": "Com este adaptador você pode controlar os dispositivos Tuya em sua rede local ou através do Tuya Cloud se uma conexão local não puder ser estabelecida. Para poder obter atualizações de status em tempo real e controlar dispositivos, você precisa recuperar a lista de dispositivos do Tuya Cloud Systems pelo menos uma vez ou armazenar suas credenciais do Tuya App Cloud. Vá para a guia \"Tuya Cloud & Synchronization\" para isso.",
     "iotCloud-Login": "Configurações para login da plataforma Tuya IoT",
     "iotCloudDescription": "Para suportar atualizações em tempo real de dispositivos que não estão conectados localmente e também, por exemplo, dispositivos baseados em bateria, você também pode registrar uma conta na plataforma Tuya IoT e vincular sua conta de aplicativo e usar uma conexão Cloud-MQTT.",
-    "iotCloudRegisterInfo": "Para registrar uma conta na Tuya IoT Platform, siga as instruções na <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a>.",
+    "iotCloudRegisterInfo": "Para registrar uma conta na Tuya IoT Platform, siga as instruções na <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a>. Nota: A Conta Plataforma IoT está ativa por algum tempo e precisa ser estendida mensalmente depois!",
     "storeCloudCredentials": "As credenciais da nuvem devem ser armazenadas e usadas para sincronização automática na inicialização do adaptador?"
 }

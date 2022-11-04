@@ -39,6 +39,7 @@ The adapter then will listen for local UDP messages to find the local IPs of the
 If you decide to store your Tuya App Login Credentials (Smart Life App or Tuya Smart App) in the adapter configuration then the devices are updated with each adapter start automatically. Additionally the states of devices that are not connected locally can be polled and controlled via the Tuya Cloud.
 
 To support real time updates of devices that are not connected locally, and also e.g. battery based devices, you can additionally register yourself an Account on the Tuya IoT Platform and Link your App Account and use a Cloud-MQTT connection. To register yourself an Account on the Tuya IoT Platform please follow the instructions on [Tuya IoT Platform](https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx).
+**Note: The IoT Platform Account is only active for some time and needs to be extended monthly afterwards!**
 
 With this featureset you can choose between all available options and work with or (beside the one time syncs) without the Tuya Cloud systems. You decide.
 

@@ -36,6 +36,6 @@
     "generalDescription": "With this adapter you can control Tuya devices in your local network or via the Tuya Cloud if a local connection can not be established. To be able to get realtime status updates and to control devices you need to retrieve the list of devices from the Tuya Cloud Systems at least once or store your Tuya App Cloud credentials. Go to the \"Tuya Cloud & Synchronization\" tab for this.",
     "iotCloud-Login": "Settings for Tuya IoT Platform Login",
     "iotCloudDescription": "To support real time updates of devices that are not connected locally, and also e.g. battery based devices, you can additionally register yourself an Account on the Tuya IoT Platform and Link your App Account and use a Cloud-MQTT connection.",
-    "iotCloudRegisterInfo": "To register yourself an Account on the Tuya IoT Platform please follow the instructions on <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a>.",
+    "iotCloudRegisterInfo": "To register yourself an Account on the Tuya IoT Platform please follow the instructions on <a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">Tuya IoT Platform</a>. Note: The IoT Platform Account is only active for some time and needs to be extended monthly afterwards!",
     "storeCloudCredentials": "Should Cloud credentials be stored and used for automatic sync on adapter start?"
 }

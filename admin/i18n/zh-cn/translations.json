@@ -36,6 +36,6 @@
     "generalDescription": "使用此适配器，您可以控制本地网络中的涂鸦设备，如果无法建立本地连接，也可以通过涂鸦云控制。为了能够获得实时状态更新并控制设备，您需要至少一次从涂鸦云系统中检索设备列表或存储您的涂鸦应用云凭据。为此，请转到“涂鸦云和同步”选项卡。",
     "iotCloud-Login": "涂鸦物联网平台登录设置",
     "iotCloudDescription": "支持本地未连接的设备的实时更新，例如基于电池的设备，您可以另外在涂鸦物联网平台上注册一个帐户并链接您的应用帐户并使用 Cloud-MQTT 连接。",
-    "iotCloudRegisterInfo": "在涂鸦物联网平台注册账号，请按照<a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">涂鸦物联网平台</a>上的说明操作。",
+    "iotCloudRegisterInfo": "向你自己登记图亚·伊罗图平台账户,请遵循关于<a href=\"https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx\" target=\"_blank\">的指示。 Tuya IoT平台</a>。 注:机构间平台帐户只在一段时间内积极,需要每月延长!",
     "storeCloudCredentials": "是否应存储云凭据并将其用于适配器启动时的自动同步？"
 }
