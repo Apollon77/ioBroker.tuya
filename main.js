@@ -1378,6 +1378,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
             errorsThisRun++;
         }
     }
+    adapter.log.debug(`Received ${deviceList.length} devices from cloud: ${JSON.stringify(deviceList)}`);
     for (const device of deviceList) {
         const deviceId = device.devId;
         if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
