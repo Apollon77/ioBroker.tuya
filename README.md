@@ -102,6 +102,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (TA2k/Apollon77) Add App-Cloud Sync deceasing the proxy
 * (Apollon77) Add support for device polling using App-Cloud for devices not connected
 * (Apollon77) Add support for realtime cloud state updates using Tuya IoT Platform MQTT connection
+* (Apollon77) More schema information added
 
 ### 3.7.2 (2022-10-23)
 * (Apollon77) Prevent warnings for invalid min/max values
