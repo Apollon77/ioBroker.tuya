@@ -272,7 +272,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     const physicalDeviceId = data.meshId || deviceId;
     objs.forEach((obj) => {
         const id = obj.id;
-        dpIdList.push(id);
+        dpIdList.push(parseInt(id, 10));
         delete obj.id;
         let onChange;
         if (!data.localKey && !data.meshId) {
@@ -397,9 +397,6 @@ function pollDevice(deviceId, overwriteDelay) {
                         const data = await knownDevices[physicalDeviceId].device.refresh({
                             requestedDPS: knownDevices[physicalDeviceId].refreshDpList
                         });
-                        // {
-                        //                         dps: knownDevices[physicalDeviceId].dpIdList
-                        //                     }
                         knownDevices[physicalDeviceId].waitingForRefrssh = false;
                         adapter.log.debug(`${deviceId} response from refresh: ${JSON.stringify(data)}`);
                         knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
@@ -615,7 +612,7 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
                     if (!data.dps.hasOwnProperty(id)) continue;
                     if (!knownDevices[deviceId]) continue;
                     let value = data.dps[id];
-                    if (!knownDevices[deviceId].dpIdList.includes(id)) {
+                    if (!knownDevices[deviceId].dpIdList.includes(parseInt(id, 10))) {
                         adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
                         continue;
                     }
@@ -1409,7 +1406,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
             for (const id in device.dps) {
                 if (!device.dps.hasOwnProperty(id)) continue;
                 let value = device.dps[id];
-                if (!knownDevices[deviceId].dpIdList.includes(id)) {
+                if (!knownDevices[deviceId].dpIdList.includes(parseInt(id, 10))) {
                     adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
                     continue;
                 }
@@ -1551,9 +1548,8 @@ async function onMQTTMessage(message) {
                 } else {
                     continue;
                 }
-                dpId = parseInt(dpId, 10);
                 if (dpId && value !== undefined) {
-                    if (!knownDevices[deviceId].dpIdList.includes(dpId)) {
+                    if (!knownDevices[deviceId].dpIdList.includes(parseInt(dpId, 10))) {
                         adapter.log.info(`${deviceId}: Unknown datapoint ${dpId} with value ${value}. Please resync devices`);
                         continue;
                     }
