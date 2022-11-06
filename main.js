@@ -837,7 +837,6 @@ async function syncDevicesWithAppCloud() {
             adapter.log.error(`Error to receive cloud devices: ${err.message}`);
         }
 
-
         if (cloudMqtt) {
             try {
                 cloudMqtt.stop();
@@ -1321,7 +1320,7 @@ async function cloudLogin(username, password, region, appType, appDeviceId, appS
     }
 }
 
-async function receiveCloudDevices(cloudApiInstance) {
+async function receiveCloudDevices(cloudApiInstance, onlyNew) {
     const groups = await cloudApiInstance.getLocationList();
     let deviceList = [];
     let deviceListInfo = [];
@@ -1330,6 +1329,7 @@ async function receiveCloudDevices(cloudApiInstance) {
             const resultDevices = await cloudApiInstance.getGroupDevices(group.groupId);
             deviceList = [...deviceList, ...resultDevices];
             for (const device of resultDevices) {
+                if (onlyNew && knownDevices[device.devId]) continue;
                 cloudDeviceGroups[device.devId] = group.groupId;
             }
         } catch (err) {
@@ -1504,10 +1504,10 @@ async function connectMqtt() {
 
 //Handle device deletion, addition, status update
 async function onMQTTMessage(message) {
-    if (message.bizCode) {
+    if (message.bizCode && message.bizData) {
         // {"bizCode":"nameUpdate","bizData":{"devId":"34305060807d3a1d7832","uid":"eu1539013901029biqMB","name":"Steckdose irgendwo"},"devId":"34305060807d3a1d7832","productKey":"8FAPq5h6gdV51Vcr","ts":1667689855956,"uuid":"34305060807d3a1d7832"}
         if (message.bizCode === 'nameUpdate') {
-            const devId = message.bizData.devId;
+            const devId = message.devId;
             const name = message.bizData.name;
             if (knownDevices[devId]) {
                 adapter.log.info(`Device ${devId} got renamed to ${name}`);
@@ -1518,7 +1518,29 @@ async function onMQTTMessage(message) {
                     }
                 });
             }
-        } else {
+        } else if (message.bizCode === 'delete') {
+            // "message": {"bizCode":"delete","bizData":{"devId":"05200020b4e62d16d0a0","uid":"eu1547822492582QDKn8","ownerId":"3246959"},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":1667755216839,"uuid":"05200020b4e62d16d0a0"}
+            if (knownDevices[message.devId]) {
+                adapter.log.info(`Cloud-MQTT notify: Device ${message.devId} was deleted. We will stop to reconnect if not connected. Please clean up the objects manually.`);
+                knownDevices[message.devId].stop = true;
+            }
+
+        } else if (message.bizCode === 'online') {
+            // "message": {"bizCode":"online","bizData":{"time":1667755598},"devId":"bfd3e506bae69c48f5ff9z","productKey":"zqtiam4u","ts":0}
+            if (knownDevices[message.devId] && !knownDevices[message.devId].connected) {
+                handleReconnect(message.devId);
+            }
+        } else if (message.bizCode === 'bindUser') {
+            // "message": {"bizCode":"bindUser","bizData":{"devId":"05200020b4e62d16d0a0","uid":"eu1547822492582QDKn8","ownerId":"3246959","uuid":"05200020b4e62d16d0a0","token":"IsQlk3pa"},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":1667756090224,"uuid":"05200020b4e62d16d0a0"}
+            if (!knownDevices[message.devId]) {
+                try {
+                    await receiveCloudDevices(appCloudApi, true);
+                } catch (err) {
+                    adapter.log.error(`Error to receive new cloud devices: ${err.message}`);
+                }
+            }
+        }
+        else {
             adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
             Sentry && Sentry.withScope(scope => {
                 scope.setLevel('info');
@@ -1526,16 +1548,6 @@ async function onMQTTMessage(message) {
                 Sentry.captureMessage(`MQTT BizCode ${message.bizCode}`, 'info');
             });
         }
-        /*if (message.bizCode == 'delete') {
-            const uuid = this.api.hap.uuid.generate(message.devId);
-            const homebridgeAccessory = this.accessories.get(uuid);
-            this.removeAccessory(homebridgeAccessory)
-        } else if (message.bizCode == 'bindUser') {
-            let deviceInfo = await tuyaOpenApi.getDeviceInfo(message.bizData.devId)
-            let functions = await tuyaOpenApi.getDeviceFunctions(message.bizData.devId)
-            let device = Object.assign(deviceInfo, functions);
-            this.addAccessory(device)
-        }*/
     } else {
         const deviceId = message.devId;
         if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {

@@ -104,7 +104,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (Apollon77) Add support for realtime cloud state updates using Tuya IoT Platform MQTT connection
 * (Apollon77) Allow to update names of device objects when changed in App
 * (Apollon77) Use read Schema details from Sync instead the already contained ones
-* (Apollon77) When MQTT connection is established change device names directly when changed in App
+* (Apollon77) React to device infos from MQTT connection and update/add device objects
 * (Apollon77) When Datapoints (e.g sockets) have custom names, also use them as State Names
 * (Apollon77) More schema information added
 
