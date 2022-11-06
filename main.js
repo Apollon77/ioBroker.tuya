@@ -454,9 +454,17 @@ function handleReconnect(deviceId, delay) {
     }, delay);
 }
 
-function initDevice(deviceId, productKey, data, preserveFields, callback) {
+function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback) {
     if (!preserveFields) {
         preserveFields = [];
+    }
+
+    if (knownDevices[deviceId] && knownDevices[deviceId].device && fromDiscovery) {
+        adapter.log.debug(`${deviceId}: Device already connected`);
+        if (callback) {
+            callback();
+        }
+        return;
     }
 
     if (knownDevices[deviceId] && (knownDevices[deviceId].device || knownDevices[deviceId].connected)) {
@@ -473,7 +481,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
             clearTimeout(knownDevices[deviceId].pollingTimeout);
             knownDevices[deviceId].pollingTimeout = null;
         }
-        setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, callback), 500);
+        setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback), 500);
         return;
     }
 
@@ -729,7 +737,7 @@ function discoverLocalDevices() {
         }
         if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
         if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device && !knownDevices[data.payload.gwId].reconnectTimeout) return;
-        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name']);
+        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true);
     });
     server.on('error', err => {
         adapter.log.warn(`Can not Listen for Encrypted UDP packages: ${err}`);
@@ -797,7 +805,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
         }
         if (data.payload.gwId === deviceId) {
             discoveredEncryptedDevices[data.payload.ip] = true;
-            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], callback);
+            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true, callback);
             return true;
         }
     }
@@ -1609,7 +1617,7 @@ function main() {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
                     deviceCnt++;
-                    initDevice(id, device.native.productKey, device.native, ['name'], () => {
+                    initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
                         if (!--deviceCnt) initDone();
                     });
                 }
