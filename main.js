@@ -368,7 +368,7 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',
             common: obj
-        }, preserveFields, values[id], onChange);
+        }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
     });
     return dpIdList;
 }
@@ -458,6 +458,25 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     if (!preserveFields) {
         preserveFields = [];
     }
+
+    if (knownDevices[deviceId] && (knownDevices[deviceId].device || knownDevices[deviceId].connected)) {
+        if (knownDevices[deviceId].device) {
+            knownDevices[deviceId].stop = true;
+            knownDevices[deviceId].device.disconnect();
+            knownDevices[deviceId].device = null;
+        }
+        if (knownDevices[deviceId].reconnectTimeout) {
+            clearTimeout(knownDevices[deviceId].reconnectTimeout);
+            knownDevices[deviceId].reconnectTimeout = null;
+        }
+        if (knownDevices[deviceId].pollingTimeout) {
+            clearTimeout(knownDevices[deviceId].pollingTimeout);
+            knownDevices[deviceId].pollingTimeout = null;
+        }
+        setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, callback), 500);
+        return;
+    }
+
     data.productKey = productKey;
     let values;
     if (data.dps) {
@@ -467,41 +486,27 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     // {"ip":"192.168.178.85","gwId":"34305060807d3a1d7178","active":2,"ability":0,"mode":0,"encrypt":true,"productKey":"8FAPq5h6gdV51Vcr","version":"3.1"}
     if (!data.schema) {
         const known = mapper.getSchema(productKey);
-        adapter.log.debug(`${deviceId}: Schema found for ${productKey}: ${JSON.stringify(known)}`);
+        adapter.log.debug(`${deviceId}: Use following Schema for ${productKey}: ${JSON.stringify(known)}`);
         if (known) {
             data.schema = known.schema;
             data.schemaExt = known.schemaExt;
         }
     }
 
-    if (knownDevices[deviceId] && knownDevices[deviceId].device && data.localKey === knownDevices[deviceId].localKey) {
+    /*if (knownDevices[deviceId] && knownDevices[deviceId].device && data.localKey === knownDevices[deviceId].localKey) {
         adapter.log.debug(`${deviceId}: Device already connected and localKey did not changed`);
         if (callback) {
             callback();
         }
         return;
-    }
+    }*/
 
     knownDevices[deviceId] = extend(true, {}, knownDevices[deviceId] || {}, {
         'data': data
     });
     knownDevices[deviceId].errorcount = 0;
+    adapter.log.debug(`${deviceId}: Init device with data (after merge): ${JSON.stringify(knownDevices[deviceId])}`);
 
-    if (knownDevices[deviceId].device) {
-        knownDevices[deviceId].stop = true;
-        if (knownDevices[deviceId].reconnectTimeout) {
-            clearTimeout(knownDevices[deviceId].reconnectTimeout);
-            knownDevices[deviceId].reconnectTimeout = null;
-        }
-        if (knownDevices[deviceId].pollingTimeout) {
-            clearTimeout(knownDevices[deviceId].pollingTimeout);
-            knownDevices[deviceId].pollingTimeout = null;
-        }
-        if (knownDevices[deviceId].device) {
-            knownDevices[deviceId].device.disconnect();
-            knownDevices[deviceId].device = null;
-        }
-    }
     if (!data.localKey) {
         data.localKey = knownDevices[deviceId].localKey || '';
     }
@@ -517,15 +522,21 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     if (data.ip) {
         knownDevices[deviceId].ip = data.ip;
     }
+    if (!data.name) {
+        data.name = knownDevices[deviceId].name || '';
+    }
+    else {
+        knownDevices[deviceId].name = data.name;
+    }
 
     adapter.log.debug(`${deviceId}: Create device objects if not exist`);
     objectHelper.setOrUpdateObject(deviceId, {
         type: 'device',
         common: {
-            name: data.name || `Device ${deviceId}`
+            name: knownDevices[deviceId].name || `Device ${deviceId}`
         },
         native: data
-    });
+    }, knownDevices[deviceId].name ? preserveFields : undefined);
     !data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.online`, {
         type: 'state',
         common: {
@@ -548,7 +559,7 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
     }, data.ip);
 
     if (data.schema) {
-        const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt);
+        const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt, data.dpName);
         adapter.log.debug(`${deviceId}: Objects ${JSON.stringify(objs)}`);
         knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
@@ -594,7 +605,12 @@ function initDevice(deviceId, productKey, data, preserveFields, callback) {
                 }
                 for (const id in data.dps) {
                     if (!data.dps.hasOwnProperty(id)) continue;
+                    if (!knownDevices[deviceId]) continue;
                     let value = data.dps[id];
+                    if (!knownDevices[deviceId].dpIdList.includes(id)) {
+                        adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
+                        continue;
+                    }
                     if (valueHandler[`${deviceId}.${id}`]) {
                         value = valueHandler[`${deviceId}.${id}`](value);
                     }
@@ -1385,6 +1401,10 @@ async function updateValuesFromCloud(groupId, retry = false) {
             for (const id in device.dps) {
                 if (!device.dps.hasOwnProperty(id)) continue;
                 let value = device.dps[id];
+                if (!knownDevices[deviceId].dpIdList.includes(id)) {
+                    adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
+                    continue;
+                }
                 if (valueHandler[`${deviceId}.${id}`]) {
                     value = valueHandler[`${deviceId}.${id}`](value);
                 }
@@ -1474,6 +1494,22 @@ async function connectMqtt() {
 //Handle device deletion, addition, status update
 async function onMQTTMessage(message) {
     if (message.bizCode) {
+        // {"bizCode":"nameUpdate","bizData":{"devId":"34305060807d3a1d7832","uid":"eu1539013901029biqMB","name":"Steckdose irgendwo"},"devId":"34305060807d3a1d7832","productKey":"8FAPq5h6gdV51Vcr","ts":1667689855956,"uuid":"34305060807d3a1d7832"}
+        if (message.bizCode === 'nameUpdate') {
+            const devId = message.bizData.devId;
+            const name = message.bizData.name;
+            if (knownDevices[devId]) {
+                adapter.log.info(`Device ${devId} got renamed to ${name}`);
+                knownDevices[devId].name = name;
+                adapter.extendObject(devId, {
+                    common: {
+                        name: name,
+                    }
+                });
+            }
+        } else {
+            adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
+        }
         /*if (message.bizCode == 'delete') {
             const uuid = this.api.hap.uuid.generate(message.devId);
             const homebridgeAccessory = this.accessories.get(uuid);
@@ -1484,7 +1520,6 @@ async function onMQTTMessage(message) {
             let device = Object.assign(deviceInfo, functions);
             this.addAccessory(device)
         }*/
-        adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
     } else {
         const deviceId = message.devId;
         if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
@@ -1508,7 +1543,12 @@ async function onMQTTMessage(message) {
                 } else {
                     continue;
                 }
+                dpId = parseInt(dpId, 10);
                 if (dpId && value !== undefined) {
+                    if (!knownDevices[deviceId].dpIdList.includes(dpId)) {
+                        adapter.log.info(`${deviceId}: Unknown datapoint ${dpId} with value ${value}. Please resync devices`);
+                        continue;
+                    }
                     if (valueHandler[`${deviceId}.${dpId}`]) {
                         value = valueHandler[`${deviceId}.${dpId}`](value);
                     }

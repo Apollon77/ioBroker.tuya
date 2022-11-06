@@ -102,7 +102,10 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (TA2k/Apollon77) Add App-Cloud Sync deceasing the proxy
 * (Apollon77) Add support for device polling using App-Cloud for devices not connected
 * (Apollon77) Add support for realtime cloud state updates using Tuya IoT Platform MQTT connection
-* (Apollon77) Allow to update names of devices when changed in App 
+* (Apollon77) Allow to update names of devices when changed in App
+* (Apollon77) Use read Schema details from Sync instead the already contained ones
+* (Apollon77) When MQTT connection is established change device names directly when changed in App
+* (Apollon77) When Datapoints (e.g sockets) have custom names, also use them as State Names
 * (Apollon77) More schema information added
 
 ### 3.7.2 (2022-10-23)
