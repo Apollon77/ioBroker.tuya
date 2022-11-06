@@ -381,6 +381,7 @@ function pollDevice(deviceId, overwriteDelay) {
         clearTimeout(knownDevices[deviceId].pollingTimeout);
         knownDevices[deviceId].pollingTimeout = null;
     }
+    if (!knownDevices[deviceId] || knownDevices[deviceId].stop) return;
     knownDevices[deviceId].pollingTimeout = setTimeout(async () => {
         knownDevices[deviceId].pollingTimeout = null;
 
@@ -436,6 +437,7 @@ function handleReconnect(deviceId, delay) {
         clearTimeout(knownDevices[deviceId].reconnectTimeout);
         knownDevices[deviceId].reconnectTimeout = null;
     }
+    if (knownDevices[deviceId].stop) return;
     knownDevices[deviceId].reconnectTimeout = setTimeout(() => {
         if (!knownDevices[deviceId].device) {
             return;
