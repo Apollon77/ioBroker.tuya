@@ -577,6 +577,7 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
             if (!knownDevices[deviceId].ip) {
                 return checkDiscoveredEncryptedDevices(deviceId, callback);
             }
+            if (knownDevices[deviceId].device) return;
             adapter.log.info(`${deviceId} Init with IP=${knownDevices[deviceId].ip}, Key=${knownDevices[deviceId].localKey}, Version=${knownDevices[deviceId].version}`);
             knownDevices[deviceId].stop = false;
             knownDevices[deviceId].device = new TuyaDevice({
