@@ -1,226 +1,226 @@
 {
-    "common": {
-        "name": "tuya",
-        "version": "3.8.0",
-        "news": {
-            "3.7.2": {
-                "en": "Prevent warnings for invalid min/max values",
-                "de": "Warnungen für ungültige Min/Max-Werte verhindern",
-                "ru": "Предотвращение предупреждений о недействительных значениях мин/макс",
-                "pt": "Evite avisos para valores inválidos min/max",
-                "nl": "Vertaling:",
-                "fr": "Prévenir les avertissements pour les valeurs invalides min/max",
-                "it": "Prevenire avvisi per valori minimi/max non validi",
-                "es": "Prevenir advertencias para valores min/max inválidos",
-                "pl": "Prevent warning for invalid min/max value (ang.)",
-                "uk": "Запобігання попереджень про недійсні значення мінімуму",
-                "zh-cn": "对无效的min/max数值的预防措施"
-            },
-            "3.7.0": {
-                "en": "Optimizations for Proxy mode to prevent certificate issues\nAllow to also \"click\" on the certificate to download the certificate file\nAdjust min/max values if a scale is defined\nMore schema information added",
-                "de": "Optimierungen für Proxy-Modus, um Zertifikatsprobleme zu verhindern\nLassen Sie auch auf das Zertifikat klicken, um die Zertifikatsdatei herunterzuladen\nEinstellen von min/max Werten, wenn eine Skala definiert ist\nWeitere Schemainformationen hinzugefügt",
-                "ru": "Оптимизация для режима Proxy для предотвращения вопросов сертификатов\nРазрешить также нажать на сертификат, чтобы скачать файл сертификата\nОтрегулируйте значения мин/макс если масштаб определен\nДополнительная информация по схеме добавлена",
-                "pt": "Otimizações para o modo Proxy para evitar problemas de certificado\nPermitir também clicar no certificado para baixar o arquivo de certificado\nAjuste valores min/max se uma escala for definida\nMais informações de esquema adicionadas",
-                "nl": "Optimisatie voor Proxy Mode om certificaatproblemen te voorkomen\nSta toe om ook op het certificaat te klikmen om het certificaat te downloaden\nAanpassen min/max waarden als een schaal wordt bepaald\nMeer schema informatie toegevoegd",
-                "fr": "Optimisations pour le mode Proxy pour prévenir les problèmes de certificat\nPermettre également de cliquer sur le certificat pour télécharger le fichier de certificat\nAjuster les valeurs min/max si une échelle est définie\nPlus d'informations sur le schéma ajoutés",
-                "it": "Ottimizzazione della modalità Proxy per prevenire i problemi di certificazione\nConsentire di cliccare anche sul certificato per scaricare il file di certificato\nRegolare i valori min/max se viene definita una scala\nUlteriori informazioni sugli schemi aggiunti",
-                "es": "Optimizaciones para el modo Proxy para evitar problemas de certificado\nPermitir también hacer clic en el certificado para descargar el archivo certificado\nAjuste los valores min/max si se define una escala\nMás información de esquema añadido",
-                "pl": "Optymizacja trybu Proxy\nAllow, by także kliknąć na certyfikat do pobrania certyfikatu pliku\nAdjust min/max value jeśli skala jest zdefiniowana\nWięcej informacji na temat schemy",
-                "uk": "Оптимізація режиму Proxy для запобігання проблем з сертифікатами\nДля того щоб завантажити файл сертифіката\nРегульувати значення min/max, якщо визначено масштаб\nБільше інформації про схему",
-                "zh-cn": "采用预防证明问题的方式\n也可点击证书以下载证书档案\n如果界定一个规模,那么调整的min/max数值\n增加的schema信息"
-            },
-            "3.6.15": {
-                "en": "More schema information added\nRecreate Proxy SSL certificates once older than 3 months to prevent ssl errors",
-                "de": "Weitere Schemainformationen hinzugefügt\nProxy-SSL-Zertifikate neu erstellen, wenn sie älter als 3 Monate sind, um SSL-Fehler zu vermeiden",
-                "ru": "Добавлена дополнительная информация о схеме\nВоссоздавайте прокси-сертификаты SSL один раз старше 3 месяцев, чтобы предотвратить ошибки ssl.",
-                "pt": "Mais informações de esquema adicionadas\nRecrie certificados SSL de proxy uma vez com mais de 3 meses para evitar erros de SSL",
-                "nl": "Meer schema-informatie toegevoegd\nMaak Proxy SSL-certificaten opnieuw aan die ouder zijn dan 3 maanden om SSL-fouten te voorkomen",
-                "fr": "Plus d'informations sur le schéma ajoutées\nRecréez les certificats Proxy SSL datant de plus de 3 mois pour éviter les erreurs SSL",
-                "it": "Ulteriori informazioni sullo schema aggiunte\nRicrea i certificati SSL proxy una volta più vecchi di 3 mesi per prevenire errori SSL",
-                "es": "Se agregó más información del esquema\nVuelva a crear los certificados Proxy SSL una vez que tengan más de 3 meses para evitar errores SSL",
-                "pl": "Dodano więcej informacji o schemacie\nOdtwórz certyfikaty Proxy SSL raz starsze niż 3 miesiące, aby zapobiec błędom SSL",
-                "zh-cn": "添加了更多架构信息\n重新创建超过 3 个月的代理 SSL 证书以防止 ssl 错误",
-                "uk": "Додано більше інформації про схему\nПовторно створіть проксі-сертифікати SSL один раз, старше 3 місяців, щоб запобігти помилкам SSL"
-            },
-            "3.6.14": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息",
-                "uk": "Додано більше інформації про схему"
-            },
-            "3.6.13": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息",
-                "uk": "Додано більше інформації про схему"
-            },
-            "3.6.11": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息",
-                "uk": "Додано більше інформації про схему"
-            },
-            "3.6.10": {
-                "en": "More schema information added",
-                "de": "Weitere Schemainformationen hinzugefügt",
-                "ru": "Добавлена дополнительная информация о схеме",
-                "pt": "Mais informações de esquema adicionadas",
-                "nl": "Meer schema-informatie toegevoegd",
-                "fr": "Plus d'informations sur le schéma ajoutées",
-                "it": "Aggiunte ulteriori informazioni sullo schema",
-                "es": "Se agregó más información de esquema",
-                "pl": "Dodano więcej informacji o schemacie",
-                "zh-cn": "添加了更多架构信息",
-                "uk": "Додано більше інформації про схему"
-            }
-        },
-        "title": "Tuya",
-        "titleLang": {
-            "en": "Tuya",
-            "de": "Tuya",
-            "ru": "Tuya",
-            "pt": "Tuya",
-            "nl": "Tuya",
-            "fr": "Tuya",
-            "it": "Tuya",
-            "es": "Tuya",
-            "pl": "Tuya",
-            "zh-cn": "土雅",
-            "uk": "Туя"
-        },
-        "desc": {
-            "en": "Tuya Adapter",
-            "de": "Tuya Adapter",
-            "ru": "Tuya адаптер",
-            "pt": "Adaptador Tuya",
-            "nl": "Tuya-adapter",
-            "fr": "Adaptateur Tuya",
-            "it": "Adattatore Tuya",
-            "es": "Adaptador Tuya",
-            "pl": "Adapter Tuya",
-            "zh-cn": "涂鸦适配器",
-            "uk": "Туя адаптер"
-        },
-        "license": "MIT",
-        "authors": [
-            "Apollon77 <iobroker@fischer-ka.de>"
-        ],
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "icon": "tuya.png",
-        "messagebox": true,
-        "subscribe": "messagebox",
-        "materialize": true,
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
-        "keywords": [
-            "Tuya",
-            "switch",
-            "smarthome",
-            "iobroker"
-        ],
-        "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
-        "loglevel": "info",
-        "type": "iot-systems",
-        "restartAdapters": [],
-        "stopTimeout": 5000,
-        "compact": true,
-        "dependencies": [
-            {
-                "js-controller": ">=3.0.0"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=4.0.19"
-            }
-        ],
-        "connectionType": "local",
-        "dataSource": "push",
-        "tier": 2,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
-                "pathWhitelist": [
-                    "@apollon"
-                ],
-                "errorBlacklist": [
-                    "SyntaxError"
-                ]
-            }
-        }
+  "common": {
+    "name": "tuya",
+    "version": "3.8.1",
+    "news": {
+      "3.8.1": {
+        "en": "Add App-Cloud Sync deceasing the proxy\nAdd support for device polling using App-Cloud for devices not connected\nAdd support for realtime cloud state updates using Tuya IoT Platform MQTT connection\nAllow to update names of device objects when changed in App\nUse read Schema details from Sync instead the already contained ones\nReact to device infos from MQTT connection and update/add device objects\nWhen Datapoints (e.g sockets) have custom names, also use them as State Names\nMore schema information added",
+        "de": "App-Cloud Sync hinzufügen täuscht den Proxy\nUnterstützung für die Gerätebefragung mit App-Cloud für Geräte, die nicht angeschlossen sind\nUnterstützung für Echtzeit-Cloud-Zustandsupdates mit Tuya IoT Platform MQTT-Verbindung\nErlauben Sie, die Namen von Geräteobjekten zu aktualisieren, wenn Sie in App geändert werden\nVerwenden Sie Leseschema-Details von Sync anstelle der bereits enthaltenen\nReact to device infos from MQTT-Verbindung und update/add device object\nWenn Datapoints (z.B. Steckdosen) benutzerdefinierte Namen haben, verwenden Sie diese auch als State Names\nWeitere Schemainformationen hinzugefügt",
+        "ru": "Добавить App-Cloud Sync уменьшая прокси\nДобавьте поддержку загрязнение устройства с помощью App-Cloud для устройств, не подключенных\nДобавьте поддержку обновлений облачного состояния в режиме реального времени с помощью соединения Tuya IoT Platform MQTT\nРазрешить обновить имена объектов устройства при изменении в App\nИспользуйте детали Schema от Sync вместо уже содержащихся\nReact к информации о устройствах от MQTT соединения и обновления/добавить объекты устройства\nКогда Datapoints (например, розетки) имеют пользовательские имена, также использовать их как государственные имена\nДополнительная информация по схеме добавлена",
+        "pt": "Adicionar App-Cloud Sincronizar rastreando o proxy\nAdicionar suporte para sondagem de dispositivo usando App-Cloud para dispositivos não conectados\nAdicione suporte para atualizações de estado em nuvem em tempo real usando a conexão Tuya IoT Platform MQTT\nPermitir atualizar nomes de objetos de dispositivo quando alterado no App\nUse os detalhes do Schema de Sync em vez dos já contidos\nReagir para informações do dispositivo a partir de conexão MQTT e objetos de dispositivo de atualização / anúncio\nQuando Datapoints (por exemplo, soquetes) têm nomes personalizados, também usá-los como Nomes de Estado\nMais informações de esquema adicionadas",
+        "nl": "Add App-Cloud Sync vernietigt de proxy\nSteun voor app-Cloud voor apparatuur die niet verbonden zijn met apparatuur\nVoeg steun toe voor echte wolken updates met Tuya IoT Platform MQT verbinding\nVertaling:\nGebruik Schema-gegevens van Sync in plaats van de al bevatten\nReageer op de info van MQTT verbinding en update/add objecten\nAls datapoints (e.g sockets hebben gebruikelijke namen, gebruik ze ook als State Names\nMeer schema informatie toegevoegd",
+        "fr": "Ajouter App-Cloud Sync découpant le proxy\nAjouter le support pour le sondage de périphériques en utilisant App-Cloud pour les appareils non connectés\nAjouter le support pour les mises à jour en temps réel de l'état cloud en utilisant la connexion Tuya IoT Platform MQTT\nPermet de mettre à jour les noms d'objets de périphériques lorsqu'ils sont modifiés dans App\nUtilisez les détails de Schema de Sync plutôt que ceux déjà contenus\nRéagir aux infos de périphérique à partir d'objets de connexion MQTT et mettre à jour/add\nLorsque Datapoints (p. ex. sockets) ont des noms personnalisés, les utiliser également comme noms d'État\nPlus d'informations sur le schéma ajoutés",
+        "it": "Aggiungi App-Cloud Sync deceasing the proxy\nAggiungi supporto per l'inquinamento dei dispositivi utilizzando App-Cloud per dispositivi non collegati\nAggiungi supporto per aggiornamenti in tempo reale dello stato del cloud utilizzando il collegamento Tuya IoT Platform MQTT\nConsentire di aggiornare i nomi degli oggetti del dispositivo quando modificati in App\nUtilizzare i dettagli dello schema da Sync invece quelli già contenuti\nReagisci alle informazioni del dispositivo dalla connessione MQTT e dagli oggetti del dispositivo di aggiornamento/aggiornamento\nQuando Datapoints (ad esempio sockets) hanno nomi personalizzati, anche usarli come nomi di stato\nUlteriori informazioni sugli schemi aggiunti",
+        "es": "Añadir App-Cloud Sincronizar el proxy\nAñadir soporte para la encuesta de dispositivos usando App-Cloud para dispositivos no conectados\nAñadir soporte para actualizaciones de estado de nube en tiempo real utilizando la conexión MQTT de Tuya IoT Platform\nPermitir actualizar los nombres de los objetos del dispositivo cuando se cambian en la aplicación\nUse read Schema detalles de Sync en lugar de los ya contenidos\nReaccione a las informaciones del dispositivo desde la conexión MQTT y los objetos del dispositivo actualizado/add\nCuando Datapoints (por ejemplo, sockets) tienen nombres personalizados, también los usan como Nombres del Estado\nMás información de esquema añadido",
+        "pl": "Add App-Cloud Sync deceasing proxy\nWsparcie dla zanieczyszczeń urządzenia za pomocą urządzenia App-Cloud dla urządzeń nie związanych ze sobą\nWsparcie dla aktualizacji stanu rzeczywistego za pomocą platformy Tuya IoT\nAllow, aby zaktualizować nazwy obiektów, gdy zmieniono się w App\nWykorzystuje ona szczegóły Schema z Sync, zamiast tego zawierały już te\nReaktywacja informacji z połączenia MQTT i aktualizacji/addition obiektów urządzenia\nGdy punkty danych (np. gniazda) mają nazwy zwyczajowe, również używają ich jako nazwy państwowe\nWięcej informacji na temat schemy",
+        "uk": "Додати App-Cloud Синхронізація зменшення проксі\nДодайте підтримку опитування пристроїв за допомогою App-Cloud для пристроїв, які не підключені\nПідтримка оновлення хмарного стану в режимі реального часу за допомогою підключення платформи Tuya IoT MQTT\nДозволяє оновлювати імена об'єктів пристрою при зміні в додатку\nВикористовуйте дані Schema від Sync замість вже існуючих\nReact to device info from MQTT підключення та оновлення/add devices\nКоли розетки даних (наприклад, розетки) мають імена, також використовують їх як державні імена\nБільше інформації про схему",
+        "zh-cn": "增 援\n使用未连接装置进行污染的增援\n利用图亚·伊洛图·图平台,增加对实时云国家更新的支助\n允许在申请修改时更新装置名称\n将Sync的Schema详细情况改为Sync, 而不是已经包含的细节。\n三. 重新部署从外贸总协定的装置和更新/后装置物体\n当数据点(如单位)有习惯名称时,也将其用作国家名称。\n增加的schema信息"
+      },
+      "3.7.2": {
+        "en": "Prevent warnings for invalid min/max values",
+        "de": "Warnungen für ungültige Min/Max-Werte verhindern",
+        "ru": "Предотвращение предупреждений о недействительных значениях мин/макс",
+        "pt": "Evite avisos para valores inválidos min/max",
+        "nl": "Vertaling:",
+        "fr": "Prévenir les avertissements pour les valeurs invalides min/max",
+        "it": "Prevenire avvisi per valori minimi/max non validi",
+        "es": "Prevenir advertencias para valores min/max inválidos",
+        "pl": "Prevent warning for invalid min/max value (ang.)",
+        "uk": "Запобігання попереджень про недійсні значення мінімуму",
+        "zh-cn": "对无效的min/max数值的预防措施"
+      },
+      "3.7.0": {
+        "en": "Optimizations for Proxy mode to prevent certificate issues\nAllow to also \"click\" on the certificate to download the certificate file\nAdjust min/max values if a scale is defined\nMore schema information added",
+        "de": "Optimierungen für Proxy-Modus, um Zertifikatsprobleme zu verhindern\nLassen Sie auch auf das Zertifikat klicken, um die Zertifikatsdatei herunterzuladen\nEinstellen von min/max Werten, wenn eine Skala definiert ist\nWeitere Schemainformationen hinzugefügt",
+        "ru": "Оптимизация для режима Proxy для предотвращения вопросов сертификатов\nРазрешить также нажать на сертификат, чтобы скачать файл сертификата\nОтрегулируйте значения мин/макс если масштаб определен\nДополнительная информация по схеме добавлена",
+        "pt": "Otimizações para o modo Proxy para evitar problemas de certificado\nPermitir também clicar no certificado para baixar o arquivo de certificado\nAjuste valores min/max se uma escala for definida\nMais informações de esquema adicionadas",
+        "nl": "Optimisatie voor Proxy Mode om certificaatproblemen te voorkomen\nSta toe om ook op het certificaat te klikmen om het certificaat te downloaden\nAanpassen min/max waarden als een schaal wordt bepaald\nMeer schema informatie toegevoegd",
+        "fr": "Optimisations pour le mode Proxy pour prévenir les problèmes de certificat\nPermettre également de cliquer sur le certificat pour télécharger le fichier de certificat\nAjuster les valeurs min/max si une échelle est définie\nPlus d'informations sur le schéma ajoutés",
+        "it": "Ottimizzazione della modalità Proxy per prevenire i problemi di certificazione\nConsentire di cliccare anche sul certificato per scaricare il file di certificato\nRegolare i valori min/max se viene definita una scala\nUlteriori informazioni sugli schemi aggiunti",
+        "es": "Optimizaciones para el modo Proxy para evitar problemas de certificado\nPermitir también hacer clic en el certificado para descargar el archivo certificado\nAjuste los valores min/max si se define una escala\nMás información de esquema añadido",
+        "pl": "Optymizacja trybu Proxy\nAllow, by także kliknąć na certyfikat do pobrania certyfikatu pliku\nAdjust min/max value jeśli skala jest zdefiniowana\nWięcej informacji na temat schemy",
+        "uk": "Оптимізація режиму Proxy для запобігання проблем з сертифікатами\nДля того щоб завантажити файл сертифіката\nРегульувати значення min/max, якщо визначено масштаб\nБільше інформації про схему",
+        "zh-cn": "采用预防证明问题的方式\n也可点击证书以下载证书档案\n如果界定一个规模,那么调整的min/max数值\n增加的schema信息"
+      },
+      "3.6.15": {
+        "en": "More schema information added\nRecreate Proxy SSL certificates once older than 3 months to prevent ssl errors",
+        "de": "Weitere Schemainformationen hinzugefügt\nProxy-SSL-Zertifikate neu erstellen, wenn sie älter als 3 Monate sind, um SSL-Fehler zu vermeiden",
+        "ru": "Добавлена дополнительная информация о схеме\nВоссоздавайте прокси-сертификаты SSL один раз старше 3 месяцев, чтобы предотвратить ошибки ssl.",
+        "pt": "Mais informações de esquema adicionadas\nRecrie certificados SSL de proxy uma vez com mais de 3 meses para evitar erros de SSL",
+        "nl": "Meer schema-informatie toegevoegd\nMaak Proxy SSL-certificaten opnieuw aan die ouder zijn dan 3 maanden om SSL-fouten te voorkomen",
+        "fr": "Plus d'informations sur le schéma ajoutées\nRecréez les certificats Proxy SSL datant de plus de 3 mois pour éviter les erreurs SSL",
+        "it": "Ulteriori informazioni sullo schema aggiunte\nRicrea i certificati SSL proxy una volta più vecchi di 3 mesi per prevenire errori SSL",
+        "es": "Se agregó más información del esquema\nVuelva a crear los certificados Proxy SSL una vez que tengan más de 3 meses para evitar errores SSL",
+        "pl": "Dodano więcej informacji o schemacie\nOdtwórz certyfikaty Proxy SSL raz starsze niż 3 miesiące, aby zapobiec błędom SSL",
+        "zh-cn": "添加了更多架构信息\n重新创建超过 3 个月的代理 SSL 证书以防止 ssl 错误",
+        "uk": "Додано більше інформації про схему\nПовторно створіть проксі-сертифікати SSL один раз, старше 3 місяців, щоб запобігти помилкам SSL"
+      },
+      "3.6.14": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息",
+        "uk": "Додано більше інформації про схему"
+      },
+      "3.6.13": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息",
+        "uk": "Додано більше інформації про схему"
+      },
+      "3.6.11": {
+        "en": "More schema information added",
+        "de": "Weitere Schemainformationen hinzugefügt",
+        "ru": "Добавлена дополнительная информация о схеме",
+        "pt": "Mais informações de esquema adicionadas",
+        "nl": "Meer schema-informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées",
+        "it": "Aggiunte ulteriori informazioni sullo schema",
+        "es": "Se agregó más información de esquema",
+        "pl": "Dodano więcej informacji o schemacie",
+        "zh-cn": "添加了更多架构信息",
+        "uk": "Додано більше інформації про схему"
+      }
     },
-    "native": {
-        "pollingInterval": 60,
-        "cloudPollingInterval": 120,
-        "cloudPollingWhenNotConnected": false,
-        "proxyPort": 8888,
-        "proxyWebPort": 8889,
-        "cloudUsername": "",
-        "cloudPassword": "",
-        "region": "EU",
-        "appType": "smart_life",
-        "appDeviceId": "",
-        "appSessionId": "",
-        "appRegion": "",
-        "appEndpoint": "",
-        "appPhoneCode": "",
-        "iotCloudAccessId": "",
-        "iotCloudAccessSecret": ""
+    "title": "Tuya",
+    "titleLang": {
+      "en": "Tuya",
+      "de": "Tuya",
+      "ru": "Tuya",
+      "pt": "Tuya",
+      "nl": "Tuya",
+      "fr": "Tuya",
+      "it": "Tuya",
+      "es": "Tuya",
+      "pl": "Tuya",
+      "zh-cn": "土雅",
+      "uk": "Туя"
     },
-    "encryptedNative": [
-        "cloudPassword",
-        "iotCloudAccessSecret",
-        "iotCloudAccessId"
+    "desc": {
+      "en": "Tuya Adapter",
+      "de": "Tuya Adapter",
+      "ru": "Tuya адаптер",
+      "pt": "Adaptador Tuya",
+      "nl": "Tuya-adapter",
+      "fr": "Adaptateur Tuya",
+      "it": "Adattatore Tuya",
+      "es": "Adaptador Tuya",
+      "pl": "Adapter Tuya",
+      "zh-cn": "涂鸦适配器",
+      "uk": "Туя адаптер"
+    },
+    "license": "MIT",
+    "authors": [
+      "Apollon77 <iobroker@fischer-ka.de>"
     ],
-    "protectedNative": [
-        "cloudPassword",
-        "iotCloudAccessSecret",
-        "iotCloudAccessId"
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "tuya.png",
+    "messagebox": true,
+    "subscribe": "messagebox",
+    "materialize": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
+    "keywords": [
+      "Tuya",
+      "switch",
+      "smarthome",
+      "iobroker"
     ],
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "If connected to Tuya devices",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
-    ]
+    "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
+    "loglevel": "info",
+    "type": "iot-systems",
+    "restartAdapters": [],
+    "stopTimeout": 5000,
+    "compact": true,
+    "dependencies": [
+      {
+        "js-controller": ">=3.0.0"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=4.0.19"
+      }
+    ],
+    "connectionType": "local",
+    "dataSource": "push",
+    "tier": 2,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://35b8ba3898fa4dda82327af26ea8e807@sentry.iobroker.net/6",
+        "pathWhitelist": [
+          "@apollon"
+        ],
+        "errorBlacklist": [
+          "SyntaxError"
+        ]
+      }
+    }
+  },
+  "native": {
+    "pollingInterval": 60,
+    "cloudPollingInterval": 120,
+    "cloudPollingWhenNotConnected": false,
+    "proxyPort": 8888,
+    "proxyWebPort": 8889,
+    "cloudUsername": "",
+    "cloudPassword": "",
+    "region": "EU",
+    "appType": "smart_life",
+    "appDeviceId": "",
+    "appSessionId": "",
+    "appRegion": "",
+    "appEndpoint": "",
+    "appPhoneCode": "",
+    "iotCloudAccessId": "",
+    "iotCloudAccessSecret": ""
+  },
+  "encryptedNative": [
+    "cloudPassword",
+    "iotCloudAccessSecret",
+    "iotCloudAccessId"
+  ],
+  "protectedNative": [
+    "cloudPassword",
+    "iotCloudAccessSecret",
+    "iotCloudAccessId"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "If connected to Tuya devices",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }

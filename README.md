@@ -97,8 +97,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.8.1 (2022-11-06)
 * (TA2k/Apollon77) Add App-Cloud Sync deceasing the proxy
 * (Apollon77) Add support for device polling using App-Cloud for devices not connected
 * (Apollon77) Add support for realtime cloud state updates using Tuya IoT Platform MQTT connection
