@@ -29,7 +29,7 @@
     "@iobroker/adapter-core": "^2.6.7",
     "@sentry/integrations": "^7.17.3",
     "@sentry/node": "^7.17.3",
-    "@tuyapi/cloud": "git+https://git@github.com/Apollon77/tuyaapi-cloud.git",
+    "@tuyapi/cloud": "^0.5.0",
     "@tuya/tuya-connector-nodejs": "^2.1.2",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
