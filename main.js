@@ -1153,13 +1153,16 @@ function catchProxyInfo(data) {
         adapter.log.debug(`Found ${deviceInfos.length} device schema information`);
         deviceInfos.forEach((deviceInfo) => {
             if (mapper.addSchema(deviceInfo.id, deviceInfo.schemaInfo)) {
-                adapter.log.info(`new Schema added for product type ${deviceInfo.id}. Please send next line from logfile on disk to developer!`);
-                adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
-                Sentry && Sentry.withScope(scope => {
-                    scope.setLevel('info');
-                    scope.setExtra("schema", `"${deviceInfo.id}": ${JSON.stringify(deviceInfo.schemaInfo)}`);
-                    Sentry.captureMessage(`Schema ${deviceInfo.id}`, 'info');
-                });
+                if (!Sentry) {
+                    adapter.log.info(`new Schema added for product type ${deviceInfo.id}. Please send next line from logfile on disk to developer!`);
+                    adapter.log.info(JSON.stringify(deviceInfo.schemaInfo));
+                } else {
+                    Sentry.withScope(scope => {
+                        scope.setLevel('info');
+                        scope.setExtra("schema", `"${deviceInfo.id}": ${JSON.stringify(deviceInfo.schemaInfo)}`);
+                        Sentry.captureMessage(`Schema ${deviceInfo.id}`, 'info');
+                    });
+                }
             }
         });
     }
@@ -1516,6 +1519,11 @@ async function onMQTTMessage(message) {
             }
         } else {
             adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
+            Sentry && Sentry.withScope(scope => {
+                scope.setLevel('info');
+                scope.setExtra("MQTTBizCode", `"message": ${JSON.stringify(message)}`);
+                Sentry.captureMessage(`MQTT BizCode ${message.bizCode}`, 'info');
+            });
         }
         /*if (message.bizCode == 'delete') {
             const uuid = this.api.hap.uuid.generate(message.devId);
