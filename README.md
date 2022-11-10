@@ -80,6 +80,22 @@ The sync is only needed initially or after you added new devices to your App.
 
 Some images for some mobile OS can be found at the [Proxy-Page](PROXY.md).
 
+## Infrared Gateway features
+There are different types of IR devices in the object tree
+
+### The IR Gateway/Sender Devices
+This is the real device you have as Hardware. This device is used by sub devices defined in the mobile App (see below) and can be used to learn and send custom IR codes.
+
+The "ir-learn" state in this device is a Trigger which can be used to learn IR codes. The learned code is then stored in the "202" state as base64 encoded String and this string can be used to send the code to the device.
+
+The "ir-send" state can be used to send a base64 encoded IR code to the device. This can be used to send custom codes or to send the learned code from the "ir-learn" state.
+
+### The IR Sub Devices
+The IR sub devices have a lot of "ir-*" states wich are all buttons to trigger the respective Button/IR code. The ir states should match the layout of the buttons in the mobile App.
+
+Some devices have combi-states like "M0_T20_S3" (found by a Daikin Air conditioner) which means Mode 0, Temperature 20 and (Fan)-Speed 3. In fact you need to choose the right button. Until now we did not found a generic/automated way to find out which button is which.
+The mobile App itself also tries to remember these settings, so as soon you trigger anything with the adapter (or the real ir controller of the device) the information from the App is outdated.
+
 ## Credits
 The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
 
@@ -97,6 +113,12 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Add support for local control of Tuya protocols 3.2 and 3.4
+* (TA2k/Apollon77) Add (experimental/WIP!) support for IR devices (Gateway and Sub Devices)
+* (Apollon77) More schema information added/updated
+
 ### 3.8.1 (2022-11-06)
 * (TA2k/Apollon77) Add App-Cloud Sync deceasing the proxy
 * (Apollon77) Add support for device polling using App-Cloud for devices not connected

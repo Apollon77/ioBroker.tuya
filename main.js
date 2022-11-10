@@ -261,7 +261,45 @@ function stopAll() {
     }
 }
 
-function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
+async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, onlyCloud) {
+    if (!onlyCloud && knownDevices[physicalDeviceId].device && knownDevices[physicalDeviceId].connected) {
+        try {
+            const res = await knownDevices[physicalDeviceId].device.set({
+                'dps': id,
+                'set': value,
+                'devId': deviceId
+            });
+            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local)`);
+            pollDevice(deviceId, 2000);
+            pollDevice(physicalDeviceId, 2000);
+            return res;
+        } catch (err) {
+            adapter.log.warn(`${deviceId}.${id}: ${err.message}.${appCloudApi} ? ' Try to use cloud.' : ''}`);
+        }
+    }
+    if (appCloudApi) {
+        const dps = {};
+        dps[id] = value;
+        try {
+            const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
+            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud)`);
+            if (!cloudMqtt) {
+                updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
+            }
+            return res;
+        } catch (err) {
+            adapter.log.warn(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud) failed: ${err.code} - ${err.message}`);
+            if (!cloudMqtt) {
+                updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
+            }
+        }
+    } else {
+        adapter.log.debug(`${deviceId} Device communication not initialized ...`);
+    }
+    return null;
+}
+
+async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     if (!values) {
         values = {};
     }
@@ -270,110 +308,187 @@ function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
     }
     const dpIdList = [];
     const physicalDeviceId = data.meshId || deviceId;
-    objs.forEach((obj) => {
-        const id = obj.id;
-        dpIdList.push(parseInt(id, 10));
-        delete obj.id;
-        let onChange;
-        if (!data.localKey && !data.meshId) {
-            obj.write = false;
-        }
-        if (obj.write) {
-            adapter.log.debug(`${deviceId} Register onChange for ${id}`);
-            onChange = async (value) => {
-                adapter.log.debug(`${deviceId} onChange triggered for ${id} and value ${JSON.stringify(value)}`);
 
-                if (obj.scale) {
-                    value *= Math.pow(10, obj.scale);
-                }
-                else if (obj.states) {
-                    value = obj.states[value.toString()];
-                }
+    if (data.infraRed && data.infraRed.keyData && data.infraRed.keyData.keyCodeList) {
+        data.infraRed.keyData.keyCodeList.forEach(keyData => {
+            const onChange = async (value) => {
+                adapter.log.debug(`${deviceId} onChange triggered for ir-${keyData.key} and value ${JSON.stringify(value)}`);
+                if (!value) return;
 
-                if (knownDevices[deviceId].device && knownDevices[deviceId].connected) {
-                    try {
-                        await knownDevices[physicalDeviceId].device.set({
-                            'dps': id,
-                            'set': value,
-                            'devId': deviceId
-                        });
-                        adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local)`);
-                        pollDevice(deviceId, 2000);
-                        return;
-                    } catch (err) {
-                        adapter.log.warn(`${deviceId}.${id}: ${err.message}.${appCloudApi ? ' Try to use cloud.' : ''}`);
+                // postData: {"devId":"bf781b021b60e971f5fvka","dps":"{\"201\":\"{\\\"control\\\":\\\"send_ir\\\",\\\"head\\\":\\\"010e0400000000000600100020003000620c4b0c5b\\\",\\\"key1\\\":\\\"002%#000490#000D0010#000100@^\\\",\\\"type\\\":0,\\\"delay\\\":300}\"}","gwId":"bf90851a27705b2de3rwll"}
+                const irData = {
+                    control: 'send_ir',
+                    head: data.infraRed.keyData.head,
+                    'key1': keyData.compressPulse.split(':')[0],
+                    type: 0,
+                    delay: 300
+                };
+
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', JSON.stringify(irData), true);
+            };
+            const keyId = keyData.key.replace(adapter.FORBIDDEN_CHARS, '_').replace(/[ +]/g, '_');
+            objectHelper.setOrUpdateObject(`${deviceId}.ir-${keyId}`, {
+                type: 'state',
+                common: {
+                    name: keyData.keyName || keyData.key,
+                    type: 'boolean',
+                    role: 'button',
+                    write: true,
+                    read: false,
+                },
+                native: keyData
+            }, preserveFields, false, onChange);
+
+        });
+    } else {
+        const deviceWriteObjDetails = {};
+        objs.forEach((obj) => {
+            const id = obj.id;
+            dpIdList.push(parseInt(id, 10));
+            delete obj.id;
+            let onChange;
+            if (!data.localKey && !data.meshId) {
+                obj.write = false;
+            }
+            if (obj.write) {
+                deviceWriteObjDetails[id] = obj;
+                adapter.log.debug(`${deviceId} Register onChange for ${id}`);
+                onChange = async (value) => {
+                    adapter.log.debug(`${deviceId} onChange triggered for ${id} and value ${JSON.stringify(value)}`);
+
+                    if (obj.scale) {
+                        value *= Math.pow(10, obj.scale);
+                    } else if (obj.states) {
+                        value = obj.states[value.toString()];
                     }
-                }
-                if (appCloudApi) {
-                    const dps = {};
-                    dps[id] = value;
-                    try {
-                        await appCloudApi.set(knownDevices[deviceId].gid, deviceId, dps);
-                        adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud)`);
-                        if (!cloudMqtt) {
-                            updateValuesFromCloud(knownDevices[deviceId].gid);
+
+                    await sendLocallyOrCloud(deviceId, physicalDeviceId, id, value);
+                    /*
+                    if (appCloudApi) {
+                        const dps = {};
+                        for (const objId of Object.keys(deviceWriteObjDetails)) {
+                            try {
+                                const state = await adapter.getStateAsync(`${deviceId}.${objId}`);
+                                if (state && state.val !== null) {
+                                    let val = state.val;
+                                    if (deviceWriteObjDetails[objId].scale) {
+                                        val *= Math.pow(10, deviceWriteObjDetails[objId].scale);
+                                    } else if (deviceWriteObjDetails[objId].states) {
+                                        val = deviceWriteObjDetails[objId].states[val.toString()];
+                                    }
+                                    dps[objId] = val;
+                                }
+                            } catch (err) {
+                                adapter.log.warn(`${deviceId}: Can not get value of state ${deviceId}.${id}: ${err.message}`);
+                            }
                         }
-                    } catch (err) {
-                        adapter.log.warn(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud) failed: ${err.code} - ${err.message}`);
-                        if (!cloudMqtt) {
-                            updateValuesFromCloud(knownDevices[deviceId].gid);
+                        adapter.log.debug(`${deviceId}: Collected datapoint values ${JSON.stringify(dps)} to report to cloud`);
+                        try {
+                            await appCloudApi.report(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
+                            if (!cloudMqtt) {
+                                updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
+                            }
+                        } catch (err) {
+                            adapter.log.warn(`${deviceId}: Can not report to cloud: ${err.message}`);
                         }
-                    }
-                } else {
-                    adapter.log.debug(`${deviceId} Device communication not initialized ...`);
-                }
-            };
-        }
-        if (obj.scale) {
-            valueHandler[`${deviceId}.${id}`] = (value) => {
-                if (value === undefined) return undefined;
-                return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
-            };
-            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
-        }
-        else if (obj.states) {
-            valueHandler[`${deviceId}.${id}`] = (value) => {
-                if (value === undefined) return undefined;
-                for (const key in obj.states) {
-                    if (!obj.states.hasOwnProperty(key)) continue;
-                    if (obj.states[key] === value) return parseInt(key);
-                }
-                adapter.log.warn(`${deviceId}.${id}: Value from device not defined in Schema: ${value}`);
-                return null;
-            };
-            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
-        }
-        if (obj.encoding) {
-            const dpEncoding = obj.encoding;
-            if (!valueHandler[`${deviceId}.${id}`]) {
+                    } else {
+                        adapter.log.debug(`${deviceId} This device can only communicate via Cloud ...`);
+                    }*/
+                };
+            }
+            if (obj.scale) {
                 valueHandler[`${deviceId}.${id}`] = (value) => {
-                    if (typeof value !== 'string') return value;
-                    try {
-                        switch (dpEncoding) {
-                            case 'base64':
-                                return Buffer.from(value, 'base64').toString('utf-8');
-                            default:
-                                adapter.log.info(`Unsupported encoding ${dpEncoding} for ${deviceId}.${id}`);
-                                return value;
-                        }
-                    } catch (err) {
-                        adapter.log.info(`Error while decoding ${dpEncoding} for ${deviceId}.${id}: ${err.message}`);
-                        return value;
+                    if (value === undefined) return undefined;
+                    return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                };
+                values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
+            } else if (obj.states) {
+                valueHandler[`${deviceId}.${id}`] = (value) => {
+                    if (value === undefined) return undefined;
+                    for (const key in obj.states) {
+                        if (!obj.states.hasOwnProperty(key)) continue;
+                        if (obj.states[key] === value) return parseInt(key);
                     }
+                    adapter.log.warn(`${deviceId}.${id}: Value from device not defined in Schema: ${value}`);
+                    return null;
                 };
                 values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
             }
-            delete obj.encoding;
+            if (obj.encoding) {
+                const dpEncoding = obj.encoding;
+                if (!valueHandler[`${deviceId}.${id}`]) {
+                    valueHandler[`${deviceId}.${id}`] = (value) => {
+                        if (typeof value !== 'string') return value;
+                        try {
+                            switch (dpEncoding) {
+                                case 'base64':
+                                    return value; // Buffer.from(value, 'base64').toString('utf-8'); Binary makes no sense
+                                default:
+                                    adapter.log.info(`Unsupported encoding ${dpEncoding} for ${deviceId}.${id}`);
+                                    return value;
+                            }
+                        } catch (err) {
+                            adapter.log.info(`Error while decoding ${dpEncoding} for ${deviceId}.${id}: ${err.message}`);
+                            return value;
+                        }
+                    };
+                    values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
+                }
+                delete obj.encoding;
+            }
+            objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
+                type: 'state',
+                common: obj
+            }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
+        });
+
+
+        if (!data.meshId && data.dataPointInfo && data.dataPointInfo.dpsTime && Object.keys(data.dataPointInfo.dpsTime).length === 2 && data.dataPointInfo.dpsTime['201'] && data.dataPointInfo.dpsTime['202']) {
+            // IR Main device
+            objectHelper.setOrUpdateObject(`${deviceId}.ir-learn`, {
+                type: 'state',
+                common: {
+                    name: 'Learn IR Code',
+                    type: 'boolean',
+                    role: 'button',
+                    write: true,
+                    read: false
+                }
+            }, preserveFields, false, async (value) => {
+                if (!value) return;
+                adapter.log.debug(`${deviceId} Learn IR Code`);
+                // Exit study mode in case it's enabled
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', '{"control": "study_exit"}');
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', '{"control": "study"}');
+                // Result will be in DP 202 when received
+            });
+            objectHelper.setOrUpdateObject(`${deviceId}.ir-send`, {
+                type: 'state',
+                common: {
+                    name: 'Send IR Code',
+                    type: 'string',
+                    role: 'value',
+                    write: true,
+                    read: false
+                }
+            }, preserveFields, '', async (value) => {
+                if (!value) return;
+                adapter.log.debug(`${deviceId} Send IR Code: ${value}`);
+                const irData = {
+                    control: 'send_ir',
+                    'key1': value,
+                    type: 0,
+                };
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', JSON.stringify(irData));
+            });
         }
-        objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
-            type: 'state',
-            common: obj
-        }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
-    });
+    }
     return dpIdList;
 }
 
 function pollDevice(deviceId, overwriteDelay) {
+    if (!knownDevices[deviceId] || knownDevices[deviceId].stop) return;
+    if (!knownDevices[deviceId].dpIdList.length) return;
     if (!overwriteDelay) {
         overwriteDelay = adapter.config.pollingInterval * 1000;
     }
@@ -381,7 +496,6 @@ function pollDevice(deviceId, overwriteDelay) {
         clearTimeout(knownDevices[deviceId].pollingTimeout);
         knownDevices[deviceId].pollingTimeout = null;
     }
-    if (!knownDevices[deviceId] || knownDevices[deviceId].stop) return;
     knownDevices[deviceId].pollingTimeout = setTimeout(async () => {
         knownDevices[deviceId].pollingTimeout = null;
 
@@ -453,7 +567,7 @@ function handleReconnect(deviceId, delay) {
     }, delay);
 }
 
-function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback) {
+async function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback) {
     if (!preserveFields) {
         preserveFields = [];
     }
@@ -536,6 +650,42 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
         knownDevices[deviceId].name = data.name;
     }
 
+    if (data.schema && data.meshId) {
+        if (data.otaInfo && data.otaInfo.otaModuleMap && data.otaInfo.otaModuleMap.infrared && appCloudApi) {
+            try {
+                const infraredRecord = await appCloudApi.cloudApi.request({
+                    gid: cloudDeviceGroups[deviceId],
+                    action: 'tuya.m.infrared.record.get',
+                    data: {
+                        devId: deviceId,
+                        gwId: data.meshId,
+                        subDevId: data.meshId,
+                        vender: '3'
+                    }
+                });
+
+                const infraRedKeyData = await appCloudApi.cloudApi.request({
+                    gid: cloudDeviceGroups[deviceId],
+                    version: '5.0',
+                    action: 'tuya.m.infrared.keydata.get',
+                    data: {
+                        devId: deviceId,
+                        gwId: data.meshId,
+                        devTypeId: infraredRecord.devTypeId,
+                        vender: infraredRecord.vender,
+                        remoteId: infraredRecord.remoteId
+                    }
+                });
+                data.infraRed = {
+                    record: infraredRecord,
+                    keyData: infraRedKeyData
+                }
+            } catch (err) {
+                adapter.log.error(`${deviceId}: Error while getting IR codes: ${err.message}`);
+            }
+        }
+    }
+
     adapter.log.debug(`${deviceId}: Create device objects if not exist`);
     objectHelper.setOrUpdateObject(deviceId, {
         type: 'device',
@@ -564,13 +714,24 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
             write: false
         }
     }, data.ip);
+    data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.meshParent`, {
+        type: 'state',
+        common: {
+            name: 'Mesh ID of parent device',
+            type: 'string',
+            role: 'info.address',
+            read: true,
+            write: false
+        }
+    }, data.meshId);
 
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt, data.dpName);
         adapter.log.debug(`${deviceId}: Objects ${JSON.stringify(objs)}`);
-        knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, objs, values, preserveFields);
+        knownDevices[deviceId].dpIdList = await initDeviceObjects(deviceId, data, objs, values, preserveFields);
         knownDevices[deviceId].objectsInitialized = true;
     }
+
 
     objectHelper.processObjectQueue(() => {
         if (!data.meshId) { // only devices without a meshId are real devices
@@ -588,7 +749,7 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
                 nullPayloadOnJSONError: true
             });
 
-            const handleNewData = (data) => {
+            const handleNewData = async (data) => {
                 knownDevices[deviceId].errorcount = 0;
                 if (typeof data !== 'object' || !data || !data.dps) return;
                 adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
@@ -606,7 +767,7 @@ function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, c
 
                 if (!knownDevices[deviceId].objectsInitialized) {
                     adapter.log.info(`${deviceId}: No schema exists, init basic states ...`);
-                    knownDevices[deviceId].dpIdList = initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
+                    knownDevices[deviceId].dpIdList = await initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
                     knownDevices[deviceId].objectsInitialized = true;
                     objectHelper.processObjectQueue();
                     return;
@@ -727,7 +888,7 @@ function discoverLocalDevices() {
         adapter.log.info('Listen for local Tuya devices on port 6666');
     });
     const normalParser = new MessageParser({version: 3.1});
-    server.on('message', function (message, remote) {
+    server.on('message', async (message, remote) => {
         adapter.log.debug(`Discovered device: ${remote.address}:${remote.port} - ${message}`);
         let data;
         try {
@@ -737,7 +898,7 @@ function discoverLocalDevices() {
         }
         if (!data.payload || !data.payload.gwId || data.commandByte !== CommandType.UDP) return;
         if (knownDevices[data.payload.gwId] && knownDevices[data.payload.gwId].device && !knownDevices[data.payload.gwId].reconnectTimeout) return;
-        initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true);
+        await initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true);
     });
     server.on('error', err => {
         adapter.log.warn(`Can not Listen for Encrypted UDP packages: ${err}`);
@@ -770,7 +931,7 @@ function discoverLocalDevices() {
     serverEncrypted.bind(6667);
 }
 
-function checkDiscoveredEncryptedDevices(deviceId, callback) {
+async function checkDiscoveredEncryptedDevices(deviceId, callback) {
     const foundIps = Object.keys(discoveredEncryptedDevices);
     adapter.log.debug(`${deviceId}: Try to initialize encrypted device with received UDP messages (#IPs: ${foundIps.length}): version=${knownDevices[deviceId].version}, key=${knownDevices[deviceId].localKey}`);
     const parser = new MessageParser({version: knownDevices[deviceId].version || 3.3, key: knownDevices[deviceId].localKey});
@@ -787,7 +948,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
         catch (err) {
             adapter.log.debug(`${deviceId}: Error on default decrypt try: ${err.message}`);
         }
-        if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW)) {
+        if (!data || !data.payload || !data.payload.gwId || (data.commandByte !== CommandType.UDP && data.commandByte !== CommandType.UDP_NEW && data.commandByte !== CommandType.BOARDCAST_LPV34)) {
             adapter.log.debug(`${deviceId}: No relevant Data for default decrypt try: ${JSON.stringify(data)}`);
 
             // try device key
@@ -805,7 +966,7 @@ function checkDiscoveredEncryptedDevices(deviceId, callback) {
         }
         if (data.payload.gwId === deviceId) {
             discoveredEncryptedDevices[data.payload.ip] = true;
-            initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true, callback);
+            await initDevice(data.payload.gwId, data.payload.productKey, data.payload, ['name'], true, callback);
             return true;
         }
     }
@@ -1132,7 +1293,7 @@ function stopProxy(msg) {
     }
 }
 
-function catchProxyInfo(data) {
+async function catchProxyInfo(data) {
     if (!data || !data.result || !Array.isArray(data.result)) return;
 
     let devices = [];
@@ -1172,10 +1333,10 @@ function catchProxyInfo(data) {
 
     if (devices && devices.length) {
         adapter.log.debug(`Found ${devices.length} devices`);
-        devices.forEach((device) => {
+        for (const device of devices) {
             delete device.ip;
             device.schema = false;
-            initDevice(device.devId, device.productId, device);
+            await initDevice(device.devId, device.productId, device);
             /*
             {
                 "devId": "34305060807d3a1d7832",
@@ -1222,7 +1383,7 @@ function catchProxyInfo(data) {
                 "localKey": "03c5e7d3b8c97ec0"
             }
             */
-        });
+        }
     }
     else {
         devices = [];
@@ -1327,6 +1488,20 @@ async function receiveCloudDevices(cloudApiInstance, onlyNew) {
     for (const group of groups) {
         try {
             const resultDevices = await cloudApiInstance.getGroupDevices(group.groupId);
+            resultDevices.forEach(device => {
+                if (device.dataPointInfo) {
+                    if (device.dataPointInfo.dps) {
+                        device.dps = device.dataPointInfo.dps;
+                    }
+                    if (device.dataPointInfo.dpName) {
+                        device.dpName = device.dataPointInfo.dpName;
+                    }
+                }
+                if (device.communication && device.communication.communicationNode && device.communication.communicationNode !== device.devId) {
+                    device.meshId = device.communication.communicationNode;
+                }
+                device.groudId = group.groupId;
+            });
             deviceList = [...deviceList, ...resultDevices];
             for (const device of resultDevices) {
                 if (onlyNew && knownDevices[device.devId]) continue;
@@ -1399,6 +1574,20 @@ async function updateValuesFromCloud(groupId, retry = false) {
     for (const groupId of groups) {
         try {
             const resultDevices = await appCloudApi.getGroupDevices(groupId);
+            resultDevices.forEach(device => {
+                if (device.dataPointInfo) {
+                    if (device.dataPointInfo.dps) {
+                        device.dps = device.dataPointInfo.dps;
+                    }
+                    if (device.dataPointInfo.dpName) {
+                        device.dpName = device.dataPointInfo.dpName;
+                    }
+                }
+                if (device.communication && device.communication.communicationNode && device.communication.communicationNode !== device.devId) {
+                    device.meshId = device.communication.communicationNode;
+                }
+                device.groudId = groupId;
+            });
             deviceList = [...deviceList, ...resultDevices];
         } catch (err) {
             adapter.log.warn(`Error fetching device list for group ${groupId}: ${err}`);
@@ -1408,7 +1597,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
     adapter.log.debug(`Received ${deviceList.length} devices from cloud: ${JSON.stringify(deviceList)}`);
     for (const device of deviceList) {
         const deviceId = device.devId;
-        if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList.length) {
             for (const id in device.dps) {
                 if (!device.dps.hasOwnProperty(id)) continue;
                 let value = device.dps[id];
@@ -1530,7 +1719,11 @@ async function onMQTTMessage(message) {
             if (knownDevices[message.devId] && !knownDevices[message.devId].connected) {
                 handleReconnect(message.devId);
             }
-        } else if (message.bizCode === 'bindUser') {
+        } else if (message.bizCode === 'offline') {
+            //"message": {"bizCode":"offline","bizData":{"time":1667762209},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":0}
+            // Nothing to do
+        }
+        else if (message.bizCode === 'bindUser') {
             // "message": {"bizCode":"bindUser","bizData":{"devId":"05200020b4e62d16d0a0","uid":"eu1547822492582QDKn8","ownerId":"3246959","uuid":"05200020b4e62d16d0a0","token":"IsQlk3pa"},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":1667756090224,"uuid":"05200020b4e62d16d0a0"}
             if (!knownDevices[message.devId]) {
                 try {
@@ -1539,6 +1732,14 @@ async function onMQTTMessage(message) {
                     adapter.log.error(`Error to receive new cloud devices: ${err.message}`);
                 }
             }
+        }
+        else if (message.bizCode === 'event_notify') {
+            // "message": {"bizCode":"event_notify","bizData":{"devId":"XXXX","edata":"XXXX","etype":"doorbell"},"devId":"XXX","productKey":"lasivvb8ccnsma4t","ts":1667915051840,"uuid":"XXXX"}
+            // Ignore for now
+        }
+        else if (message.bizCode === 'p2pSignal') {
+            // "message": {"bizCode":"p2pSignal","bizData":..."}
+            // Ignore for now
         }
         else {
             adapter.log.debug(`Ignore MQTT message for now: ${JSON.stringify(message)}`);
@@ -1550,7 +1751,7 @@ async function onMQTTMessage(message) {
         }
     } else {
         const deviceId = message.devId;
-        if (knownDevices[deviceId] && !knownDevices[deviceId].connected) {
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList.length) {
             for (const dpData of message.status) {
                 const ts = dpData.t * 1000;
                 delete dpData.t;
@@ -1628,19 +1829,19 @@ function main() {
 
     objectHelper.init(adapter);
 
-    adapter.getDevices((err, devices) => {
+    adapter.getDevices(async (err, devices) => {
         let deviceCnt = 0;
         if (devices && devices.length) {
             adapter.log.debug(`init ${devices.length} known devices`);
-            devices.forEach((device) => {
+            for (const device of devices) {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
                     deviceCnt++;
-                    initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
+                    await initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
                         if (!--deviceCnt) initDone();
                     });
                 }
-            });
+            }
         }
         if (!deviceCnt) {
             initDone();
