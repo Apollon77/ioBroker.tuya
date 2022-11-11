@@ -86,9 +86,11 @@ There are different types of IR devices in the object tree
 ### The IR Gateway/Sender Devices
 This is the real device you have as Hardware. This device is used by sub devices defined in the mobile App (see below) and can be used to learn and send custom IR codes.
 
-The "ir-learn" state in this device is a Trigger which can be used to learn IR codes. The learned code is then stored in the "202" state as base64 encoded String and this string can be used to send the code to the device.
+The "ir-learn" state in this device is a Trigger which can be used to learn IR codes. The learned code is then received in the "202" state as base64 encoded Data.
 
-The "ir-send" state can be used to send a base64 encoded IR code to the device. This can be used to send custom codes or to send the learned code from the "ir-learn" state.
+The "ir-send" state can be used to send a base64 encoded IR code to the device. This can be used to send the learned code from the "ir-learn" state.
+
+**This way to control only works on the "main IR device" and only when connected locally (no cloud connection) (right now).**
 
 ### The IR Sub Devices
 The IR sub devices have a lot of "ir-*" states wich are all buttons to trigger the respective Button/IR code. The ir states should match the layout of the buttons in the mobile App.
@@ -96,8 +98,15 @@ The IR sub devices have a lot of "ir-*" states wich are all buttons to trigger t
 Some devices have combi-states like "M0_T20_S3" (found by a Daikin Air conditioner) which means Mode 0, Temperature 20 and (Fan)-Speed 3. In fact you need to choose the right button. Until now we did not found a generic/automated way to find out which button is which.
 The mobile App itself also tries to remember these settings, so as soon you trigger anything with the adapter (or the real ir controller of the device) the information from the App is outdated.
 
+**This way to control only works whenapp cloud credentials are entere. The commands will be send also out via cloud for now.**
+
+## Scenes features
+When the app cloud credentials are entered and stored then the adapter also reads out the scenes from the app and creates them as objects in the adapter. The scenes can be triggered by setting the scene state to true.
+
+The triggering is then send to the cloud.
+
 ## Credits
-The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya and many more.
+The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya,https://github.com/uzlonewolf/tinytuya and many more.
 
 ## How to report issues and feature requests
 
@@ -116,7 +125,9 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Add support for local control of Tuya protocols 3.2 and 3.4
-* (TA2k/Apollon77) Add (experimental/WIP!) support for IR devices (Gateway and Sub Devices)
+* (TA2k/Apollon77) Add basic support for IR devices (Gateway and Sub Devices)
+* (Apollon77) Convert special colour/colour_data values to an additional rgb state
+* (Apollon77) Add support for more cloud MQTT notifications
 * (Apollon77) More schema information added/updated
 
 ### 3.8.1 (2022-11-06)

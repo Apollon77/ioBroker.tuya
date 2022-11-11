@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.8.1",
+    "version": "3.9.0",
     "news": {
       "3.8.1": {
         "en": "Add App-Cloud Sync deceasing the proxy\nAdd support for device polling using App-Cloud for devices not connected\nAdd support for realtime cloud state updates using Tuya IoT Platform MQTT connection\nAllow to update names of device objects when changed in App\nUse read Schema details from Sync instead the already contained ones\nReact to device infos from MQTT connection and update/add device objects\nWhen Datapoints (e.g sockets) have custom names, also use them as State Names\nMore schema information added",
