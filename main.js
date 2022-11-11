@@ -590,7 +590,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 
 function pollDevice(deviceId, overwriteDelay) {
     if (!knownDevices[deviceId] || knownDevices[deviceId].stop) return;
-    if (!knownDevices[deviceId].dpIdList.length) return;
+    if (!knownDevices[deviceId].dpIdList || !knownDevices[deviceId].dpIdList.length) return;
     if (!overwriteDelay) {
         overwriteDelay = adapter.config.pollingInterval * 1000;
     }
