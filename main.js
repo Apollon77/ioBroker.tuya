@@ -244,19 +244,7 @@ function stopAll() {
     }
     for (const deviceId in knownDevices) {
         if (!knownDevices.hasOwnProperty(deviceId)) continue;
-        knownDevices[deviceId].stop = true;
-        if (knownDevices[deviceId].reconnectTimeout) {
-            clearTimeout(knownDevices[deviceId].reconnectTimeout);
-            knownDevices[deviceId].reconnectTimeout = null;
-        }
-        if (knownDevices[deviceId].pollingTimeout) {
-            clearTimeout(knownDevices[deviceId].pollingTimeout);
-            knownDevices[deviceId].pollingTimeout = null;
-        }
-        if (knownDevices[deviceId].device) {
-            knownDevices[deviceId].device.disconnect();
-            knownDevices[deviceId].device = null;
-        }
+        disconnectDevice(deviceId);
         if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
             discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
         }
@@ -670,6 +658,170 @@ function handleReconnect(deviceId, delay) {
     }, delay);
 }
 
+function connectDevice(deviceId, callback) {
+    if (!knownDevices[deviceId].meshId) { // only devices without a meshId are real devices
+        if (knownDevices[deviceId].noLocalConnection) {
+            callback && callback();
+            return;
+        }
+        if (!knownDevices[deviceId].ip) {
+            return void checkDiscoveredEncryptedDevices(deviceId, callback);
+        }
+        if (knownDevices[deviceId].device) {
+            if (!knownDevices[deviceId].connected) {
+                handleReconnect(deviceId, 1000);
+            }
+            callback && callback();
+            return;
+        }
+        adapter.log.info(`${deviceId} Init with IP=${knownDevices[deviceId].ip}, Key=${knownDevices[deviceId].localKey}, Version=${knownDevices[deviceId].version}`);
+        knownDevices[deviceId].stop = false;
+        knownDevices[deviceId].device = new TuyaDevice({
+            id: deviceId,
+            key: knownDevices[deviceId].localKey || '0000000000000000',
+            ip: knownDevices[deviceId].ip,
+            version: knownDevices[deviceId].version,
+            nullPayloadOnJSONError: true
+        });
+
+        const handleNewData = async (data) => {
+            knownDevices[deviceId].errorcount = 0;
+            if (typeof data !== 'object' || !data || !data.dps) return;
+            adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
+
+            if (knownDevices[deviceId].deepCheckNextData) {
+                const dataKeys = Object.keys(data.dps);
+                const dummyFieldList = ["1", "2", "3", "101", "102", "103"];
+                if (dataKeys.length === dummyFieldList.length && !dataKeys.find(key => !dummyFieldList.includes(key) || data.dps[key] !== null)) {
+                    // {"1":null,"2":null,"3":null,"101":null,"102":null,"103":null}
+                    adapter.log.debug(`${deviceId}: Ignore invalid data (Counter: ${knownDevices[deviceId].deepCheckNextData})`);
+                    knownDevices[deviceId].deepCheckNextData--;
+                    return;
+                }
+            }
+
+            if (!knownDevices[deviceId].objectsInitialized) {
+                adapter.log.info(`${deviceId}: No schema exists, init basic states ...`);
+                knownDevices[deviceId].dpIdList = await initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
+                knownDevices[deviceId].objectsInitialized = true;
+                objectHelper.processObjectQueue();
+                return;
+            }
+            for (const id in data.dps) {
+                if (!data.dps.hasOwnProperty(id)) continue;
+                if (!knownDevices[deviceId]) continue;
+                let value = data.dps[id];
+                if (!knownDevices[deviceId].dpIdList.includes(parseInt(id, 10))) {
+                    adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
+                    continue;
+                }
+                if (valueHandler[`${deviceId}.${id}`]) {
+                    value = valueHandler[`${deviceId}.${id}`](value);
+                }
+                adapter.setState(`${deviceId}.${id}`, value, true);
+                if (enhancedValueHandler[`${deviceId}.${id}`]) {
+                    const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`].handler(value);
+                    adapter.setState(enhancedValueHandler[`${deviceId}.${id}`].id, enhancedValue, true);
+                }
+            }
+            pollDevice(deviceId); // lets poll in defined interval
+        };
+
+        knownDevices[deviceId].device.on('data', handleNewData);
+        knownDevices[deviceId].device.on('dp-refresh', handleNewData);
+
+        knownDevices[deviceId].device.on('connected', () => {
+            adapter.log.debug(`${deviceId}: Connected to device`);
+            adapter.setState(`${deviceId}.online`, true, true);
+            if (knownDevices[deviceId].reconnectTimeout) {
+                clearTimeout(knownDevices[deviceId].reconnectTimeout);
+                knownDevices[deviceId].reconnectTimeout = null;
+            }
+            knownDevices[deviceId].connected = true;
+            connectedCount++;
+            if (!connected) setConnected(true);
+            pollDevice(deviceId, 1000);
+        });
+
+        knownDevices[deviceId].device.on('disconnected', () => {
+            adapter.log.debug(`${deviceId}: Disconnected from device`);
+            if (knownDevices[deviceId].waitingForRefresh) {
+                knownDevices[deviceId].waitingForRefresh = false;
+                knownDevices[deviceId].useRefreshToGet = false;
+                adapter.log.debug(`${deviceId}: ... seems like Refresh not supported ... disable`);
+                // TODO check once such a case comes up
+            }
+            adapter.setState(`${deviceId}.online`, false, true);
+            if (!knownDevices[deviceId].stop) {
+                if (knownDevices[deviceId].pollingTimeout) {
+                    clearTimeout(knownDevices[deviceId].pollingTimeout);
+                    knownDevices[deviceId].pollingTimeout = null;
+                }
+                handleReconnect(deviceId);
+            }
+            if (knownDevices[deviceId].connected) {
+                knownDevices[deviceId].connected = false;
+                connectedCount--;
+            }
+            if (connected && connectedCount === 0) setConnected(false);
+        });
+
+        knownDevices[deviceId].device.on('error', (err) => {
+            adapter.log.debug(`${deviceId}: Error from device (${knownDevices[deviceId].errorcount}): App still open on your mobile phone? ${err}`);
+
+            if (err === 'json obj data unvalid') {
+                // Special error case!
+                knownDevices[deviceId].deepCheckNextData = knownDevices[deviceId].deepCheckNextData || 0;
+                knownDevices[deviceId].deepCheckNextData++;
+                if (knownDevices[deviceId].useRefreshToGet === undefined) {
+                    knownDevices[deviceId].useRefreshToGet = true;
+                    pollDevice(deviceId, 100); // next try with refresh
+                }
+            }
+
+            knownDevices[deviceId].errorcount++;
+
+            if (knownDevices[deviceId].errorcount > 3) {
+                disconnectDevice(deviceId);
+                if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
+                    discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
+                }
+            }
+        });
+
+        knownDevices[deviceId].device.connect().catch(err => {
+            if (!cloudMqtt && !appCloudApi) {
+                adapter.log.warn(`${deviceId}: ${err.message}`);
+            } else {
+                adapter.log.info(`${deviceId}: ${err.message}`);
+            }
+            handleReconnect(deviceId);
+        });
+
+        if (!knownDevices[deviceId].localKey) {
+            adapter.log.info(`${deviceId}: No local encryption key available, get data using polling, controlling of device NOT possible. Please sync with App!`);
+            pollDevice(deviceId);
+        }
+    }
+    callback && callback();
+}
+
+function disconnectDevice(deviceId) {
+    if (knownDevices[deviceId].device) {
+        knownDevices[deviceId].stop = true;
+        knownDevices[deviceId].device.disconnect();
+        knownDevices[deviceId].device = null;
+    }
+    if (knownDevices[deviceId].reconnectTimeout) {
+        clearTimeout(knownDevices[deviceId].reconnectTimeout);
+        knownDevices[deviceId].reconnectTimeout = null;
+    }
+    if (knownDevices[deviceId].pollingTimeout) {
+        clearTimeout(knownDevices[deviceId].pollingTimeout);
+        knownDevices[deviceId].pollingTimeout = null;
+    }
+}
+
 async function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback) {
     if (!preserveFields) {
         preserveFields = [];
@@ -684,19 +836,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     }
 
     if (knownDevices[deviceId] && (knownDevices[deviceId].device || knownDevices[deviceId].connected)) {
-        if (knownDevices[deviceId].device) {
-            knownDevices[deviceId].stop = true;
-            knownDevices[deviceId].device.disconnect();
-            knownDevices[deviceId].device = null;
-        }
-        if (knownDevices[deviceId].reconnectTimeout) {
-            clearTimeout(knownDevices[deviceId].reconnectTimeout);
-            knownDevices[deviceId].reconnectTimeout = null;
-        }
-        if (knownDevices[deviceId].pollingTimeout) {
-            clearTimeout(knownDevices[deviceId].pollingTimeout);
-            knownDevices[deviceId].pollingTimeout = null;
-        }
+        disconnectDevice(deviceId);
         setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback), 500);
         return;
     }
@@ -751,6 +891,9 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     }
     else {
         knownDevices[deviceId].name = data.name;
+    }
+    if (data.meshId) {
+        knownDevices[deviceId].meshId = data.meshId;
     }
 
     if (data.schema && data.meshId) {
@@ -827,6 +970,32 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
             write: false
         }
     }, data.meshId);
+    objectHelper.setOrUpdateObject(`${deviceId}.noLocalConnection`, {
+        type: 'state',
+        common: {
+            name: 'Do not connect locally to this device',
+            type: 'boolean',
+            role: 'switch.enable',
+            read: true,
+            write: true,
+            def: false
+        }
+    }, value => {
+        knownDevices[deviceId].noLocalConnection = !!value;
+        adapter.log.info(`${deviceId}: ${value ? 'Do not connect' : 'Connect'} locally to device`);
+        if (value) {
+            disconnectDevice(deviceId);
+        }
+        else {
+            if (knownDevices[deviceId].device) {
+                handleReconnect(deviceId, 500);
+            }
+            else {
+                connectDevice(deviceId);
+            }
+        }
+        adapter.setState(`${deviceId}.noLocalConnection`, !!value, true);
+    });
 
     if (data.schema) {
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt, data.dpName);
@@ -835,155 +1004,12 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         knownDevices[deviceId].objectsInitialized = true;
     }
 
+    objectHelper.processObjectQueue(async () => {
+        const noLocalConnectionState = await adapter.getStateAsync(`${deviceId}.noLocalConnection`);
+        knownDevices[deviceId].noLocalConnection = noLocalConnectionState && !!noLocalConnectionState.val;
+        adapter.log.info(`${deviceId}: ${knownDevices[deviceId].noLocalConnection ? 'Do not connect' : 'Connect'} locally to device`);
 
-    objectHelper.processObjectQueue(() => {
-        if (!data.meshId) { // only devices without a meshId are real devices
-            if (!knownDevices[deviceId].ip) {
-                return checkDiscoveredEncryptedDevices(deviceId, callback);
-            }
-            if (knownDevices[deviceId].device) return;
-            adapter.log.info(`${deviceId} Init with IP=${knownDevices[deviceId].ip}, Key=${knownDevices[deviceId].localKey}, Version=${knownDevices[deviceId].version}`);
-            knownDevices[deviceId].stop = false;
-            knownDevices[deviceId].device = new TuyaDevice({
-                id: deviceId,
-                key: knownDevices[deviceId].localKey || '0000000000000000',
-                ip: knownDevices[deviceId].ip,
-                version: knownDevices[deviceId].version,
-                nullPayloadOnJSONError: true
-            });
-
-            const handleNewData = async (data) => {
-                knownDevices[deviceId].errorcount = 0;
-                if (typeof data !== 'object' || !data || !data.dps) return;
-                adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
-
-                if (knownDevices[deviceId].deepCheckNextData) {
-                    const dataKeys = Object.keys(data.dps);
-                    const dummyFieldList = ["1", "2", "3", "101", "102", "103"];
-                    if (dataKeys.length === dummyFieldList.length && !dataKeys.find(key => !dummyFieldList.includes(key) || data.dps[key] !== null)) {
-                        // {"1":null,"2":null,"3":null,"101":null,"102":null,"103":null}
-                        adapter.log.debug(`${deviceId}: Ignore invalid data (Counter: ${knownDevices[deviceId].deepCheckNextData})`);
-                        knownDevices[deviceId].deepCheckNextData--;
-                        return;
-                    }
-                }
-
-                if (!knownDevices[deviceId].objectsInitialized) {
-                    adapter.log.info(`${deviceId}: No schema exists, init basic states ...`);
-                    knownDevices[deviceId].dpIdList = await initDeviceObjects(deviceId, data, mapper.getObjectsForData(data.dps, !!knownDevices[deviceId].localKey), data.dps, ['name']);
-                    knownDevices[deviceId].objectsInitialized = true;
-                    objectHelper.processObjectQueue();
-                    return;
-                }
-                for (const id in data.dps) {
-                    if (!data.dps.hasOwnProperty(id)) continue;
-                    if (!knownDevices[deviceId]) continue;
-                    let value = data.dps[id];
-                    if (!knownDevices[deviceId].dpIdList.includes(parseInt(id, 10))) {
-                        adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
-                        continue;
-                    }
-                    if (valueHandler[`${deviceId}.${id}`]) {
-                        value = valueHandler[`${deviceId}.${id}`](value);
-                    }
-                    adapter.setState(`${deviceId}.${id}`, value, true);
-                    if (enhancedValueHandler[`${deviceId}.${id}`]) {
-                        const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`].handler(value);
-                        adapter.setState(enhancedValueHandler[`${deviceId}.${id}`].id, enhancedValue, true);
-                    }
-                }
-                pollDevice(deviceId); // lets poll in defined interval
-            };
-
-            knownDevices[deviceId].device.on('data', handleNewData);
-            knownDevices[deviceId].device.on('dp-refresh', handleNewData);
-
-            knownDevices[deviceId].device.on('connected', () => {
-                adapter.log.debug(`${deviceId}: Connected to device`);
-                adapter.setState(`${deviceId}.online`, true, true);
-                if (knownDevices[deviceId].reconnectTimeout) {
-                    clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                    knownDevices[deviceId].reconnectTimeout = null;
-                }
-                knownDevices[deviceId].connected = true;
-                connectedCount++;
-                if (!connected) setConnected(true);
-                pollDevice(deviceId, 1000);
-            });
-
-            knownDevices[deviceId].device.on('disconnected', () => {
-                adapter.log.debug(`${deviceId}: Disconnected from device`);
-                if (knownDevices[deviceId].waitingForRefresh) {
-                    knownDevices[deviceId].waitingForRefresh = false;
-                    knownDevices[deviceId].useRefreshToGet = false;
-                    adapter.log.debug(`${deviceId}: ... seems like Refresh not supported ... disable`);
-                    // TODO check once such a case comes up
-                }
-                adapter.setState(`${deviceId}.online`, false, true);
-                if (!knownDevices[deviceId].stop) {
-                    if (knownDevices[deviceId].pollingTimeout) {
-                        clearTimeout(knownDevices[deviceId].pollingTimeout);
-                        knownDevices[deviceId].pollingTimeout = null;
-                    }
-                    handleReconnect(deviceId);
-                }
-                if (knownDevices[deviceId].connected) {
-                    knownDevices[deviceId].connected = false;
-                    connectedCount--;
-                }
-                if (connected && connectedCount === 0) setConnected(false);
-            });
-
-            knownDevices[deviceId].device.on('error', (err) => {
-                adapter.log.debug(`${deviceId}: Error from device (${knownDevices[deviceId].errorcount}): App still open on your mobile phone? ${err}`);
-
-                if (err === 'json obj data unvalid') {
-                    // Special error case!
-                    knownDevices[deviceId].deepCheckNextData = knownDevices[deviceId].deepCheckNextData || 0;
-                    knownDevices[deviceId].deepCheckNextData++;
-                    if (knownDevices[deviceId].useRefreshToGet === undefined) {
-                        knownDevices[deviceId].useRefreshToGet = true;
-                        pollDevice(deviceId, 100); // next try with refresh
-                    }
-                }
-
-                knownDevices[deviceId].errorcount++;
-
-                if (knownDevices[deviceId].errorcount > 3) {
-                    knownDevices[deviceId].stop = true;
-                    if (knownDevices[deviceId].reconnectTimeout) {
-                        clearTimeout(knownDevices[deviceId].reconnectTimeout);
-                        knownDevices[deviceId].reconnectTimeout = null;
-                    }
-                    if (knownDevices[deviceId].pollingTimeout) {
-                        clearTimeout(knownDevices[deviceId].pollingTimeout);
-                        knownDevices[deviceId].pollingTimeout = null;
-                    }
-                    if (knownDevices[deviceId].device) {
-                        knownDevices[deviceId].device.disconnect();
-                        knownDevices[deviceId].device = null;
-                    }
-                    if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
-                        discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
-                    }
-                }
-            });
-
-            knownDevices[deviceId].device.connect().catch(err => {
-                if (!cloudMqtt && !appCloudApi) {
-                    adapter.log.warn(`${deviceId}: ${err.message}`);
-                } else {
-                    adapter.log.info(`${deviceId}: ${err.message}`);
-                }
-                handleReconnect(deviceId);
-            });
-
-            if (!knownDevices[deviceId].localKey) {
-                adapter.log.info(`${deviceId}: No local encryption key available, get data using polling, controlling of device NOT possibe. Please sync with App!`);
-                pollDevice(deviceId);
-            }
-        }
-        callback && callback();
+        connectDevice(deviceId, callback);
     });
 }
 
@@ -1077,7 +1103,7 @@ async function checkDiscoveredEncryptedDevices(deviceId, callback) {
             return true;
         }
     }
-    adapter.log.info(`${deviceId}: None of the discovered devices matches :-(`);
+    adapter.log.debug(`${deviceId}: None of the discovered devices matches :-(`);
     callback && callback();
 }
 
