@@ -970,7 +970,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
             write: false
         }
     }, data.meshId);
-    objectHelper.setOrUpdateObject(`${deviceId}.noLocalConnection`, {
+    !data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.noLocalConnection`, {
         type: 'state',
         common: {
             name: 'Do not connect locally to this device',
