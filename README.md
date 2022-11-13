@@ -128,6 +128,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (TA2k/Apollon77) Add basic support for IR devices (Gateway and Sub Devices)
 * (Apollon77) Convert special colour/colour_data values to an additional rgb state
 * (Apollon77) Allow to define that devices do not connect locally (this prevents error logs, and they work via cloud if data are provided)
+* (Apollon77) Add custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);
 * (Apollon77) Add support for more cloud MQTT notifications
 * (Apollon77) More schema information added/updated
 

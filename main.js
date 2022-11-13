@@ -1888,8 +1888,10 @@ async function onMQTTMessage(message) {
         } else if (message.bizCode === 'offline') {
             //"message": {"bizCode":"offline","bizData":{"time":1667762209},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":0}
             // Nothing to do
-        }
-        else if (message.bizCode === 'bindUser') {
+        } else if (message.bizCode === 'upgradeStatus') {
+            // "message": {"bizCode":"upgradeStatus","bizData":{"devId":"bf8a61ec7888662271pk9q","upgradeStatus":"2","moduleType":"0","description":""},"devId":"bf8a61ec7888662271pk9q","productKey":"fbvia0apnlnattcy","ts":1668363150268,"uuid":"1890996e42c622e8"}
+            // Nothing to do
+        } else if (message.bizCode === 'bindUser') {
             // "message": {"bizCode":"bindUser","bizData":{"devId":"05200020b4e62d16d0a0","uid":"eu1547822492582QDKn8","ownerId":"3246959","uuid":"05200020b4e62d16d0a0","token":"IsQlk3pa"},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":1667756090224,"uuid":"05200020b4e62d16d0a0"}
             if (!knownDevices[message.devId]) {
                 try {
@@ -1898,8 +1900,7 @@ async function onMQTTMessage(message) {
                     adapter.log.error(`Error to receive new cloud devices: ${err.message}`);
                 }
             }
-        }
-        else if (message.bizCode === 'event_notify') {
+        } else if (message.bizCode === 'event_notify') {
             // "message": {"bizCode":"event_notify","bizData":{"devId":"XXXX","edata":"XXXX","etype":"doorbell"},"devId":"XXX","productKey":"lasivvb8ccnsma4t","ts":1667915051840,"uuid":"XXXX"}
             // Ignore for now
         }
