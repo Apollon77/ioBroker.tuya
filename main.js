@@ -337,7 +337,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
             }
         }
     } else {
-        adapter.log.debug(`${deviceId} Local Device communication not initialized and cloud unavailable ...`);
+        adapter.log.info(`${deviceId} Sending command failed: Local Device communication not initialized and cloud unavailable ...`);
     }
     return null;
 }
