@@ -943,7 +943,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     !data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.online`, {
         type: 'state',
         common: {
-            name: 'Device online status',
+            name: 'Local connection status',
             type: 'boolean',
             role: 'indicator.reachable',
             read: true,
