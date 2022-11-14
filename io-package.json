@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.9.0",
+    "version": "3.9.1",
     "news": {
+      "3.9.1": {
+        "en": "Add support for local control of Tuya protocols 3.2 and 3.4\nAdd basic support for IR devices (Gateway and Sub Devices)\nConvert special colour/colour_data values to an additional rgb state\nAllow to define that devices do not connect locally (this prevents error logs, and they work via cloud if data are provided)\nAdd custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);\nAdd support for more cloud MQTT notifications\nMore schema information added/updated",
+        "de": "Unterstützung für die lokale Kontrolle der Tuya-Protokolle 3.2 und 3.4\nGrundlegende Unterstützung für IR-Geräte (Gateway und Sub Devices) hinzufügen\nSpezielle Farb-/Farb-Datenwerte in einen zusätzlichen rgb-Zustand umrechnen\nErlauben Sie, zu definieren, dass Geräte nicht lokal verbinden (das verhindert Fehlerprotokolle, und sie arbeiten über Cloud, wenn Daten bereitgestellt werden)\nFügen Sie benutzerdefinierte Handhabung für hell_value-Felder mit fehlendem Skalenfaktor (10..1000 wird jetzt 1..100 sein);\nUnterstützung für weitere Cloud-MQTT-Benachrichtigungen hinzufügen\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Добавьте поддержку местного контроля протоколов Tuya 3.2 и 3.4\nДобавьте базовую поддержку устройств IR (Gateway и Sub Devices)\nПреобразование специальных значений цвета/цвета_данных в дополнительное состояние rgb\nРазрешить определить, что устройства не подключаются локально (это предотвращает логы ошибок, и они работают через облако, если данные предоставлены)\nДобавьте обычай обработки для ярких_ценных полей с отсутствующим коэффициентом шкалы (10.1000 будет сейчас 1..100);\nДобавьте поддержку для более облачных уведомлений MQTT\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Adicione suporte para controle local dos protocolos Tuya 3.2 e 3.4\nAdicione suporte básico para dispositivos IR (Gateway and Sub Devices)\nConverta valores especiais de cor/color_dados em um estado adicional de rgb\nPermitir definir que os dispositivos não se conectam localmente (isso impede registros de erros, e eles funcionam via nuvem se os dados forem fornecidos)\nAdicione o manuseio personalizado para campos de valor brilhante com fator de escala ausente (10.1000 será agora 1..100);\nAdicionar suporte para mais notificações MQTT em nuvem\nMais informações de esquema adicionado / atualizado",
+        "nl": "Voeg steun toe voor de lokale controle over Tuya protocols 3,2 en 3,4\nVoeg basissteun toe voor IR apparaten (Gateway and Sub Devices)\nVerander speciale kleur/colourdata waarden aan een extra RGB staat\nSta toe om te definiëren dat apparaten zich niet verbinden in plaatselijk (dit verhindert foutenlogs, en ze werken via wolk als data wordt verstrekt\nGezamenlijk handelen voor heldere velden met vermiste schaalfactor (10.000 zal nu 1.100 zijn:;\nSteun voor meer wolken MQT-informaties\nMeer schema informatie toegevoegd",
+        "fr": "Ajouter un support pour le contrôle local des protocoles de Tuya 3.2 et 3.4\nAjouter un support de base pour les appareils IR (Gateway et Sub Devices)\nConvertir des valeurs spéciales couleur/couleur_données en un état rgb supplémentaire\nPermet de définir que les périphériques ne se connectent pas localement (ceci empêche les journaux d'erreur, et ils fonctionnent via le cloud si les données sont fournies)\nAjouter la manipulation personnalisée pour les champs de valeur lumineuse avec facteur d'échelle manquant (10..1000 sera maintenant 1..100);\nAjouter le support pour plus de notifications MQTT cloud\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Aggiungi supporto per il controllo locale dei protocolli Tuya 3.2 e 3.4\nAggiungi supporto di base per i dispositivi IR (Gateway e Sub Devices)\nConvertire valori speciali di colore/colore_dati in uno stato rgb aggiuntivo\nConsentire di definire che i dispositivi non si connettono localmente (questo impedisce i log di errore, e funzionano tramite cloud se vengono forniti i dati)\nAggiungere la gestione personalizzata per i campi di brillante_valore con fattore di scala mancante (10..1000 sarà ora 1..100);\nAggiungi supporto per altre notifiche MQTT cloud\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Añadir soporte para el control local de los protocolos Tuya 3.2 y 3.4\nAñadir soporte básico para dispositivos IR (Gateway y Sub Dispositivos)\nConvertir valores especiales de color/color_data en un estado rgb adicional\nPermitir definir que los dispositivos no se conectan localmente (esto evita los registros de errores, y funcionan a través de la nube si se proporcionan datos)\nAgregue el manejo personalizado para campos de valor brillante con factor de escala perdida (10.1000 será ahora 1..100);\nAñadir soporte para más notificaciones de MQTT en la nube\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Wsparcie dla lokalnych protokołów Tuya 3.2 i 3.4\nPodstawowe wsparcie dla urządzeń IR (Gateway and Sub Devices)\nPrzetworzono specjalne wartości koloru/colour_data do dodatkowego stanu rgb\nOkreślenie, że urządzenia nie łączą lokalnie (jest to zapobieganie logom błędów i pracują przez chmury, jeśli dane są dostarczane)\nAddd customowa obsługa pola jaskrajowego z brakującym czynnikiem skalnym (10,1000 będzie obecnie 1..100); t;\nPoparcie większej ilości chmur MQTT\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Додавання підтримки локального контролю протоколів Tuya 3.2 та 3.4\nДодайте базову підтримку пристроїв IR (Gateway та Sub Devices)\nКонвертувати спеціальні значення кольорів / Colour_data до додаткового стану rgb\nДозвольте визначити, що пристрої не з'єднують локально (це запобігає журналам помилок, і вони працюють через хмару, якщо дані надаються)\nДодати користувацьке обслуговування для світлих_значення полів з відсутнім коефіцієнтом ваги (10.1000 буде зараз 1..100);\nДодати підтримку більше хмарних повідомлень MQTT\nДетальніше про схему додано/оновлено",
+        "zh-cn": "增加支助图亚议定书3.2和3.4的当地控制\n增加对IR装置(公路和子宫)的基本支持\n特殊颜色/色:数据价值\n允许界定这种装置不当地连接(这妨碍错误的逻辑,如果提供数据,则通过云雾器开展工作)。\n增加用于光明的增值领域的习惯做法(10 000美元现为1.100美元);\n增加对MQTT通知的支持\n更多的schema信息增加/更新"
+      },
       "3.8.1": {
         "en": "Add App-Cloud Sync deceasing the proxy\nAdd support for device polling using App-Cloud for devices not connected\nAdd support for realtime cloud state updates using Tuya IoT Platform MQTT connection\nAllow to update names of device objects when changed in App\nUse read Schema details from Sync instead the already contained ones\nReact to device infos from MQTT connection and update/add device objects\nWhen Datapoints (e.g sockets) have custom names, also use them as State Names\nMore schema information added",
         "de": "App-Cloud Sync hinzufügen täuscht den Proxy\nUnterstützung für die Gerätebefragung mit App-Cloud für Geräte, die nicht angeschlossen sind\nUnterstützung für Echtzeit-Cloud-Zustandsupdates mit Tuya IoT Platform MQTT-Verbindung\nErlauben Sie, die Namen von Geräteobjekten zu aktualisieren, wenn Sie in App geändert werden\nVerwenden Sie Leseschema-Details von Sync anstelle der bereits enthaltenen\nReact to device infos from MQTT-Verbindung und update/add device object\nWenn Datapoints (z.B. Steckdosen) benutzerdefinierte Namen haben, verwenden Sie diese auch als State Names\nWeitere Schemainformationen hinzugefügt",
@@ -69,19 +82,6 @@
         "uk": "Додано більше інформації про схему"
       },
       "3.6.13": {
-        "en": "More schema information added",
-        "de": "Weitere Schemainformationen hinzugefügt",
-        "ru": "Добавлена дополнительная информация о схеме",
-        "pt": "Mais informações de esquema adicionadas",
-        "nl": "Meer schema-informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées",
-        "it": "Aggiunte ulteriori informazioni sullo schema",
-        "es": "Se agregó más información de esquema",
-        "pl": "Dodano więcej informacji o schemacie",
-        "zh-cn": "添加了更多架构信息",
-        "uk": "Додано більше інформації про схему"
-      },
-      "3.6.11": {
         "en": "More schema information added",
         "de": "Weitere Schemainformationen hinzugefügt",
         "ru": "Добавлена дополнительная информация о схеме",

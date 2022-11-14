@@ -122,8 +122,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.9.1 (2022-11-14)
 * (Apollon77) Add support for local control of Tuya protocols 3.2 and 3.4
 * (TA2k/Apollon77) Add basic support for IR devices (Gateway and Sub Devices)
 * (Apollon77) Convert special colour/colour_data values to an additional rgb state
