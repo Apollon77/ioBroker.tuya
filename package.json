@@ -29,7 +29,7 @@
     "@iobroker/adapter-core": "^2.6.7",
     "@sentry/integrations": "^7.17.3",
     "@sentry/node": "^7.17.3",
-    "@tuyapi/cloud": "git+https://git@github.com/Apollon77/tuyaapi-cloud.git",
+    "@tuyapi/cloud": "^0.6.0",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "extend": "^3.0.2",
@@ -41,7 +41,7 @@
     "request": "^2.88.2",
     "serve-static": "^1.15.0",
     "source-map-support": "^0.5.21",
-    "tuyapi": "git+https://git@github.com/Apollon77/tuyapi.git",
+    "tuyapi": "^7.5.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
