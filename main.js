@@ -245,60 +245,58 @@ function stopAll() {
     for (const deviceId in knownDevices) {
         if (!knownDevices.hasOwnProperty(deviceId)) continue;
         disconnectDevice(deviceId);
-        if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
-            discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
-        }
     }
 }
 
 async function initScenes() {
-    if (appCloudApi.groups) {
-        const allScenes = [];
-        for (const group of appCloudApi.groups) {
-            const scenes = await appCloudApi.cloudApi.request({action: 'tuya.m.linkage.rule.query', version: '4.0', gid: group.groupId});
-            if (scenes && scenes.length) {
-                scenes.forEach(scene => {
-                    scene.groupId = group.groupId;
-                });
-                allScenes.push(...scenes);
-            }
+    if (!appCloudApi || !appCloudApi.groups) {
+        return;
+    }
+    const allScenes = [];
+    for (const group of appCloudApi.groups) {
+        const scenes = await appCloudApi.cloudApi.request({action: 'tuya.m.linkage.rule.query', version: '4.0', gid: group.groupId});
+        if (scenes && scenes.length) {
+            scenes.forEach(scene => {
+                scene.groupId = group.groupId;
+            });
+            allScenes.push(...scenes);
         }
-        if (allScenes.length) {
-            objectHelper.setOrUpdateObject('scenes', {
-                type: 'channel',
+    }
+    if (allScenes.length) {
+        objectHelper.setOrUpdateObject('scenes', {
+            type: 'channel',
+            common: {
+                name: 'Scenes'
+            }
+        });
+        allScenes.forEach(scene => {
+            objectHelper.setOrUpdateObject(`scenes.${scene.id}`, {
+                type: 'state',
                 common: {
-                    name: 'Scenes'
+                    name: scene.name,
+                    type: 'boolean',
+                    role: 'button',
+                    read: false,
+                    write: true
+                },
+                native: scene
+            }, false, async (value) => {
+                if (!value) return;
+                adapter.log.debug(`Scene ${scene.id} triggered`);
+                try {
+                    await appCloudApi.cloudApi.request({
+                        action: 'tuya.m.linkage.rule.trigger',
+                        gid: scene.groupId,
+                        data: {
+                            ruleId: scene.id
+                        }
+                    });
+                } catch (err) {
+                    adapter.log.error(`Cannot trigger scene ${scene.id}: ${err.message}`);
                 }
             });
-            allScenes.forEach(scene => {
-                objectHelper.setOrUpdateObject(`scenes.${scene.id}`, {
-                    type: 'state',
-                    common: {
-                        name: scene.name,
-                        type: 'boolean',
-                        role: 'button',
-                        read: false,
-                        write: true
-                    },
-                    native: scene
-                }, false, async (value) => {
-                    if (!value) return;
-                    adapter.log.debug(`Scene ${scene.id} triggered`);
-                    try {
-                        await appCloudApi.cloudApi.request({
-                            action: 'tuya.m.linkage.rule.trigger',
-                            gid: scene.groupId,
-                            data: {
-                                ruleId: scene.id
-                            }
-                        });
-                    } catch (err) {
-                        adapter.log.error(`Cannot trigger scene ${scene.id}: ${err.message}`);
-                    }
-                });
-            });
-            objectHelper.processObjectQueue();
-        }
+        });
+        objectHelper.processObjectQueue();
     }
 }
 
@@ -649,11 +647,12 @@ function handleReconnect(deviceId, delay) {
         }
         knownDevices[deviceId].device.connect().catch(err => {
             if (!cloudMqtt && !appCloudApi) {
-                adapter.log.warn(`${deviceId}: Error on Reconnect: ${err.message}`);
+                adapter.log.warn(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
             } else  {
-                adapter.log.info(`${deviceId}: Error on Reconnect: ${err.message}`);
+                adapter.log.info(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
             }
-            handleReconnect(deviceId);
+            knownDevices[deviceId].errorcount++;
+            handleReconnect(deviceId, knownDevices[deviceId].errorcount < 6 ? (knownDevices[deviceId].errorcount * 10000) : 60000);
         });
     }, delay);
 }
@@ -666,6 +665,9 @@ function connectDevice(deviceId, callback) {
         }
         if (!knownDevices[deviceId].ip) {
             return void checkDiscoveredEncryptedDevices(deviceId, callback);
+        }
+        if (knownDevices[deviceId].version) {
+            discoveredEncryptedDevices[knownDevices[deviceId].ip] = true;
         }
         if (knownDevices[deviceId].device) {
             if (!knownDevices[deviceId].connected) {
@@ -781,21 +783,19 @@ function connectDevice(deviceId, callback) {
 
             knownDevices[deviceId].errorcount++;
 
-            if (knownDevices[deviceId].errorcount > 3) {
+            if (knownDevices[deviceId].errorcount > 5) {
                 disconnectDevice(deviceId);
-                if (discoveredEncryptedDevices[knownDevices[deviceId].ip]) {
-                    discoveredEncryptedDevices[knownDevices[deviceId].ip] = false;
-                }
             }
         });
 
         knownDevices[deviceId].device.connect().catch(err => {
             if (!cloudMqtt && !appCloudApi) {
-                adapter.log.warn(`${deviceId}: ${err.message}`);
-            } else {
-                adapter.log.info(`${deviceId}: ${err.message}`);
+                adapter.log.warn(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
+            } else  {
+                adapter.log.info(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
             }
-            handleReconnect(deviceId);
+            knownDevices[deviceId].errorcount++;
+            handleReconnect(deviceId, knownDevices[deviceId].errorcount < 6 ? (knownDevices[deviceId].errorcount * 10000) : 60000);
         });
 
         if (!knownDevices[deviceId].localKey) {
@@ -819,6 +819,9 @@ function disconnectDevice(deviceId) {
     if (knownDevices[deviceId].pollingTimeout) {
         clearTimeout(knownDevices[deviceId].pollingTimeout);
         knownDevices[deviceId].pollingTimeout = null;
+    }
+    if (discoveredEncryptedDevices[knownDevices[deviceId].ip] && !knownDevices[deviceId].noLocalConnection) {
+        delete discoveredEncryptedDevices[knownDevices[deviceId].ip];
     }
 }
 
@@ -870,6 +873,17 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     });
     knownDevices[deviceId].errorcount = 0;
     adapter.log.debug(`${deviceId}: Init device with data (after merge): ${JSON.stringify(knownDevices[deviceId])}`);
+
+    if (!fromDiscovery) {
+        const stateIp = await adapter.getStateAsync(`${deviceId}.ip`);
+        if (stateIp && stateIp.val) {
+            const ipVal = stateIp.val.toString().trim();
+            if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipVal) && ipVal !== data.ip) {
+                adapter.log.debug(`${deviceId}: IP changed from ${data.ip} to ${ipVal}`);
+                data.ip = ipVal;
+            }
+        }
+    }
 
     if (!data.localKey) {
         data.localKey = knownDevices[deviceId].localKey || '';
@@ -959,7 +973,30 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
             read: true,
             write: false
         }
-    }, data.ip);
+    }, data.ip, value => {
+        value = (value || '').toString().trim();
+        if (!value || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value)) {
+            adapter.log.warn(`${deviceId}: Invalid IP address set to ip state: ${value}`);
+            return;
+        }
+        if (!knownDevices[deviceId] || (knownDevices[deviceId] && knownDevices[deviceId].ip === value)) return;
+        if (knownDevices[deviceId] && knownDevices[deviceId].connected) {
+            adapter.log.warn(`${deviceId}: Device is connected to ${knownDevices[deviceId].ip} but IP state is set to ${value}. Ignoring.`);
+            adapter.setState(`${deviceId}.ip`, knownDevices[deviceId].ip, true);
+            return;
+        }
+        knownDevices[deviceId].ip = value;
+        adapter.extendObject(deviceId, {
+            native: {
+                ip: value
+            }
+        });
+        adapter.setState(`${deviceId}.ip`, value, true);
+        if (knownDevices[deviceId] && !knownDevices[deviceId].noLocalConnection) {
+            disconnectDevice(deviceId);
+            connectDevice(deviceId);
+        }
+    });
     data.meshId && objectHelper.setOrUpdateObject(`${deviceId}.meshParent`, {
         type: 'state',
         common: {
@@ -983,7 +1020,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     }, value => {
         knownDevices[deviceId].noLocalConnection = !!value;
         adapter.log.info(`${deviceId}: ${value ? 'Do not connect' : 'Connect'} locally to device`);
-        if (value) {
+        if (knownDevices[deviceId].noLocalConnection) {
             disconnectDevice(deviceId);
         }
         else {
@@ -1882,7 +1919,7 @@ async function onMQTTMessage(message) {
 
         } else if (message.bizCode === 'online') {
             // "message": {"bizCode":"online","bizData":{"time":1667755598},"devId":"bfd3e506bae69c48f5ff9z","productKey":"zqtiam4u","ts":0}
-            if (knownDevices[message.devId] && !knownDevices[message.devId].connected) {
+            if (knownDevices[message.devId] && !knownDevices[message.devId].connected && !knownDevices[message.devId].noLocalConnection) {
                 handleReconnect(message.devId);
             }
         } else if (message.bizCode === 'offline') {

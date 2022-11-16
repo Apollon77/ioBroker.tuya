@@ -46,7 +46,8 @@ With this featureset you can choose between all available options and work with 
 The "former" App-Proxy-Sync is still available in the Adapter Config but not recommended anymore. It is much easier to do the new One Time Cloud Sync.
 
 ### If UDP discovery do not work
-If the devices are not correctly detected via their UDP packages you can set the IP manually by editing the device object. see https://github.com/Apollon77/ioBroker.tuya/issues/221#issuecomment-702392636
+If the devices are not correctly detected via their UDP packages you can set the IP manually by setting the ip state of the device to the correct IP.
+The former alternative is to edit the device object. See https://github.com/Apollon77/ioBroker.tuya/issues/221#issuecomment-702392636
 
 ### Note for Battery powered devices
 As already told above Battery powered devices are not supported by this adapter when using only local connections! The reason is that they are not online all the time to save power. Whenever they get a signal, they go online, send the update to the the Tuya cloud servers and go offline again. They do not emit any UDP packages or are online long enough so that the adapter could connect to them.
@@ -122,6 +123,12 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Optimize discovery and device connection checks
+* (Apollon77) IPs of unconnected devices can be set via the ip state now
+* (Apollon77) Fix crash cases reported by Sentry
+
 ### 3.9.1 (2022-11-14)
 * (Apollon77) Add support for local control of Tuya protocols 3.2 and 3.4
 * (TA2k/Apollon77) Add basic support for IR devices (Gateway and Sub Devices)
