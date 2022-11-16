@@ -123,8 +123,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.9.2 (2022-11-16)
 * (Apollon77) Optimize discovery and device connection checks
 * (Apollon77) IPs of unconnected devices can be set via the ip state now
 * (Apollon77) Fix crash cases reported by Sentry

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.9.1",
+    "version": "3.9.2",
     "news": {
+      "3.9.2": {
+        "en": "Optimize discovery and device connection checks\nIPs of unconnected devices can be set via the ip state now\nFix crash cases reported by Sentry",
+        "de": "Optimierung von Erkennungs- und Geräteanschlusskontrollen\nIPs von nicht angeschlossenen Geräten können nun über den ip-Zustand eingestellt werden\nReparieren Crashfälle gemeldet von Sentry",
+        "ru": "Оптимизация открытия и проверка подключения устройства\nIP-адреса неподключённых устройств можно установить через состояние ip сейчас\nИсправление случаев аварии, описанных Sentry",
+        "pt": "Otimize as verificações de descoberta e conexão de dispositivos\nIPs de dispositivos não conectados podem ser definidos através do estado ip agora\nCorrigir casos de acidente relatados por Sentry",
+        "nl": "Optimaal ontdekking en apparaat connectie controle\nIP van onbereikbare apparaten kan worden geplaatst via de IP-staat\nVertaling:",
+        "fr": "Optimiser les vérifications de connexion de découverte et de périphérique\nLes IP de dispositifs non connectés peuvent être définies via l'état d'ip maintenant\nTroubles de crash signalés par Sentry",
+        "it": "Ottimizzare i controlli di connessione alla scoperta e al dispositivo\nGli IP di dispositivi non connessi possono essere impostati tramite lo stato ip\nCorrezione dei casi di crash segnalati da Sentry",
+        "es": "Optimize discovery and device connection checks\nLos IPs de dispositivos no conectados se pueden configurar a través del estado ip ahora\nCasos de accidente fijo reportados por Sentry",
+        "pl": "Oświadczenie odkrycia i połączenia urządzenia\nIP nierozłączonych urządzeń może być ustawione przez stan ip\nSprawy katastrofy Fix podane przez Sentry’a",
+        "uk": "Оптимізуйте перевірки з'єднання та пристрою\nIP-адреси підключених пристроїв можна встановити через IP-станцію\nВиправлені випадки аварії, які повідомляються Sentry",
+        "zh-cn": "减少发现和装置连接检查\n现在可通过参与国建立无连接装置。\nSentry所报告的六例事故"
+      },
       "3.9.1": {
         "en": "Add support for local control of Tuya protocols 3.2 and 3.4\nAdd basic support for IR devices (Gateway and Sub Devices)\nConvert special colour/colour_data values to an additional rgb state\nAllow to define that devices do not connect locally (this prevents error logs, and they work via cloud if data are provided)\nAdd custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);\nAdd support for more cloud MQTT notifications\nMore schema information added/updated",
         "de": "Unterstützung für die lokale Kontrolle der Tuya-Protokolle 3.2 und 3.4\nGrundlegende Unterstützung für IR-Geräte (Gateway und Sub Devices) hinzufügen\nSpezielle Farb-/Farb-Datenwerte in einen zusätzlichen rgb-Zustand umrechnen\nErlauben Sie, zu definieren, dass Geräte nicht lokal verbinden (das verhindert Fehlerprotokolle, und sie arbeiten über Cloud, wenn Daten bereitgestellt werden)\nFügen Sie benutzerdefinierte Handhabung für hell_value-Felder mit fehlendem Skalenfaktor (10..1000 wird jetzt 1..100 sein);\nUnterstützung für weitere Cloud-MQTT-Benachrichtigungen hinzufügen\nMehr Schemainformationen hinzugefügt/updated",
@@ -69,19 +82,6 @@
         "uk": "Додано більше інформації про схему\nПовторно створіть проксі-сертифікати SSL один раз, старше 3 місяців, щоб запобігти помилкам SSL"
       },
       "3.6.14": {
-        "en": "More schema information added",
-        "de": "Weitere Schemainformationen hinzugefügt",
-        "ru": "Добавлена дополнительная информация о схеме",
-        "pt": "Mais informações de esquema adicionadas",
-        "nl": "Meer schema-informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées",
-        "it": "Aggiunte ulteriori informazioni sullo schema",
-        "es": "Se agregó más información de esquema",
-        "pl": "Dodano więcej informacji o schemacie",
-        "zh-cn": "添加了更多架构信息",
-        "uk": "Додано більше інформації про схему"
-      },
-      "3.6.13": {
         "en": "More schema information added",
         "de": "Weitere Schemainformationen hinzugefügt",
         "ru": "Добавлена дополнительная информация о схеме",
