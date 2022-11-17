@@ -838,9 +838,14 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         return;
     }
 
-    if (knownDevices[deviceId] && (knownDevices[deviceId].device || knownDevices[deviceId].connected)) {
+    if (knownDevices[deviceId] && (
+        knownDevices[deviceId].device ||
+        knownDevices[deviceId].connected ||
+        knownDevices[deviceId].reconnectTimeout ||
+        knownDevices[deviceId].pollingTimeout
+    )) {
         disconnectDevice(deviceId);
-        setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback), 500);
+        adapter.setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback), 500);
         return;
     }
 
@@ -1200,7 +1205,7 @@ async function initDone() {
     adapter.log.info('Existing devices initialized');
     discoverLocalDevices();
     adapter.subscribeStates('*');
-    discoveredEncryptedDevices = {}; // Clean discovered devices to reset auto detection
+    discoveredEncryptedDevices = {}; // Clean discovered devices to reset auto-detection
     adapterInitDone = true;
     if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
         await syncDevicesWithAppCloud();
@@ -1928,6 +1933,9 @@ async function onMQTTMessage(message) {
         } else if (message.bizCode === 'upgradeStatus') {
             // "message": {"bizCode":"upgradeStatus","bizData":{"devId":"bf8a61ec7888662271pk9q","upgradeStatus":"2","moduleType":"0","description":""},"devId":"bf8a61ec7888662271pk9q","productKey":"fbvia0apnlnattcy","ts":1668363150268,"uuid":"1890996e42c622e8"}
             // Nothing to do
+        } else if (message.bizCode === 'upgradeProcess') {
+            // "message": {"bizCode":"upgradeProcess","bizData":{"devId":"bf02c988bf11156bb2whi9","firmwareType":0,"progress":0},"devId":"bf02c988bf11156bb2whi9","productKey":"40bjtgxrokhcgzzf","ts":1668613053432,"uuid":"4670ca7b24ab7aba"}
+            // Nothing to do
         } else if (message.bizCode === 'bindUser') {
             // "message": {"bizCode":"bindUser","bizData":{"devId":"05200020b4e62d16d0a0","uid":"eu1547822492582QDKn8","ownerId":"3246959","uuid":"05200020b4e62d16d0a0","token":"IsQlk3pa"},"devId":"05200020b4e62d16d0a0","productKey":"qxJSyTLEtX5WrzA9","ts":1667756090224,"uuid":"05200020b4e62d16d0a0"}
             if (!knownDevices[message.devId]) {
@@ -1995,7 +2003,7 @@ async function onMQTTMessage(message) {
     }
 }
 
-function main() {
+async function main() {
     setConnected(false);
 
     try {
@@ -2019,18 +2027,32 @@ function main() {
     }
     mitm = require('http-mitm-proxy');
 
+    if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
+        try {
+            const instObj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+            if (instObj && instObj.common && typeof instObj.common.restartSchedule === 'string' && instObj.common.restartSchedule.endsWith('* * * * *')) {
+                delete instObj.common.restartSchedule;
+                this.log.info(`restart schedule by minute found and removed!`);
+                await this.setForeignObjectAsync(`system.adapter.${this.namespace}`, instObj);
+                return;
+            }
+        } catch (err) {
+            this.log.error(`Could not check or adjust the restart schedule: ${err.message}`);
+        }
+    }
+
     adapter.config.cloudPollingWhenNotConnected = !!adapter.config.cloudPollingWhenNotConnected;
     adapter.config.pollingInterval = parseInt(adapter.config.pollingInterval, 10) || 60;
     if (isNaN(adapter.config.pollingInterval) || adapter.config.pollingInterval < 10) {
-        adapter.log.info(`Polling interval ${adapter.config.pollingInterval} too short, setting to 30s`);
-        adapter.config.pollingInterval = 30;
+        adapter.log.info(`Polling interval ${adapter.config.pollingInterval} too short, setting to 60s`);
+        adapter.config.pollingInterval = 60;
     } else if (adapter.config.pollingInterval > 2147482) {
         adapter.config.pollingInterval = 3600;
     }
     adapter.config.cloudPollingInterval = parseInt(adapter.config.cloudPollingInterval, 10) || 120;
-    if (isNaN(adapter.config.cloudPollingInterval) || adapter.config.cloudPollingInterval < 6) {
-        adapter.config.cloudPollingWhenNotConnected && adapter.log.info('Cloud polling interval is too low. Set to 60 seconds');
-        adapter.config.cloudPollingInterval = 60;
+    if (isNaN(adapter.config.cloudPollingInterval) || adapter.config.cloudPollingInterval < 60) {
+        adapter.config.cloudPollingWhenNotConnected && adapter.log.info('Cloud polling interval is too low. Set to 120 seconds');
+        adapter.config.cloudPollingInterval = 120;
     } else if (adapter.config.cloudPollingInterval > 2147482) {
         adapter.config.cloudPollingInterval = 3600;
     }

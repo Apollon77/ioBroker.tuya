@@ -41,7 +41,7 @@
     "request": "^2.88.2",
     "serve-static": "^1.15.0",
     "source-map-support": "^0.5.21",
-    "tuyapi": "^7.5.0",
+    "tuyapi": "^7.5.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
