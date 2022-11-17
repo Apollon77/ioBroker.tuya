@@ -2029,15 +2029,15 @@ async function main() {
 
     if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
         try {
-            const instObj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+            const instObj = await adapter.getForeignObjectAsync(`system.adapter.${adapter.namespace}`);
             if (instObj && instObj.common && typeof instObj.common.restartSchedule === 'string' && instObj.common.restartSchedule.endsWith('* * * * *')) {
                 delete instObj.common.restartSchedule;
-                this.log.info(`restart schedule by minute found and removed!`);
-                await this.setForeignObjectAsync(`system.adapter.${this.namespace}`, instObj);
+                adapter.log.info(`restart schedule by minute found and removed!`);
+                await adapter.setForeignObjectAsync(`system.adapter.${adapter.namespace}`, instObj);
                 return;
             }
         } catch (err) {
-            this.log.error(`Could not check or adjust the restart schedule: ${err.message}`);
+            adapter.log.error(`Could not check or adjust the restart schedule: ${err.message}`);
         }
     }
 
