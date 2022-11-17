@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.9.2",
+    "version": "3.9.3",
     "news": {
+      "3.9.3": {
+        "en": "Optimize Tuya protocol 3.4 discovery\nPrevent restart schedules that are too short when cloud is used\nFix crash cases reported by Sentry\nMore schema information added/updated",
+        "de": "Optimieren Sie Tuya Protokoll 3.4 Entdeckung\nVerhindern Sie Neustartpläne, die zu kurz sind, wenn Cloud verwendet wird\nReparieren Crashfälle gemeldet von Sentry\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Оптимизируйте протокол Tuya 3.4 Открытие\nПредотвратить перезагрузочные графики, которые слишком короткие, когда облако используется\nИсправление случаев аварии, описанных Sentry\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Otimizar a descoberta do protocolo Tuya 3.4\nEvite horários de reinício que são muito curtos quando a nuvem é usada\nCorrigir casos de acidente relatados por Sentry\nMais informações de esquema adicionado / atualizado",
+        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nVertaling:\nVertaling:\nMeer schema informatie toegevoegd",
+        "fr": "Optimiser le protocole Tuya 3.4 découverte\nPrévenir les horaires de redémarrage trop courts lorsque le nuage est utilisé\nTroubles de crash signalés par Sentry\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Ottimizzare il protocollo Tuya 3.4 scoperta\nEvitare di riavviare gli orari che sono troppo brevi quando il cloud viene utilizzato\nCorrezione dei casi di crash segnalati da Sentry\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Optimize Tuya protocol 3.4 Discover\nEvitar los horarios de reinicio que son demasiado cortos cuando se utiliza la nube\nCasos de accidente fijo reportados por Sentry\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Protokół Tuya 3.4\nPrevent restart schedule, które są zbyt krótkie, gdy chmura jest używana\nSprawy katastrofy Fix podane przez Sentry’a\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Optimize Tuya протокол 3.4 відкриття\nЗапобігти розкладам перезавантаження, які занадто короткі, коли хмара використовується\nВиправлені випадки аварії, які повідомляються Sentry\nДетальніше про схему додано/оновлено",
+        "zh-cn": "3.4 利用图亚议定书\n防备时间太短,在使用云雾器时太短。\nSentry所报告的六例事故\n更多的schema信息增加/更新"
+      },
       "3.9.2": {
         "en": "Optimize discovery and device connection checks\nIPs of unconnected devices can be set via the ip state now\nFix crash cases reported by Sentry",
         "de": "Optimierung von Erkennungs- und Geräteanschlusskontrollen\nIPs von nicht angeschlossenen Geräten können nun über den ip-Zustand eingestellt werden\nReparieren Crashfälle gemeldet von Sentry",
@@ -80,19 +93,6 @@
         "pl": "Dodano więcej informacji o schemacie\nOdtwórz certyfikaty Proxy SSL raz starsze niż 3 miesiące, aby zapobiec błędom SSL",
         "zh-cn": "添加了更多架构信息\n重新创建超过 3 个月的代理 SSL 证书以防止 ssl 错误",
         "uk": "Додано більше інформації про схему\nПовторно створіть проксі-сертифікати SSL один раз, старше 3 місяців, щоб запобігти помилкам SSL"
-      },
-      "3.6.14": {
-        "en": "More schema information added",
-        "de": "Weitere Schemainformationen hinzugefügt",
-        "ru": "Добавлена дополнительная информация о схеме",
-        "pt": "Mais informações de esquema adicionadas",
-        "nl": "Meer schema-informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées",
-        "it": "Aggiunte ulteriori informazioni sullo schema",
-        "es": "Se agregó más información de esquema",
-        "pl": "Dodano więcej informacji o schemacie",
-        "zh-cn": "添加了更多架构信息",
-        "uk": "Додано більше інформації про схему"
       }
     },
     "title": "Tuya",

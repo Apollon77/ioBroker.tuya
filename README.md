@@ -123,8 +123,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.9.3 (2022-11-17)
 * (Apollon77) Optimize Tuya protocol 3.4 discovery
 * (Apollon77) Prevent restart schedules that are too short when cloud is used
 * (Apollon77) Fix crash cases reported by Sentry
