@@ -410,7 +410,11 @@ async function initDeviceGroups() {
                         try {
                             switch (dpEncoding) {
                                 case 'base64':
-                                    return value; // Buffer.from(value, 'base64').toString('utf-8'); Binary makes no sense
+                                    let convertedValue = Buffer.from(value, 'base64').toString('ascii');
+                                    if (!convertedValue.match(/[\x20-\x7E]*/g)) {
+                                        convertedValue = value;
+                                    }
+                                    return convertedValue;
                                 default:
                                     adapter.log.info(`Unsupported encoding ${dpEncoding} for ${deviceGroupId}.${id}`);
                                     return value;
