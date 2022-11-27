@@ -106,6 +106,10 @@ When the app cloud credentials are entered and stored then the adapter also read
 
 The triggering is then send to the cloud.
 
+## Groups features
+The adapter also reads out defined groups and creates corresponding states in the adapter. The group value is also polled from cloud and updated in the adapter.
+When controlling groups the adapter tries to use an existing local connection to the device with cloud as fallback.
+
 ## Credits
 The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya,https://github.com/uzlonewolf/tinytuya and many more.
 
@@ -123,6 +127,11 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Added support for groups
+* (Apollon77) Added cloud session refresh while adapter is running
+
 ### 3.9.4 (2022-11-19)
 * (Apollon77) More schema information added/updated
 

@@ -36,6 +36,7 @@ let proxyAdminMessageCallback;
 const TuyaDevice = require('tuyapi');
 
 const knownDevices = {};
+const deviceGroups = {};
 let discoveredEncryptedDevices = {};
 const valueHandler = {};
 const enhancedValueHandler = {};
@@ -46,6 +47,7 @@ let AppCloud;
 let appCloudApi = null;
 const cloudDeviceGroups = {};
 let cloudPollingTimeout = null;
+const cloudGroupPollingTimeouts = {};
 let cloudPollingErrorCounter = 0;
 let cloudMqtt = null;
 
@@ -177,6 +179,9 @@ function startAdapter(options) {
     adapter.on('unload', function(callback) {
         try {
             cloudPollingTimeout && clearTimeout(cloudPollingTimeout);
+            for (const id in cloudGroupPollingTimeouts) {
+                cloudGroupPollingTimeouts[id] && clearTimeout(cloudGroupPollingTimeouts[id]);
+            }
             if (cloudMqtt) {
                 try {
                     cloudMqtt.stop();
@@ -254,7 +259,7 @@ async function initScenes() {
     }
     const allScenes = [];
     for (const group of appCloudApi.groups) {
-        const scenes = await appCloudApi.cloudApi.request({action: 'tuya.m.linkage.rule.query', version: '4.0', gid: group.groupId});
+        const scenes = await appCloudApi.getScenes(group.groupId);
         if (scenes && scenes.length) {
             scenes.forEach(scene => {
                 scene.groupId = group.groupId;
@@ -284,20 +289,200 @@ async function initScenes() {
                 if (!value) return;
                 adapter.log.debug(`Scene ${scene.id} triggered`);
                 try {
-                    await appCloudApi.cloudApi.request({
-                        action: 'tuya.m.linkage.rule.trigger',
-                        gid: scene.groupId,
-                        data: {
-                            ruleId: scene.id
-                        }
-                    });
+                    await appCloudApi.triggerScene(scene.groupId, scene.id);
                 } catch (err) {
                     adapter.log.error(`Cannot trigger scene ${scene.id}: ${err.message}`);
                 }
             });
         });
-        objectHelper.processObjectQueue();
+        return new Promise((resolve) => objectHelper.processObjectQueue(() => resolve()));
     }
+}
+
+async function initDeviceGroups() {
+    if (!appCloudApi || !appCloudApi.groups) {
+        return;
+    }
+    for (const group of appCloudApi.groups) {
+        const deviceGroupData = await appCloudApi.getGroupDeviceGroups(group.groupId);
+        if (!deviceGroupData || !deviceGroupData.length) {
+            continue;
+        }
+        for (const deviceGroup of deviceGroupData) {
+            deviceGroups[deviceGroup.id] = deviceGroup;
+            deviceGroups[deviceGroup.id].gid = group.groupId;
+        }
+
+        const deviceGroupRelationData = await appCloudApi.getGroupDeviceGroupRelations(group.groupId);
+        if (!deviceGroupRelationData || !deviceGroupRelationData['5'] || !Array.isArray(deviceGroupRelationData['5'])) {
+            continue;
+        }
+        deviceGroupRelationData['5'].forEach(relation => {
+            const id = relation.id;
+            const devicesInGroup = [];
+            if (relation.children && relation.children['6'] && Array.isArray(relation.children['6'])) {
+                relation.children['6'].forEach(child => devicesInGroup.push(child.id));
+            }
+            if (devicesInGroup.length) {
+                deviceGroups[id].children = devicesInGroup;
+            }
+        });
+    }
+    if (!Object.keys(deviceGroups).length) {
+        return;
+    }
+
+    objectHelper.setOrUpdateObject('groups', {
+        type: 'channel',
+        common: {
+            name: 'groups'
+        }
+    });
+
+    const preserveFields = ['name'];
+
+    for (const devGroupId of Object.keys(deviceGroups)) {
+        const deviceGroup = deviceGroups[devGroupId];
+        const deviceGroupId = `groups.${deviceGroup.id}`;
+        if (!deviceGroup.children || !deviceGroup.children.length) {
+            continue;
+        }
+
+        const groupSchema = deviceGroup.productId ? mapper.getSchema(deviceGroup.productId) : null;
+        let objs;
+        if (groupSchema) {
+            adapter.log.debug(`Devicegroup ${deviceGroupId}: Use following Schema for ${deviceGroup.productId}: ${JSON.stringify(groupSchema)}`);
+            objs = mapper.getObjectsForSchema(groupSchema.schema, groupSchema.schemaExt, deviceGroup.dpName);
+        } else {
+            adapter.log.info(`Devicegroup ${deviceGroupId}: No schema exists, init basic states ...`);
+            objs = mapper.getObjectsForData(deviceGroup.dps, true);
+        }
+        adapter.log.debug(`Devicegroup ${deviceGroupId}: Objects ${JSON.stringify(objs)}`);
+
+        const dpIdList = [];
+        const deviceWriteObjDetails = {};
+        const values = deviceGroup.dps;
+
+        objs.forEach((obj) => {
+            const id = obj.id;
+            dpIdList.push(parseInt(id, 10));
+            delete obj.id;
+            const native = obj.native;
+            delete obj.native;
+            let onChange;
+            if (obj.write) {
+                deviceWriteObjDetails[id] = obj;
+                adapter.log.debug(`Devicegroup ${deviceGroupId} Register onChange for ${id}`);
+                onChange = async (value) => {
+                    adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - send to ${deviceGroup.children && deviceGroup.children.length} devices`);
+                    if (deviceGroup.children && deviceGroup.children.length) {
+                        for (const childId of deviceGroup.children) {
+                            const stateId = `${adapter.namespace}.${childId}.${id}`;
+                            objectHelper.handleStateChange(stateId, {val: value, ack: false});
+                        }
+                        pollDeviceGroup(deviceGroup.id, 5000);
+                    }
+                };
+            }
+            if (obj.scale) {
+                valueHandler[`${deviceGroupId}.${id}`] = (value) => {
+                    if (value === undefined) return undefined;
+                    return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                };
+                values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
+            } else if (obj.states) {
+                valueHandler[`${deviceGroupId}.${id}`] = (value) => {
+                    if (value === undefined) return undefined;
+                    for (const key in obj.states) {
+                        if (!obj.states.hasOwnProperty(key)) continue;
+                        if (obj.states[key] === value) return parseInt(key);
+                    }
+                    adapter.log.warn(`${deviceGroupId}.${id}: Value from device not defined in Schema: ${value}`);
+                    return null;
+                };
+                values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
+            }
+            if (obj.encoding) {
+                const dpEncoding = obj.encoding;
+                if (!valueHandler[`${deviceGroupId}.${id}`]) {
+                    valueHandler[`${deviceGroupId}.${id}`] = (value) => {
+                        if (typeof value !== 'string') return value;
+                        try {
+                            switch (dpEncoding) {
+                                case 'base64':
+                                    return value; // Buffer.from(value, 'base64').toString('utf-8'); Binary makes no sense
+                                default:
+                                    adapter.log.info(`Unsupported encoding ${dpEncoding} for ${deviceGroupId}.${id}`);
+                                    return value;
+                            }
+                        } catch (err) {
+                            adapter.log.info(`Error while decoding ${dpEncoding} for ${deviceGroupId}.${id}: ${err.message}`);
+                            return value;
+                        }
+                    };
+                    values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
+                }
+                delete obj.encoding;
+            }
+            objectHelper.setOrUpdateObject(`${deviceGroupId}.${id}`, {
+                type: 'state',
+                common: obj,
+                native
+            }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, values[id], onChange);
+
+            const enhancedLogicData = enhancedDpLogic.getEnhancedLogic(id, native.code);
+            if (enhancedLogicData) {
+                enhancedLogicData.common.read = obj.read;
+                enhancedLogicData.common.write = obj.write;
+                enhancedLogicData.common.name = `${obj.name} ${enhancedLogicData.common.name}`;
+
+                const enhancedStateId = `${deviceGroupId}.${id}${enhancedLogicData.namePostfix}`;
+
+                let onEnhancedChange;
+                if (typeof enhancedLogicData.onValueChange === 'function') {
+                    onEnhancedChange = async (value) => {
+                        const dps = enhancedLogicData.onValueChange(value);
+                        adapter.log.debug(`${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
+                        if (!dps) return;
+                        for (const dpId of Object.keys(dps)) {
+                            await adapter.setState(`${deviceGroupId}.${dpId}`, dps[dpId], false);
+                        }
+                    }
+                }
+                let enhancedValue = values[id];
+                if (typeof enhancedLogicData.onDpSet === 'function') {
+                    enhancedValue = enhancedLogicData.onDpSet(enhancedValue);
+                    enhancedValueHandler[`${deviceGroupId}.${id}`] = {
+                        id: enhancedStateId,
+                        handler: enhancedLogicData.onDpSet
+                    };
+                }
+
+                objectHelper.setOrUpdateObject(enhancedStateId, {
+                    type: 'state',
+                    common: enhancedLogicData.common
+                }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, enhancedValue, onEnhancedChange);
+
+            }
+        });
+
+        deviceGroup.groupSchema = groupSchema;
+        deviceGroup.dpIdList = dpIdList;
+        objectHelper.setOrUpdateObject(deviceGroupId, {
+            type: 'device',
+            common: {
+                name: deviceGroup.name || `Group ${deviceGroup.id}`
+            },
+            native: deviceGroup
+        }, deviceGroup.name ? preserveFields : undefined);
+
+    }
+    return new Promise((resolve) => objectHelper.processObjectQueue(() => {
+        for (const deviceGroupId of Object.keys(deviceGroups)) {
+            //pollDeviceGroup(deviceGroupId, adapter.config.cloudPollingInterval * Math.random() + 5);
+        }
+        resolve();
+    }));
 }
 
 async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCloud, noPolling) {
@@ -325,13 +510,13 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
             const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
             adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud)`);
             if (!cloudMqtt && !noPolling) {
-                updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
+                scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
             return res;
         } catch (err) {
             adapter.log.warn(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud) failed: ${err.code} - ${err.message}`);
             if (!cloudMqtt && !noPolling) {
-                updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
+                scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
         }
     } else {
@@ -366,7 +551,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     delay: 300
                 };
 
-                await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', JSON.stringify(irData), true, true);
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), true, true);
             };
             const keyId = keyData.key.replace(adapter.FORBIDDEN_CHARS, '_').replace(/[ +]/g, '_');
             objectHelper.setOrUpdateObject(`${deviceId}.ir-${keyId}`, {
@@ -411,37 +596,6 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     sendViaCloud = true;
                 }
                 await sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, sendViaCloud);
-                /*
-                if (appCloudApi) {
-                    const dps = {};
-                    for (const objId of Object.keys(deviceWriteObjDetails)) {
-                        try {
-                            const state = await adapter.getStateAsync(`${deviceId}.${objId}`);
-                            if (state && state.val !== null) {
-                                let val = state.val;
-                                if (deviceWriteObjDetails[objId].scale) {
-                                    val *= Math.pow(10, deviceWriteObjDetails[objId].scale);
-                                } else if (deviceWriteObjDetails[objId].states) {
-                                    val = deviceWriteObjDetails[objId].states[val.toString()];
-                                }
-                                dps[objId] = val;
-                            }
-                        } catch (err) {
-                            adapter.log.warn(`${deviceId}: Can not get value of state ${deviceId}.${id}: ${err.message}`);
-                        }
-                    }
-                    adapter.log.debug(`${deviceId}: Collected datapoint values ${JSON.stringify(dps)} to report to cloud`);
-                    try {
-                        await appCloudApi.report(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
-                        if (!cloudMqtt) {
-                            updateValuesFromCloud(cloudDeviceGroups[physicalDeviceId]);
-                        }
-                    } catch (err) {
-                        adapter.log.warn(`${deviceId}: Can not report to cloud: ${err.message}`);
-                    }
-                } else {
-                    adapter.log.debug(`${deviceId} This device can only communicate via Cloud ...`);
-                }*/
             };
         }
         if (obj.scale) {
@@ -541,8 +695,8 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             if (!value) return;
             adapter.log.debug(`${deviceId} Learn IR Code`);
             // Exit study mode in case it's enabled
-            await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', '{"control": "study_exit"}', undefined, true);
-            await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', '{"control": "study"}', undefined, true);
+            await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, '{"control": "study_exit"}', undefined, true);
+            await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, '{"control": "study"}', undefined, true);
             // Result will be in DP 202 when received
         });
         objectHelper.setOrUpdateObject(`${deviceId}.ir-send`, {
@@ -568,7 +722,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 type: 0,
                 delay: 300,
             };
-            await sendLocallyOrCloud(deviceId, physicalDeviceId, '201', JSON.stringify(irData), false, true);
+            await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), false, true);
         });
     }
     return dpIdList;
@@ -632,6 +786,48 @@ function pollDevice(deviceId, overwriteDelay) {
         pollDevice(deviceId);
     }, overwriteDelay);
 }
+
+function pollDeviceGroup(deviceGroupId, overwriteDelay) {
+    if (!deviceGroups[deviceGroupId]) return;
+    if (!appCloudApi) {
+        adapter.log.warn(`Device group ${deviceGroupId} cannot be polled because cloud API is not available`);
+        return;
+    }
+    if (!overwriteDelay) {
+        overwriteDelay = adapter.config.cloudPollingInterval * 1000;
+    }
+    if (deviceGroups[deviceGroupId].pollingTimeout) {
+        clearTimeout(deviceGroups[deviceGroupId].pollingTimeout);
+        deviceGroups[deviceGroupId].pollingTimeout = null;
+    }
+    deviceGroups[deviceGroupId].pollingTimeout = setTimeout(async () => {
+        deviceGroups[deviceGroupId].pollingTimeout = null;
+
+        const groupData = appCloudApi.getDeviceGroupData(deviceGroups[deviceGroupId].gid, deviceGroupId);
+        if (!groupData || !Array.isArray(groupData)) {
+            adapter.log.warn(`Cannot get data for device group ${deviceGroupId}`);
+            return;
+        }
+        for (const dpData of groupData) {
+            const id = dpData.dpId;
+            let value = dpData.value;
+            if (!deviceGroups[deviceGroupId].dpIdList.includes(parseInt(id, 10))) {
+                adapter.log.info(`Group ${deviceGroupId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
+                continue;
+            }
+            if (valueHandler[`${deviceGroupId}.${id}`]) {
+                value = valueHandler[`${deviceGroupId}.${id}`](value);
+            }
+            adapter.setState(`${deviceGroupId}.${id}`, value, true);
+            if (enhancedValueHandler[`${deviceGroupId}.${id}`]) {
+                const enhancedValue = enhancedValueHandler[`${deviceGroupId}.${id}`].handler(value);
+                adapter.setState(enhancedValueHandler[`${deviceGroupId}.${id}`].id, enhancedValue, true);
+            }
+        }
+        pollDeviceGroup(deviceGroupId);
+    }, overwriteDelay);
+}
+
 
 function handleReconnect(deviceId, delay) {
     if (!knownDevices[deviceId]) return;
@@ -845,8 +1041,12 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         knownDevices[deviceId].pollingTimeout
     )) {
         disconnectDevice(deviceId);
-        adapter.setTimeout(() => initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback), 500);
-        return;
+        return new Promise(resolve => setTimeout(() => {
+            initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, () => {
+                callback && callback();
+                resolve();
+            })
+        }, 500));
     }
 
     data.productKey = productKey;
@@ -918,29 +1118,10 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     if (data.schema && data.meshId) {
         if (data.otaInfo && data.otaInfo.otaModuleMap && data.otaInfo.otaModuleMap.infrared && appCloudApi) {
             try {
-                const infraredRecord = await appCloudApi.cloudApi.request({
-                    gid: cloudDeviceGroups[deviceId],
-                    action: 'tuya.m.infrared.record.get',
-                    data: {
-                        devId: deviceId,
-                        gwId: data.meshId,
-                        subDevId: data.meshId,
-                        vender: '3'
-                    }
-                });
+                const infraredRecord = await appCloudApi.getInfraredRecord(cloudDeviceGroups[deviceId], deviceId, data.meshId, data.meshId, '3');
 
-                const infraRedKeyData = await appCloudApi.cloudApi.request({
-                    gid: cloudDeviceGroups[deviceId],
-                    version: '5.0',
-                    action: 'tuya.m.infrared.keydata.get',
-                    data: {
-                        devId: deviceId,
-                        gwId: data.meshId,
-                        devTypeId: infraredRecord.devTypeId,
-                        vender: infraredRecord.vender,
-                        remoteId: infraredRecord.remoteId
-                    }
-                });
+                const infraRedKeyData = await appCloudApi.getInfraredKeydata(cloudDeviceGroups[deviceId], deviceId, data.meshId, infraredRecord.devTypeId, infraredRecord.vender, infraredRecord.remoteId);
+
                 data.infraRed = {
                     record: infraredRecord,
                     keyData: infraRedKeyData
@@ -1040,6 +1221,12 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     });
 
     if (data.schema) {
+        if (Array.isArray(data.schema)) {
+            data.dpCodes = {};
+            data.schema.forEach((def) => {
+                data.dpCodes[def.code] = def;
+            });
+        }
         const objs = mapper.getObjectsForSchema(data.schema, data.schemaExt, data.dpName);
         adapter.log.debug(`${deviceId}: Objects ${JSON.stringify(objs)}`);
         knownDevices[deviceId].dpIdList = await initDeviceObjects(deviceId, data, objs, values, preserveFields);
@@ -1150,20 +1337,26 @@ async function checkDiscoveredEncryptedDevices(deviceId, callback) {
 }
 
 async function syncDevicesWithAppCloud() {
+    let adapterRestartPlanned = false;
     adapter.log.info("Try to sync devices from Cloud using stored cloud credentials");
-    appCloudApi = await cloudLogin(adapter.config.cloudUsername, adapter.config.cloudPassword, adapter.config.region, adapter.config.appType, adapter.config.appDeviceId, adapter.config.appSessionId, adapter.config.appRegion, adapter.config.appEndpoint);
-    if (appCloudApi) {
-        if ((!adapter.config.appDeviceId && appCloudApi.cloudApi.deviceID) || (!adapter.config.appSessionId && appCloudApi.cloudApi.sid) || (adapter.config.appSessionId && adapter.config.appSessionId !== appCloudApi.cloudApi.sid)) {
+    appCloudApi = await cloudLogin(adapter.config.cloudUsername, adapter.config.cloudPassword, adapter.config.region, adapter.config.appType, adapter.config.appDeviceId, adapter.config.appSessionId, adapter.config.appRegion, adapter.config.appEndpoint, (cloudApi, lastLoginResult) => {
+        adapter.log.info("Cloud login successful. Adapter restarts in 5s");
+        adapterRestartPlanned = true;
+        if ((!adapter.config.appDeviceId && cloudApi.deviceID) || (!adapter.config.appSessionId && cloudApi.sid) || (adapter.config.appSessionId && adapter.config.appSessionId !== cloudApi.sid)) {
             adapter.extendForeignObject(`system.adapter.${adapter.namespace}`, {
                 native: {
-                    appDeviceId: appCloudApi.cloudApi.deviceID,
-                    appSessionId: appCloudApi.cloudApi.sid,
-                    appRegion: appCloudApi.cloudApi.region,
-                    appEndpoint: appCloudApi.cloudApi.endpoint,
-                    appPhoneCode: appCloudApi.lastLoginResult ? appCloudApi.lastLoginResult.phoneCode: null,
+                    appDeviceId: cloudApi.deviceID,
+                    appSessionId: cloudApi.sid,
+                    appRegion: cloudApi.region,
+                    appEndpoint: cloudApi.endpoint,
+                    appPhoneCode: lastLoginResult ? lastLoginResult.phoneCode: null,
                 }
             });
-            adapter.log.info(`Set data for ${adapter.namespace} to appDeviceId=${appCloudApi.cloudApi.deviceID} / sid=${appCloudApi.cloudApi.sid}. Restart adapter now!`);
+            adapter.log.info(`Set data for ${adapter.namespace} to appDeviceId=${cloudApi.deviceID} / sid=${cloudApi.sid}. Restart adapter now!`);
+        }
+    });
+    if (appCloudApi) {
+        if (adapterRestartPlanned) {
             return;
         }
 
@@ -1171,6 +1364,9 @@ async function syncDevicesWithAppCloud() {
             await receiveCloudDevices(appCloudApi);
         } catch (err) {
             adapter.log.error(`Error to receive cloud devices: ${err.message}`);
+        }
+        if (adapterRestartPlanned) {
+            return;
         }
 
         if (cloudMqtt) {
@@ -1210,6 +1406,7 @@ async function initDone() {
     if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
         await syncDevicesWithAppCloud();
         await initScenes();
+        await initDeviceGroups();
     }
 }
 
@@ -1622,24 +1819,28 @@ function getDeviceInfo(msg) {
 
 }
 
-async function cloudLogin(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint) {
+async function cloudLogin(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint, loginCallback) {
     if (!AppCloud) {
         AppCloud = require('./lib/appcloud');
     }
 
     let cloudInstance;
     try {
-        cloudInstance = new AppCloud(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint);
+        cloudInstance = new AppCloud(username, password, region, appType, appDeviceId, appSessionId, appRegion, appEndpoint, loginCallback);
     } catch (err) {
         adapter.log.error(`Error creating cloud API: ${err.message}`);
         return null;
     }
     if (appSessionId) {
         try {
-            await cloudInstance.getTime();
-            adapter.log.debug(`Reuse existing session id: ${appSessionId}`);
+            adapter.log.debug(`Try to reuse existing session id: ${appSessionId}`);
+            await cloudInstance.getLocationList();
+            if (appSessionId !== cloudInstance.cloudApi.sid) {
+                adapter.log.debug(`Session id changed to ${cloudInstance.cloudApi.sid}`);
+            }
             return cloudInstance;
         } catch (err) {
+            adapter.log.error(`Error reusing existing session id: ${err.message}`);
             adapter.log.debug(`Session id ${appSessionId} is not valid anymore. Try to login again`);
             appSessionId = null;
         }
@@ -1715,6 +1916,13 @@ async function receiveCloudDevices(cloudApiInstance, onlyNew) {
     });
 }
 
+function scheduleCloudGroupValueUpdate(groupId, delay) {
+    if (cloudGroupPollingTimeouts[groupId]) {
+        clearTimeout(cloudGroupPollingTimeouts[groupId]);
+    }
+    cloudGroupPollingTimeouts[groupId] = setTimeout(() => updateValuesFromCloud(groupId), delay);
+}
+
 async function updateValuesFromCloud(groupId, retry = false) {
     if (cloudMqtt) {
         return;
@@ -1774,7 +1982,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
     adapter.log.debug(`Received ${deviceList.length} devices from cloud: ${JSON.stringify(deviceList)}`);
     for (const device of deviceList) {
         const deviceId = device.devId;
-        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList.length) {
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList && knownDevices[deviceId].dpIdList.length) {
             for (const id in device.dps) {
                 if (!device.dps.hasOwnProperty(id)) continue;
                 let value = device.dps[id];
@@ -2062,8 +2270,15 @@ async function main() {
     adapter.getDevices(async (err, devices) => {
         let deviceCnt = 0;
         if (devices && devices.length) {
-            adapter.log.debug(`init ${devices.length} known devices`);
+            const devicesToInit = [];
             for (const device of devices) {
+                if (device._id.includes('.groups.')) {
+                    continue;
+                }
+                devicesToInit.push(device._id);
+            }
+            adapter.log.debug(`init ${devicesToInit.length} known devices`);
+            for (const device of devicesToInit) {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
                     deviceCnt++;
