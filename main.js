@@ -748,10 +748,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             if (!value) return;
             adapter.log.debug(`${deviceId} Send IR Code: ${value} with Type-Prefix 1`);
             value = value.toString();
+            if (value.length % 4 === 0) {
+                value = '1' + value;
+            }
             if (data.dpCodes['ir_send']) {
-                if (value.length % 4 === 0) {
-                    value = '1' + value;
-                }
                 const irData = {
                     control: 'send_ir',
                     head: '',
