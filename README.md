@@ -129,6 +129,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Added support for groups
+* (Apollon77) Add support for an other type of IR blaster
 * (Apollon77) Added cloud session refresh while adapter is running
 * (Apollon77) Add custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);
 * (Apollon77) Base64 encoded raw values are now decoded again when the decoded value is readable ascii
