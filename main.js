@@ -497,14 +497,14 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
                 'set': value,
                 'devId': deviceId
             });
-            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local)`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local): ${JSON.stringify(res)}`);
             if (!noPolling) {
                 pollDevice(deviceId, 2000);
                 pollDevice(physicalDeviceId, 2000);
             }
             return res;
         } catch (err) {
-            adapter.log.warn(`${deviceId}.${id}: ${err.message}.${appCloudApi} ? ' Try to use cloud.' : ''}`);
+            adapter.log.warn(`${deviceId}.${id}: ${err.message}.${appCloudApi ? ' Try to use cloud.' : ''}`);
         }
     }
     if (appCloudApi && forceCloud !== false) {
@@ -512,7 +512,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
         dps[id] = value;
         try {
             const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
-            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud)`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud): ${JSON.stringify(res)}`);
             if (!cloudMqtt && !noPolling) {
                 scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
@@ -727,7 +727,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 control: 'send_ir',
                 head: '',
                 'key1': value,
-                type: 0,
+                type: 1,
                 delay: 300,
             };
             await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), false, true);
@@ -811,7 +811,7 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
     deviceGroups[deviceGroupId].pollingTimeout = setTimeout(async () => {
         deviceGroups[deviceGroupId].pollingTimeout = null;
 
-        const groupData = appCloudApi.getDeviceGroupData(deviceGroups[deviceGroupId].gid, deviceGroupId);
+        const groupData = await appCloudApi.getDeviceGroupData(deviceGroups[deviceGroupId].gid, deviceGroupId);
         if (!groupData || !Array.isArray(groupData)) {
             adapter.log.warn(`Cannot get data for device group ${deviceGroupId}`);
             return;
