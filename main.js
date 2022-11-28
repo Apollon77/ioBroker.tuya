@@ -504,7 +504,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
                 data: dps,
                 devId: deviceId
             });
-            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Local): ${JSON.stringify(res)}`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Local): ${JSON.stringify(res)}`);
             if (!noPolling) {
                 pollDevice(deviceId, 2000);
                 pollDevice(physicalDeviceId, 2000);
@@ -517,7 +517,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
     if (appCloudApi && forceCloud !== false) {
         try {
             const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
-            adapter.log.debug(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud): ${JSON.stringify(res)}`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Cloud): ${JSON.stringify(res)}`);
             if (!cloudMqtt && !noPolling) {
                 scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
@@ -748,10 +748,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             if (!value) return;
             adapter.log.debug(`${deviceId} Send IR Code: ${value} with Type-Prefix 1`);
             value = value.toString();
-            if (value.length % 4 === 0) {
-                value = '1' + value;
-            }
             if (data.dpCodes['ir_send']) {
+                if (value.length % 4 === 0) {
+                    value = '1' + value;
+                }
                 const irData = {
                     control: 'send_ir',
                     head: '',
@@ -764,9 +764,9 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 const dps = {};
                 dps[data.dpCodes['control'].id.toString()] = 'send_ir';
                 dps[data.dpCodes['key_code'].id.toString()] = value;
-                dps[data.dpCodes['ir_code'].id.toString()] = '';
-                dps[data.dpCodes['type'].id.toString()] = 0;
-                dps[data.dpCodes['delay_time'].id.toString()] = 300;
+                //dps[data.dpCodes['ir_code'].id.toString()] = '';
+                //dps[data.dpCodes['type'].id.toString()] = 0;
+                //dps[data.dpCodes['delay_time'].id.toString()] = 300;
 
                 await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, false, true);
             }
