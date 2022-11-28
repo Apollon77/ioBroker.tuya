@@ -756,7 +756,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     control: 'send_ir',
                     head: '',
                     'key1': value,
-                    type: 1,
+                    type: 0,
                     delay: 300,
                 };
                 await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), false, true);
@@ -765,7 +765,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 dps[data.dpCodes['control'].id.toString()] = 'send_ir';
                 dps[data.dpCodes['key_code'].id.toString()] = value;
                 dps[data.dpCodes['ir_code'].id.toString()] = '';
-                dps[data.dpCodes['type'].id.toString()] = 1;
+                dps[data.dpCodes['type'].id.toString()] = 0;
                 dps[data.dpCodes['delay_time'].id.toString()] = 300;
 
                 await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, false, true);
