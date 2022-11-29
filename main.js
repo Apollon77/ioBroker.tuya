@@ -374,11 +374,23 @@ async function initDeviceGroups() {
                 deviceWriteObjDetails[id] = obj;
                 adapter.log.debug(`Devicegroup ${deviceGroupId} Register onChange for ${id}`);
                 onChange = async (value) => {
-                    adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - send to ${deviceGroup.children && deviceGroup.children.length} devices`);
+                    /*adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - send to ${deviceGroup.children && deviceGroup.children.length} devices`);
                     if (deviceGroup.children && deviceGroup.children.length) {
                         for (const childId of deviceGroup.children) {
                             const stateId = `${adapter.namespace}.${childId}.${id}`;
                             objectHelper.handleStateChange(stateId, {val: value, ack: false});
+                        }
+                        pollDeviceGroup(deviceGroup.id, 5000);
+                    }*/
+
+                    adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - set value via Cloud or group`);
+                    const dps = {};
+                    dps[id] = value;
+                    await appCloudApi.setDeviceGroupDps(deviceGroup.gid, deviceGroup.id, dps);
+                    pollDeviceGroup(deviceGroup.id, 5000);
+                    if (deviceGroup.children && deviceGroup.children.length) {
+                        for (const childId of deviceGroup.children) {
+                            pollDevice(childId, 5000);
                         }
                         pollDeviceGroup(deviceGroup.id, 5000);
                     }
@@ -427,6 +439,15 @@ async function initDeviceGroups() {
                     values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
                 }
                 delete obj.encoding;
+            }
+            if (!valueHandler[`${deviceGroupId}.${id}`]) {
+                valueHandler[`${deviceGroupId}.${id}`] = (value) => {
+                    if (obj.type === 'boolean') {
+                        return (!value || value === 'false') ? false : true;
+                    } else if (obj.type === 'number') {
+                        return parseFloat(value);
+                    }
+                };
             }
             objectHelper.setOrUpdateObject(`${deviceGroupId}.${id}`, {
                 type: 'state',
@@ -778,6 +799,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 function pollDevice(deviceId, overwriteDelay) {
     if (!knownDevices[deviceId] || knownDevices[deviceId].stop) return;
     if (!knownDevices[deviceId].dpIdList || !knownDevices[deviceId].dpIdList.length) return;
+    if (overwriteDelay && (!knownDevices[deviceId].connected || knownDevices[deviceId].noLocalConnection)) {
+        scheduleCloudGroupValueUpdate(cloudDeviceGroups[deviceId], overwriteDelay);
+        return;
+    }
     if (!overwriteDelay) {
         overwriteDelay = adapter.config.pollingInterval * 1000;
     }
@@ -862,13 +887,14 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
                 adapter.log.info(`Group ${deviceGroupId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
                 continue;
             }
-            if (valueHandler[`${deviceGroupId}.${id}`]) {
-                value = valueHandler[`${deviceGroupId}.${id}`](value);
+            const deviceGroupStateId = `groups.${deviceGroupId}.${id}`;
+            if (valueHandler[deviceGroupStateId]) {
+                value = valueHandler[deviceGroupStateId](value);
             }
-            adapter.setState(`${deviceGroupId}.${id}`, value, true);
-            if (enhancedValueHandler[`${deviceGroupId}.${id}`]) {
-                const enhancedValue = enhancedValueHandler[`${deviceGroupId}.${id}`].handler(value);
-                adapter.setState(enhancedValueHandler[`${deviceGroupId}.${id}`].id, enhancedValue, true);
+            adapter.setState(deviceGroupStateId, value, true);
+            if (enhancedValueHandler[deviceGroupStateId]) {
+                const enhancedValue = enhancedValueHandler[deviceGroupStateId].handler(value);
+                adapter.setState(enhancedValueHandler[deviceGroupStateId].id, enhancedValue, true);
             }
         }
         pollDeviceGroup(deviceGroupId);
@@ -1583,7 +1609,7 @@ function startProxy(msg) {
                         catch (err) {
                             response = null;
                         }
-                        if (response && response.result && typeof response.result ==='string') {
+                        if (response && response.result && typeof response.result === 'string') {
                             adapter.log.warn('It seems that you use an unsupported App version of Tuya App! Please see Admin Infos and GitHub Readme for details!');
                         }
                     }
