@@ -107,7 +107,7 @@ The triggering is then send to the cloud.
 
 ## Groups features
 The adapter also reads out defined groups and creates corresponding states in the adapter. The group value is also polled from cloud and updated in the adapter.
-When controlling groups the adapter tries to use an existing local connection to the device with cloud as fallback.
+When controlling groups this also is done via the cloud because else the group status will run out of sync.
 
 ## Credits
 The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya,https://github.com/uzlonewolf/tinytuya and many more.
