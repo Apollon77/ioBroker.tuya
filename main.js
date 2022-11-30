@@ -409,7 +409,7 @@ async function initDeviceGroups() {
                         if (!obj.states.hasOwnProperty(key)) continue;
                         if (obj.states[key] === value) return parseInt(key);
                     }
-                    adapter.log.warn(`${deviceGroupId}.${id}: Value from device not defined in Schema: ${value}`);
+                    adapter.log.warn(`Devicegroup ${deviceGroupId}.${id}: Value from device not defined in Schema: ${value}`);
                     return null;
                 };
                 values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
@@ -446,6 +446,8 @@ async function initDeviceGroups() {
                         return (!value || value === 'false') ? false : true;
                     } else if (obj.type === 'number') {
                         return parseFloat(value);
+                    } else {
+                        return value;
                     }
                 };
             }
@@ -467,7 +469,7 @@ async function initDeviceGroups() {
                 if (typeof enhancedLogicData.onValueChange === 'function') {
                     onEnhancedChange = async (value) => {
                         const dps = enhancedLogicData.onValueChange(value);
-                        adapter.log.debug(`${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
+                        adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
                         if (!dps) return;
                         for (const dpId of Object.keys(dps)) {
                             await adapter.setState(`${deviceGroupId}.${dpId}`, dps[dpId], false);
@@ -476,7 +478,7 @@ async function initDeviceGroups() {
                 }
                 let enhancedValue = values[id];
                 if (typeof enhancedLogicData.onDpSet === 'function') {
-                    enhancedValue = enhancedLogicData.onDpSet(enhancedValue);
+                    enhancedValue = enhancedLogicData.onDpSet(enhancedValue, true);
                     enhancedValueHandler[`${deviceGroupId}.${id}`] = {
                         id: enhancedStateId,
                         handler: enhancedLogicData.onDpSet
@@ -880,6 +882,7 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
             adapter.log.warn(`Cannot get data for device group ${deviceGroupId}`);
             return;
         }
+        adapter.log.debug(`Got data for device group ${deviceGroupId}: ${JSON.stringify(groupData)}`);
         for (const dpData of groupData) {
             const id = dpData.dpId;
             let value = dpData.value;
@@ -893,7 +896,7 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
             }
             adapter.setState(deviceGroupStateId, value, true);
             if (enhancedValueHandler[deviceGroupStateId]) {
-                const enhancedValue = enhancedValueHandler[deviceGroupStateId].handler(value);
+                const enhancedValue = enhancedValueHandler[deviceGroupStateId].handler(value, true);
                 adapter.setState(enhancedValueHandler[deviceGroupStateId].id, enhancedValue, true);
             }
         }
