@@ -384,6 +384,13 @@ async function initDeviceGroups() {
                     }*/
 
                     adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - set value via Cloud or group`);
+
+                    if (obj.scale) {
+                        value *= Math.pow(10, obj.scale);
+                    } else if (obj.states) {
+                        value = obj.states[value.toString()];
+                    }
+
                     const dps = {};
                     dps[id] = value;
                     await appCloudApi.setDeviceGroupDps(deviceGroup.gid, deviceGroup.id, dps);
@@ -468,7 +475,7 @@ async function initDeviceGroups() {
                 let onEnhancedChange;
                 if (typeof enhancedLogicData.onValueChange === 'function') {
                     onEnhancedChange = async (value) => {
-                        const dps = enhancedLogicData.onValueChange(value);
+                        const dps = enhancedLogicData.onValueChange(value, true);
                         adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
                         if (!dps) return;
                         for (const dpId of Object.keys(dps)) {
