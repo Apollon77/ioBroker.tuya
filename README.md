@@ -133,6 +133,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (Apollon77) Added cloud session refresh while adapter is running
 * (Apollon77) Add custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);
 * (Apollon77) Base64 encoded raw values are now decoded again when the decoded value is readable ascii
+* (Apollon77) Allow to flag devices manually that need "refresh instead of get" to get current data - use "useRefreshToGet: true" in device object native section
 * (Apollon77) More schema information added/updated
 
 ### 3.9.4 (2022-11-19)

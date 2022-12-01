@@ -834,11 +834,11 @@ function pollDevice(deviceId, overwriteDelay) {
                     }
                     if (knownDevices[physicalDeviceId].refreshDpList.length) {
                         adapter.log.debug(`${deviceId} request data via refresh for ${JSON.stringify(knownDevices[physicalDeviceId].refreshDpList)}`);
-                        knownDevices[physicalDeviceId].waitingForRefrssh = true;
+                        knownDevices[physicalDeviceId].waitingForRefresh = true;
                         const data = await knownDevices[physicalDeviceId].device.refresh({
                             requestedDPS: knownDevices[physicalDeviceId].refreshDpList
                         });
-                        knownDevices[physicalDeviceId].waitingForRefrssh = false;
+                        knownDevices[physicalDeviceId].waitingForRefresh = false;
                         adapter.log.debug(`${deviceId} response from refresh: ${JSON.stringify(data)}`);
                         knownDevices[physicalDeviceId].device.emit('dp-refresh', {dps: data});
                     }
@@ -1114,7 +1114,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     if (knownDevices[deviceId] && knownDevices[deviceId].device && fromDiscovery) {
         adapter.log.debug(`${deviceId}: Device already connected`);
         if (callback) {
-            callback();
+            setImmediate(callback);
         }
         return;
     }
@@ -1200,7 +1200,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         knownDevices[deviceId].meshId = data.meshId;
     }
 
-    if (data.useRefreshToGet && knownDevices[deviceId].useRefreshToGet == undefined) {
+    if (data.useRefreshToGet && knownDevices[deviceId].useRefreshToGet === undefined) {
         knownDevices[deviceId].useRefreshToGet = data.useRefreshToGet;
     }
 
@@ -2365,20 +2365,22 @@ async function main() {
                 if (device._id.includes('.groups.')) {
                     continue;
                 }
-                devicesToInit.push(device._id);
+                devicesToInit.push(device);
             }
-            adapter.log.debug(`init ${devicesToInit.length} known devices`);
+            deviceCnt = devicesToInit.length;
+            adapter.log.debug(`init ${deviceCnt} known devices`);
             for (const device of devicesToInit) {
+                console.log(device._id + ': ' + deviceCnt);
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
-                    deviceCnt++;
                     await initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
                         if (!--deviceCnt) initDone();
                     });
+                } else {
+                    if (!--deviceCnt) initDone();
                 }
             }
-        }
-        if (!deviceCnt) {
+        } else if (!deviceCnt) {
             initDone();
         }
     });
