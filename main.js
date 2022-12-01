@@ -1027,8 +1027,8 @@ function connectDevice(deviceId, callback) {
             adapter.log.debug(`${deviceId}: Disconnected from device`);
             if (knownDevices[deviceId].waitingForRefresh) {
                 knownDevices[deviceId].waitingForRefresh = false;
-                knownDevices[deviceId].useRefreshToGet = false;
-                adapter.log.debug(`${deviceId}: ... seems like Refresh not supported ... disable`);
+                //knownDevices[deviceId].useRefreshToGet = false;
+                //adapter.log.debug(`${deviceId}: ... seems like Refresh not supported ... disable`);
                 // TODO check once such a case comes up
             }
             adapter.setState(`${deviceId}.online`, false, true);
