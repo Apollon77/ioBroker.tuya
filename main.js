@@ -2367,7 +2367,6 @@ async function main() {
             deviceCnt = devicesToInit.length;
             adapter.log.debug(`init ${deviceCnt} known devices`);
             for (const device of devicesToInit) {
-                console.log(device._id + ': ' + deviceCnt);
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
                     await initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
