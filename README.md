@@ -80,6 +80,23 @@ The sync is only needed initially or after you added new devices to your App.
 
 Some images for some mobile OS can be found at the [Proxy-Page](PROXY.md).
 
+## Devices that do not deliver up-to-date data
+We discovered some devices - most likely devices with power/current states - that can have the effect that they only show up-to-date values when the mobile app is connected to them. When the app is closed they stay on the old values.
+
+These devices currently only work via "polling interval" in most cases. They do not deliver up-to-date values by themself. You can try to work around that by using the iot platform from Tuya and enable the MQTT option.
+
+Some of these devices also do not deliver up-to-date values when using polling. If you got such a device it could be that the device needs to be polled differently. This can be configured manually.Please do the following:
+* Stop the tuya instance
+* Use Admin on "Objects" tab and find the object with type "device" of the affected device. In this line in Admin Objects view click the pencil icon.
+* In the JSON view of the object you see a "native" section. Add a new json key inside this native section:
+```json
+"native": {
+    "useRefreshToGet": true,
+    ...
+}
+```
+* Save the object and restart the adapter and check if the values are updated now.
+
 ## Infrared Gateway features
 There are different types of IR devices in the object tree
 
