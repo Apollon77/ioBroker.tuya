@@ -50,6 +50,7 @@ let cloudPollingTimeout = null;
 const cloudGroupPollingTimeouts = {};
 let cloudPollingErrorCounter = 0;
 let cloudMqtt = null;
+let isStopping = false;
 
 let Sentry;
 let SentryIntegrations;
@@ -177,11 +178,8 @@ function startAdapter(options) {
     adapter = new utils.Adapter(options);
 
     adapter.on('unload', function(callback) {
+        isStopping = true;
         try {
-            cloudPollingTimeout && clearTimeout(cloudPollingTimeout);
-            for (const id in cloudGroupPollingTimeouts) {
-                cloudGroupPollingTimeouts[id] && clearTimeout(cloudGroupPollingTimeouts[id]);
-            }
             if (cloudMqtt) {
                 try {
                     cloudMqtt.stop();
@@ -189,6 +187,10 @@ function startAdapter(options) {
                 } catch (err) {
                     adapter.log.error(`Cannot stop cloud mqtt: ${err}`);
                 }
+            }
+            cloudPollingTimeout && clearTimeout(cloudPollingTimeout);
+            for (const id in cloudGroupPollingTimeouts) {
+                cloudGroupPollingTimeouts[id] && clearTimeout(cloudGroupPollingTimeouts[id]);
             }
             appCloudApi = null;
             stopAll();
@@ -1198,6 +1200,10 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         knownDevices[deviceId].meshId = data.meshId;
     }
 
+    if (data.useRefreshToGet && knownDevices[deviceId].useRefreshToGet == undefined) {
+        knownDevices[deviceId].useRefreshToGet = data.useRefreshToGet;
+    }
+
     if (data.schema && data.meshId) {
         if (data.otaInfo && data.otaInfo.otaModuleMap && data.otaInfo.otaModuleMap.infrared && appCloudApi) {
             try {
@@ -2165,6 +2171,7 @@ async function connectMqtt() {
 
 //Handle device deletion, addition, status update
 async function onMQTTMessage(message) {
+    if (isStopping) return;
     if (message.bizCode && message.bizData) {
         // {"bizCode":"nameUpdate","bizData":{"devId":"34305060807d3a1d7832","uid":"eu1539013901029biqMB","name":"Steckdose irgendwo"},"devId":"34305060807d3a1d7832","productKey":"8FAPq5h6gdV51Vcr","ts":1667689855956,"uuid":"34305060807d3a1d7832"}
         if (message.bizCode === 'nameUpdate') {
@@ -2254,7 +2261,7 @@ async function onMQTTMessage(message) {
         }
     } else {
         const deviceId = message.devId;
-        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList.length) {
+        if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList && knownDevices[deviceId].dpIdList.length) {
             for (const dpData of message.status) {
                 const ts = dpData.t * 1000;
                 delete dpData.t;
