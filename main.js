@@ -603,7 +603,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     dps[data.dpCodes['type'].id.toString()] = 0;
                     dps[data.dpCodes['delay_time'].id.toString()] = 300;
 
-                    await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, true, true);
+                    await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, undefined, true);
                 }
             };
             const keyId = keyData.key.replace(adapter.FORBIDDEN_CHARS, '_').replace(/[ +]/g, '_');
@@ -797,7 +797,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 dps[data.dpCodes['control'].id.toString()] = 'study_key';
                 dps[data.dpCodes['key_study'].id.toString()] = value;
 
-                await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, false, true);
+                await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, undefined, true);
             }
         });
     }
