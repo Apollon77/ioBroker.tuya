@@ -141,8 +141,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.10.2 (2022-12-05)
 * (Apollon77) Optimize IR - now works locally and via cloud in all cases
 
 ### 3.10.1 (2022-12-05)
