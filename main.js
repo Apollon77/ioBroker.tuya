@@ -967,6 +967,9 @@ function connectDevice(deviceId, callback) {
             knownDevices[deviceId].errorcount = 0;
             if (typeof data !== 'object' || !data || !data.dps) return;
             adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
+            if (data.cid) {
+                adapter.log.debug(`${deviceId}: Received data with cid: ${data.cid}`);
+            }
 
             if (knownDevices[deviceId].deepCheckNextData) {
                 const dataKeys = Object.keys(data.dps);
