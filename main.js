@@ -1243,7 +1243,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
             type: 'string',
             role: 'info.ip',
             read: true,
-            write: false
+            write: true
         }
     }, data.ip, value => {
         value = (value || '').toString().trim();

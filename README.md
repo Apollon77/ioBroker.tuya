@@ -143,6 +143,10 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Make info.ip writable to allow manual setting of IP address
+
 ### 3.10.0 (2022-12-05)
 * (Apollon77) Added support for groups
 * (Apollon77) Add support for a second type of IR blaster
