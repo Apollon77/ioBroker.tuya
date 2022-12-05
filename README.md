@@ -107,15 +107,13 @@ The "ir-learn" state in this device is a Trigger which can be used to learn IR c
 
 The "ir-send" state can be used to send a base64 encoded IR code to the device. This can be used to send the learned code from the "ir-learn" state.
 
-**This way to control only works on the "main IR device" and for devices with Datapoints 201/202 only when connected locally (no cloud connection) (right now).**
+**This way to control only works on the "main IR device".**
 
 ### The IR Sub Devices
 The IR sub devices have a lot of "ir-*" states wich are all buttons to trigger the respective Button/IR code. The ir states should match the layout of the buttons in the mobile App.
 
 Some devices have combi-states like "M0_T20_S3" (found by a Daikin Air conditioner) which means Mode 0, Temperature 20 and (Fan)-Speed 3. In fact you need to choose the right button. Until now we did not found a generic/automated way to find out which button is which.
 The mobile App itself also tries to remember these settings, so as soon you trigger anything with the adapter (or the real ir controller of the device) the information from the App is outdated.
-
-**This way to control only works when app cloud credentials are entered. The commands will be send also out via cloud for now for devices with datapoints 201/202.**
 
 ## Scenes features
 When the app cloud credentials are entered and stored then the adapter also reads out the scenes from the app and creates them as objects in the adapter. The scenes can be triggered by setting the scene state to true.
@@ -143,6 +141,10 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Optimize IR - now works locally and via cloud in all cases
+
 ### 3.10.1 (2022-12-05)
 * (Apollon77) Make info.ip writable to allow manual setting of IP address
 

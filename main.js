@@ -593,7 +593,8 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                         delay: 300
                     };
 
-                    await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), true, true);
+                    // To send the head/key format locally we need to send it to the physical device
+                    await sendLocallyOrCloud(physicalDeviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), undefined, true);
                 } else if (data.dpCodes['control'] && data.dpCodes['key_code'] && data.dpCodes['ir_code'] && data.dpCodes['type'] && data.dpCodes['delay_time']) {
                     const keyArr = keyData.compressPulse.split(':');
                     const dps = {};
@@ -603,7 +604,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     dps[data.dpCodes['type'].id.toString()] = 0;
                     dps[data.dpCodes['delay_time'].id.toString()] = 300;
 
-                    await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, undefined, true);
+                    await sendLocallyOrCloud(physicalDeviceId, physicalDeviceId, 'multiple', dps, undefined, true);
                 }
             };
             const keyId = keyData.key.replace(adapter.FORBIDDEN_CHARS, '_').replace(/[ +]/g, '_');
@@ -781,23 +782,21 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             adapter.log.debug(`${deviceId} Send IR Code: ${value} with Type-Prefix 1`);
             value = value.toString();
             if (data.dpCodes['ir_send']) {
-                if (value.length % 4 === 0) {
-                    value = '1' + value;
-                }
                 const irData = {
                     control: 'send_ir',
                     head: '',
-                    'key1': value,
+                    'key1': '1' + value,
                     type: 0,
                     delay: 300,
                 };
-                await sendLocallyOrCloud(deviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), false, true);
+                await sendLocallyOrCloud(physicalDeviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), undefined, true);
             } else if (data.dpCodes['control'] && data.dpCodes['key_study']) {
                 const dps = {};
                 dps[data.dpCodes['control'].id.toString()] = 'study_key';
                 dps[data.dpCodes['key_study'].id.toString()] = value;
+                dps[data.dpCodes['type'].id.toString()] = 0;
 
-                await sendLocallyOrCloud(deviceId, physicalDeviceId, 'multiple', dps, undefined, true);
+                await sendLocallyOrCloud(physicalDeviceId, physicalDeviceId, 'multiple', dps, undefined, true);
             }
         });
     }
