@@ -1681,7 +1681,7 @@ function startProxy(msg) {
                         proxyStopTimeout = setTimeout(() => {
                             if (proxyServer) {
                                 proxyServer.close();
-                                staticServer.close();
+                                staticServer && staticServer.close();
                                 proxyServer = null;
                                 staticServer = null;
                             }
@@ -1700,7 +1700,7 @@ function startProxy(msg) {
                     proxyStopTimeout = setTimeout(() => {
                         if (proxyServer) {
                             proxyServer.close();
-                            staticServer.close();
+                            staticServer && staticServer.close();
                             proxyServer = null;
                             staticServer = null;
                         }
@@ -1715,7 +1715,7 @@ function startProxy(msg) {
         proxyStopTimeout = setTimeout(() => {
             if (proxyServer) {
                 proxyServer.close();
-                staticServer.close();
+                staticServer && staticServer.close();
                 proxyServer = null;
                 staticServer = null;
             }
