@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.10.0",
+    "version": "3.10.1",
     "news": {
+      "3.10.1": {
+        "en": "Make info.ip writable to allow manual setting of IP address",
+        "de": "Machen Sie info.ip schreibbar, um die manuelle Einstellung der IP-Adresse zu ermöglichen",
+        "ru": "Сделайте info.ip writable, чтобы позволить ручной настройки IP-адреса",
+        "pt": "Faça info.ip writable para permitir a configuração manual do endereço IP",
+        "nl": "Maak info geschreven om handmatig IP-adres toe te staan",
+        "fr": "Faites info.ip writable pour permettre le réglage manuel de l'adresse IP",
+        "it": "Fare scrivibile info.ip per consentire l'impostazione manuale dell'indirizzo IP",
+        "es": "Hacer info.ip writable para permitir el ajuste manual de la dirección IP",
+        "pl": "Make info.ip writable to umożliwia ręczne ustawienie adresu IP",
+        "uk": "Зробіть інформацію.ip зважений, щоб дозволити ручне налаштування IP-адреси",
+        "zh-cn": "Ming info.iptable to容许IP地址的手册制定"
+      },
       "3.10.0": {
         "en": "Added support for groups\nAdd support for a second type of IR blaster\nAdded cloud session refresh while adapter is running\nAdd custom handling for bright_value fields with missing scale factor (10..1000 will be now 1..100);\nBase64 encoded raw values are now decoded again when the decoded value is readable ascii\nAllow to flag devices manually that need \"refresh instead of get\" to get current data - use \"useRefreshToGet: true\" in device object native section\nMore schema information added/updated",
         "de": "Unterstützung für Gruppen\nUnterstützung für einen zweiten IR-Strahler hinzufügen\nCloud-Sitzungserfrischung hinzugefügt, während der Adapter läuft\nFügen Sie benutzerdefinierte Handhabung für hell_value-Felder mit fehlendem Skalenfaktor (10..1000 wird jetzt 1..100;);\nBasis64 kodierte Rohwerte werden nun wieder decodiert, wenn der decodierte Wert auslesbar ist\nLassen Sie die Flag-Geräte manuell, die \"refresh anstelle von get\" benötigen, um aktuelle Daten zu erhalten - verwenden Sie \"RefreshToGet: true\" im Geräteobjekt nativen Abschnitt\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Add App-Cloud Sync deceasing proxy\nWsparcie dla zanieczyszczeń urządzenia za pomocą urządzenia App-Cloud dla urządzeń nie związanych ze sobą\nWsparcie dla aktualizacji stanu rzeczywistego za pomocą platformy Tuya IoT\nAllow, aby zaktualizować nazwy obiektów, gdy zmieniono się w App\nWykorzystuje ona szczegóły Schema z Sync, zamiast tego zawierały już te\nReaktywacja informacji z połączenia MQTT i aktualizacji/addition obiektów urządzenia\nGdy punkty danych (np. gniazda) mają nazwy zwyczajowe, również używają ich jako nazwy państwowe\nWięcej informacji na temat schemy",
         "uk": "Додати App-Cloud Синхронізація зменшення проксі\nДодайте підтримку опитування пристроїв за допомогою App-Cloud для пристроїв, які не підключені\nПідтримка оновлення хмарного стану в режимі реального часу за допомогою підключення платформи Tuya IoT MQTT\nДозволяє оновлювати імена об'єктів пристрою при зміні в додатку\nВикористовуйте дані Schema від Sync замість вже існуючих\nReact to device info from MQTT підключення та оновлення/add devices\nКоли розетки даних (наприклад, розетки) мають імена, також використовують їх як державні імена\nБільше інформації про схему",
         "zh-cn": "增 援\n使用未连接装置进行污染的增援\n利用图亚·伊洛图·图平台,增加对实时云国家更新的支助\n允许在申请修改时更新装置名称\n将Sync的Schema详细情况改为Sync, 而不是已经包含的细节。\n三. 重新部署从外贸总协定的装置和更新/后装置物体\n当数据点(如单位)有习惯名称时,也将其用作国家名称。\n增加的schema信息"
-      },
-      "3.7.2": {
-        "en": "Prevent warnings for invalid min/max values",
-        "de": "Warnungen für ungültige Min/Max-Werte verhindern",
-        "ru": "Предотвращение предупреждений о недействительных значениях мин/макс",
-        "pt": "Evite avisos para valores inválidos min/max",
-        "nl": "Vertaling:",
-        "fr": "Prévenir les avertissements pour les valeurs invalides min/max",
-        "it": "Prevenire avvisi per valori minimi/max non validi",
-        "es": "Prevenir advertencias para valores min/max inválidos",
-        "pl": "Prevent warning for invalid min/max value (ang.)",
-        "uk": "Запобігання попереджень про недійсні значення мінімуму",
-        "zh-cn": "对无效的min/max数值的预防措施"
       }
     },
     "title": "Tuya",
