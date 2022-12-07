@@ -532,6 +532,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
     if (forceCloud !== true && knownDevices[physicalDeviceId].device && knownDevices[physicalDeviceId].connected) {
         try {
             const res = await knownDevices[physicalDeviceId].device.set({
+                cid: knownDevices[deviceId].cid,
                 multiple: true,
                 data: dps,
                 devId: deviceId
@@ -832,6 +833,7 @@ function pollDevice(deviceId, overwriteDelay) {
                         adapter.log.debug(`${deviceId} request data via refresh for ${JSON.stringify(knownDevices[physicalDeviceId].refreshDpList)}`);
                         knownDevices[physicalDeviceId].waitingForRefresh = true;
                         const data = await knownDevices[physicalDeviceId].device.refresh({
+                            cid: knownDevices[deviceId].cid,
                             requestedDPS: knownDevices[physicalDeviceId].refreshDpList
                         });
                         knownDevices[physicalDeviceId].waitingForRefresh = false;
@@ -840,11 +842,11 @@ function pollDevice(deviceId, overwriteDelay) {
                     }
                     else if (cleanedDpIdList.length) {
                         adapter.log.debug(`${deviceId} request data via set-refresh for ${JSON.stringify(knownDevices[physicalDeviceId].dpIdList)}`);
-                        const setOptions = {
+                        const data = await knownDevices[physicalDeviceId].device.set({
+                            cid: knownDevices[deviceId].cid,
                             dps: cleanedDpIdList,
                             set: null
-                        };
-                        const data = await knownDevices[physicalDeviceId].device.set(setOptions);
+                        });
                         adapter.log.debug(`${deviceId} response from set-refresh: ${JSON.stringify(data)}`);
                         // adapter.log.debug(deviceId + ' polling not supported');
                     }
@@ -855,6 +857,7 @@ function pollDevice(deviceId, overwriteDelay) {
                 try {
                     adapter.log.debug(`${deviceId} request data via get ...`);
                     await knownDevices[physicalDeviceId].device.get({
+                        cid: knownDevices[deviceId].cid,
                         returnAsEvent: true
                     });
                 } catch(err) {
@@ -968,7 +971,15 @@ function connectDevice(deviceId, callback) {
             if (typeof data !== 'object' || !data || !data.dps) return;
             adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
             if (data.cid) {
-                adapter.log.debug(`${deviceId}: Received data with cid: ${data.cid}`);
+                if (knownDevices[deviceId].cid !== data.cid) {
+                    adapter.log.debug(`${deviceId}: Set/Update cid: ${knownDevices[deviceId].cid} --> ${data.cid}`);
+                    knownDevices[deviceId].cid = data.cid;
+                    adapter.extendObject(deviceId, {
+                        native: {
+                            cid: data.cid
+                        }
+                    });
+                }
             }
 
             if (knownDevices[deviceId].deepCheckNextData) {
@@ -1197,6 +1208,15 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     }
     if (data.meshId) {
         knownDevices[deviceId].meshId = data.meshId;
+    }
+    if (knownDevices[deviceId].meshId) {
+        if (data.cid !== undefined) {
+            knownDevices[deviceId].cid = data.cid;
+        } else if (data.otaInfo && data.otaInfo.otaModuleMap && data.otaInfo.otaModuleMap.zigbee && data.deviceTopo && data.deviceTopo.nodeId) {
+            adapter.log.debug(`${deviceId}: Initialize cid "${data.deviceTopo.nodeId}" for Sub-Zigbee device via parent ${knownDevices[deviceId].meshId}`);
+            data.cid = data.deviceTopo.nodeId;
+            knownDevices[deviceId].cid = data.cid;
+        }
     }
 
     if (data.useRefreshToGet && knownDevices[deviceId].useRefreshToGet === undefined) {
