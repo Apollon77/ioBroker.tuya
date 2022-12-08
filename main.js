@@ -969,7 +969,7 @@ function connectDevice(deviceId, callback) {
         const handleNewData = async (data) => {
             knownDevices[deviceId].errorcount = 0;
             if (typeof data !== 'object' || !data || !data.dps) return;
-            adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data.dps)}`);
+            adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data)}`);
             if (data.cid) {
                 if (knownDevices[deviceId].cid !== data.cid) {
                     adapter.log.debug(`${deviceId}: Set/Update cid: ${knownDevices[deviceId].cid} --> ${data.cid}`);
@@ -1098,8 +1098,8 @@ function connectDevice(deviceId, callback) {
 }
 
 function disconnectDevice(deviceId) {
+    knownDevices[deviceId].stop = true;
     if (knownDevices[deviceId].device) {
-        knownDevices[deviceId].stop = true;
         knownDevices[deviceId].device.disconnect();
         knownDevices[deviceId].device = null;
     }
@@ -1129,7 +1129,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         return;
     }
 
-    if (knownDevices[deviceId] && (
+    if (knownDevices[deviceId] && !fromDiscovery && (
         knownDevices[deviceId].device ||
         knownDevices[deviceId].connected ||
         knownDevices[deviceId].reconnectTimeout ||

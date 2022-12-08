@@ -144,6 +144,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Added support to control Zigbee Devices via Hubs locally
+* (Apollon77) More schema information added/updated
 
 ### 3.10.2 (2022-12-05)
 * (Apollon77) Optimize IR - now works locally and via cloud in all cases
