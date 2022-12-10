@@ -583,7 +583,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 adapter.log.debug(`${deviceId} onChange triggered for ir-${keyData.key} and value ${JSON.stringify(value)}`);
                 if (!value) return;
 
-                if (data.dpCodes['ir_send']) {
+                if (data.dpCodes && data.dpCodes['ir_send']) {
                     // postData: {"devId":"bf781b021b60e971f5fvka","dps":"{\"201\":\"{\\\"control\\\":\\\"send_ir\\\",\\\"head\\\":\\\"010e0400000000000600100020003000620c4b0c5b\\\",\\\"key1\\\":\\\"002%#000490#000D0010#000100@^\\\",\\\"type\\\":0,\\\"delay\\\":300}\"}","gwId":"bf90851a27705b2de3rwll"}
                     const keyArr = keyData.compressPulse.split(':');
                     const irData = {
@@ -596,7 +596,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 
                     // To send the head/key format locally we need to send it to the physical device
                     await sendLocallyOrCloud(physicalDeviceId, physicalDeviceId, data.dpCodes['ir_send'].id, JSON.stringify(irData), undefined, true);
-                } else if (data.dpCodes['control'] && data.dpCodes['key_code'] && data.dpCodes['ir_code'] && data.dpCodes['type'] && data.dpCodes['delay_time']) {
+                } else if (data.dpCodes && data.dpCodes['control'] && data.dpCodes['key_code'] && data.dpCodes['ir_code'] && data.dpCodes['type'] && data.dpCodes['delay_time']) {
                     const keyArr = keyData.compressPulse.split(':');
                     const dps = {};
                     dps[data.dpCodes['control'].id.toString()] = 'send_ir';
@@ -740,7 +740,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         }
     });
 
-    if (!data.meshId && (
+    if (!data.meshId && data.dpCodes && (
         (data.dpCodes['ir_send'] && data.dpCodes['ir_study_code']) || // 201/202 case
         (data.dpCodes['control'] && data.dpCodes['study_code'] && data.dpCodes['key_code'] && data.dpCodes['ir_code'] && data.dpCodes['type'] && data.dpCodes['delay_time']) // 1..13 case
     ) && (!data.infraRed || !data.infraRed.keyData)) {
