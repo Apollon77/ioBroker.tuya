@@ -36,6 +36,7 @@ let proxyAdminMessageCallback;
 const TuyaDevice = require('tuyapi');
 
 const knownDevices = {};
+const nodeToDeviceMap = {};
 const deviceGroups = {};
 let discoveredEncryptedDevices = {};
 const valueHandler = {};
@@ -1000,24 +1001,32 @@ function connectDevice(deviceId, callback) {
                 objectHelper.processObjectQueue();
                 return;
             }
-            for (const id in data.dps) {
-                if (!data.dps.hasOwnProperty(id)) continue;
-                if (!knownDevices[deviceId]) continue;
-                let value = data.dps[id];
-                if (!knownDevices[deviceId].dpIdList.includes(parseInt(id, 10))) {
-                    adapter.log.info(`${deviceId}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
-                    continue;
-                }
-                if (valueHandler[`${deviceId}.${id}`]) {
-                    value = valueHandler[`${deviceId}.${id}`](value);
-                }
-                adapter.setState(`${deviceId}.${id}`, value, true);
-                if (enhancedValueHandler[`${deviceId}.${id}`]) {
-                    const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`].handler(value);
-                    adapter.setState(enhancedValueHandler[`${deviceId}.${id}`].id, enhancedValue, true);
+
+            let deviceIdToSet = deviceId;
+            if (data.cid && !knownDevices[deviceId].meshId && nodeToDeviceMap[deviceId][data.cid]) {
+                deviceIdToSet = nodeToDeviceMap[deviceId][data.cid];
+                adapter.log.debug(`${deviceId}: Set values on ${deviceIdToSet} for cid ${data.cid}`);
+            }
+
+            if (knownDevices[deviceIdToSet]) {
+                for (const id in data.dps) {
+                    if (!data.dps.hasOwnProperty(id)) continue;
+                    let value = data.dps[id];
+                    if (!knownDevices[deviceIdToSet].dpIdList.includes(parseInt(id, 10))) {
+                        adapter.log.info(`${deviceIdToSet}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
+                        continue;
+                    }
+                    if (valueHandler[`${deviceIdToSet}.${id}`]) {
+                        value = valueHandler[`${deviceIdToSet}.${id}`](value);
+                    }
+                    adapter.setState(`${deviceIdToSet}.${id}`, value, true);
+                    if (enhancedValueHandler[`${deviceIdToSet}.${id}`]) {
+                        const enhancedValue = enhancedValueHandler[`${deviceIdToSet}.${id}`].handler(value);
+                        adapter.setState(enhancedValueHandler[`${deviceIdToSet}.${id}`].id, enhancedValue, true);
+                    }
                 }
             }
-            pollDevice(deviceId); // lets poll in defined interval
+            pollDevice(deviceIdToSet); // lets poll in defined interval
         };
 
         knownDevices[deviceId].device.on('data', handleNewData);
@@ -1216,6 +1225,10 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
             adapter.log.debug(`${deviceId}: Initialize cid "${data.deviceTopo.nodeId}" for Sub-Zigbee device via parent ${knownDevices[deviceId].meshId}`);
             data.cid = data.deviceTopo.nodeId;
             knownDevices[deviceId].cid = data.cid;
+        }
+        if (knownDevices[deviceId].cid) {
+            nodeToDeviceMap[knownDevices[deviceId].meshId] = nodeToDeviceMap[knownDevices[deviceId].meshId] || {};
+            nodeToDeviceMap[knownDevices[deviceId].meshId][knownDevices[deviceId].cid] = deviceId;
         }
     }
 
