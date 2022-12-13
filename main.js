@@ -538,7 +538,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
                 data: dps,
                 devId: deviceId
             });
-            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Local): ${JSON.stringify(res)}`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Local): res=${JSON.stringify(res)}`);
             if (!noPolling) {
                 pollDevice(deviceId, 2000);
                 pollDevice(physicalDeviceId, 2000);
@@ -551,7 +551,7 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
     if (appCloudApi && forceCloud !== false) {
         try {
             const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
-            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Cloud): ${JSON.stringify(res)}`);
+            adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Cloud): res=${JSON.stringify(res)}`);
             if (!cloudMqtt && !noPolling) {
                 scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
@@ -971,17 +971,6 @@ function connectDevice(deviceId, callback) {
             knownDevices[deviceId].errorcount = 0;
             if (typeof data !== 'object' || !data || !data.dps) return;
             adapter.log.debug(`${deviceId}: Received data: ${JSON.stringify(data)}`);
-            if (data.cid) {
-                if (knownDevices[deviceId].cid !== data.cid) {
-                    adapter.log.debug(`${deviceId}: Set/Update cid: ${knownDevices[deviceId].cid} --> ${data.cid}`);
-                    knownDevices[deviceId].cid = data.cid;
-                    adapter.extendObject(deviceId, {
-                        native: {
-                            cid: data.cid
-                        }
-                    });
-                }
-            }
 
             if (knownDevices[deviceId].deepCheckNextData) {
                 const dataKeys = Object.keys(data.dps);
