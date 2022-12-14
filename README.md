@@ -141,8 +141,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.11.0 (2022-12-14)
 * (Apollon77) Added support to control Zigbee Devices via Hubs locally
 * (Apollon77) Prevent crash case when new unencrypted device is discovered
 * (Apollon77) More schema information added/updated
