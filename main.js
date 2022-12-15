@@ -992,12 +992,20 @@ function connectDevice(deviceId, callback) {
             }
 
             let deviceIdToSet = deviceId;
-            if (data.cid && !knownDevices[deviceId].meshId && nodeToDeviceMap[deviceId][data.cid]) {
-                deviceIdToSet = nodeToDeviceMap[deviceId][data.cid];
-                adapter.log.debug(`${deviceId}: Set values on ${deviceIdToSet} for cid ${data.cid}`);
+            if (data.cid && !knownDevices[deviceId].meshId) {
+                if (!nodeToDeviceMap[deviceId]) {
+                    adapter.log.info(`${deviceId}: Received data for node ${data.cid} for unexpected device. Please resync devices`);
+                    deviceIdToSet = null;
+                } else if (!nodeToDeviceMap[deviceId][data.cid]) {
+                    adapter.log.info(`${deviceId}: Received data for unknown node ${data.cid}. Please resync devices`);
+                    deviceIdToSet = null;
+                } else {
+                    deviceIdToSet = nodeToDeviceMap[deviceId][data.cid];
+                    adapter.log.debug(`${deviceId}: Set values on ${deviceIdToSet} for cid ${data.cid}`);
+                }
             }
 
-            if (knownDevices[deviceIdToSet]) {
+            if (deviceIdToSet && knownDevices[deviceIdToSet]) {
                 for (const id in data.dps) {
                     if (!data.dps.hasOwnProperty(id)) continue;
                     let value = data.dps[id];
