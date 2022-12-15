@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.11.0",
+    "version": "3.11.1",
     "news": {
+      "3.11.1": {
+        "en": "More schema information added/updated\nPrevent crash case reported by Sentry",
+        "de": "Mehr Schemainformationen hinzugefügt/updated\nVerhindern Crashfall berichtet von Sentry",
+        "ru": "Дополнительная информация по схеме добавлена/обновлена\nПредотвратить случай аварии, сообщается в Sentry",
+        "pt": "Mais informações de esquema adicionado / atualizado\nImpedir caso de acidente relatado por Sentry",
+        "nl": "Meer schema informatie toegevoegd\nVertaling:",
+        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour\nPrévenir l ' accident signalé par Sentry",
+        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato\nPrevenire caso crash segnalato da Sentry",
+        "es": "Más información sobre esquemas añadidos / actualizados\nCaso de emergencia reportado por Sentry",
+        "pl": "Więcej informacji o schemacie dodano/updować\nPrzygotowania do wypadku Sentry",
+        "uk": "Детальніше про схему додано/оновлено\nЗапобігти виникненню аварійних випадків",
+        "zh-cn": "更多的schema信息增加/更新\nSentry所报告的预防事故"
+      },
       "3.11.0": {
         "en": "Added support to control Zigbee Devices via Hubs locally\nPrevent crash case when new unencrypted device is discovered\nMore schema information added/updated",
         "de": "Unterstützung zur Steuerung von Zigbee Devices über Hubs vor Ort\nVerhindern Sie Crashfall, wenn neues unverschlüsseltes Gerät entdeckt wird\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Protokół Tuya 3.4\nPrevent restart schedule, które są zbyt krótkie, gdy chmura jest używana\nSprawy katastrofy Fix podane przez Sentry’a\nWięcej informacji o schemacie dodano/updować",
         "uk": "Optimize Tuya протокол 3.4 відкриття\nЗапобігти розкладам перезавантаження, які занадто короткі, коли хмара використовується\nВиправлені випадки аварії, які повідомляються Sentry\nДетальніше про схему додано/оновлено",
         "zh-cn": "3.4 利用图亚议定书\n防备时间太短,在使用云雾器时太短。\nSentry所报告的六例事故\n更多的schema信息增加/更新"
-      },
-      "3.9.2": {
-        "en": "Optimize discovery and device connection checks\nIPs of unconnected devices can be set via the ip state now\nFix crash cases reported by Sentry",
-        "de": "Optimierung von Erkennungs- und Geräteanschlusskontrollen\nIPs von nicht angeschlossenen Geräten können nun über den ip-Zustand eingestellt werden\nReparieren Crashfälle gemeldet von Sentry",
-        "ru": "Оптимизация открытия и проверка подключения устройства\nIP-адреса неподключённых устройств можно установить через состояние ip сейчас\nИсправление случаев аварии, описанных Sentry",
-        "pt": "Otimize as verificações de descoberta e conexão de dispositivos\nIPs de dispositivos não conectados podem ser definidos através do estado ip agora\nCorrigir casos de acidente relatados por Sentry",
-        "nl": "Optimaal ontdekking en apparaat connectie controle\nIP van onbereikbare apparaten kan worden geplaatst via de IP-staat\nVertaling:",
-        "fr": "Optimiser les vérifications de connexion de découverte et de périphérique\nLes IP de dispositifs non connectés peuvent être définies via l'état d'ip maintenant\nTroubles de crash signalés par Sentry",
-        "it": "Ottimizzare i controlli di connessione alla scoperta e al dispositivo\nGli IP di dispositivi non connessi possono essere impostati tramite lo stato ip\nCorrezione dei casi di crash segnalati da Sentry",
-        "es": "Optimize discovery and device connection checks\nLos IPs de dispositivos no conectados se pueden configurar a través del estado ip ahora\nCasos de accidente fijo reportados por Sentry",
-        "pl": "Oświadczenie odkrycia i połączenia urządzenia\nIP nierozłączonych urządzeń może być ustawione przez stan ip\nSprawy katastrofy Fix podane przez Sentry’a",
-        "uk": "Оптимізуйте перевірки з'єднання та пристрою\nIP-адреси підключених пристроїв можна встановити через IP-станцію\nВиправлені випадки аварії, які повідомляються Sentry",
-        "zh-cn": "减少发现和装置连接检查\n现在可通过参与国建立无连接装置。\nSentry所报告的六例事故"
       }
     },
     "title": "Tuya",
