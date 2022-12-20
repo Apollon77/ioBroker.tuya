@@ -1122,13 +1122,21 @@ function disconnectDevice(deviceId) {
     }
 }
 
-async function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback) {
+async function initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, callback, retry) {
     if (!preserveFields) {
         preserveFields = [];
     }
 
     if (knownDevices[deviceId] && knownDevices[deviceId].device && fromDiscovery) {
         adapter.log.debug(`${deviceId}: Device already connected`);
+        if (callback) {
+            setImmediate(callback);
+        }
+        return;
+    }
+
+    if (knownDevices[deviceId] && knownDevices[deviceId].waitForDisconnect) {
+        adapter.log.debug(`${deviceId}: Device is waiting for disconnect`);
         if (callback) {
             setImmediate(callback);
         }
@@ -1142,12 +1150,24 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         knownDevices[deviceId].pollingTimeout
     )) {
         disconnectDevice(deviceId);
+        if (retry) {
+            adapter.log.info(`${deviceId}: Device still connected for re-init - skip init now`);
+            if (callback) {
+                setImmediate(callback);
+            }
+            return;
+        }
+        knownDevices[deviceId].waitForDisconnect = true;
         return new Promise(resolve => setTimeout(() => {
+            knownDevices[deviceId].waitForDisconnect = false;
             initDevice(deviceId, productKey, data, preserveFields, fromDiscovery, () => {
                 callback && callback();
                 resolve();
-            })
-        }, 500));
+            }, true)
+        }, 1000));
+    } else if (knownDevices[deviceId] && fromDiscovery) {
+        // Make finally sure to end all timeouts
+        disconnectDevice(deviceId);
     }
 
     data.productKey = productKey;
@@ -2333,6 +2353,7 @@ async function onMQTTMessage(message) {
 async function main() {
     setConnected(false);
 
+    // Work around/Hack until https://github.com/joeferner/node-http-mitm-proxy/issues/263 is fixed
     try {
         const mitmCaFile = require.resolve('http-mitm-proxy/lib/ca.js');
         if (mitmCaFile) {
