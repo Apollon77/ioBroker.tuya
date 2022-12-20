@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.11.1",
+    "version": "3.11.2",
     "news": {
+      "3.11.2": {
+        "en": "More schema information added/updated\nA crash case reported by Sentry is prevented",
+        "de": "Mehr Schemainformationen hinzugefügt/updated\nEin Unfallfall von Sentry wird verhindert",
+        "ru": "Дополнительная информация по схеме добавлена/обновлена\nПрофилактический случай, сообщенный Sentry, предотвращен",
+        "pt": "Mais informações de esquema adicionado / atualizado\nUm caso de acidente relatado por Sentry é impedido",
+        "nl": "Meer schema informatie toegevoegd\nEen crash-zaak gemeld door Sentry wordt voorkomen",
+        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour\nA crash case reported by Sentry is prevented",
+        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato\nUn caso di crash segnalato da Sentry è impedito",
+        "es": "Más información sobre esquemas añadidos / actualizados\nSe impide un caso de accidente denunciado por Sentry",
+        "pl": "Więcej informacji o schemacie dodano/updować\nSprawa doniesienia o katastrofie przeprowadzona przez Sentry'a jest zapobiegana",
+        "uk": "Детальніше про схему додано/оновлено\nПро це повідомляє Sentry",
+        "zh-cn": "更多的schema信息增加/更新\n阻止Sentry所报告的事故"
+      },
       "3.11.1": {
         "en": "More schema information added/updated\nPrevent crash case reported by Sentry",
         "de": "Mehr Schemainformationen hinzugefügt/updated\nVerhindern Crashfall berichtet von Sentry",
@@ -80,19 +93,6 @@
         "pl": "Więcej informacji o schemacie dodano/updować",
         "uk": "Детальніше про схему додано/оновлено",
         "zh-cn": "更多的schema信息增加/更新"
-      },
-      "3.9.3": {
-        "en": "Optimize Tuya protocol 3.4 discovery\nPrevent restart schedules that are too short when cloud is used\nFix crash cases reported by Sentry\nMore schema information added/updated",
-        "de": "Optimieren Sie Tuya Protokoll 3.4 Entdeckung\nVerhindern Sie Neustartpläne, die zu kurz sind, wenn Cloud verwendet wird\nReparieren Crashfälle gemeldet von Sentry\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Оптимизируйте протокол Tuya 3.4 Открытие\nПредотвратить перезагрузочные графики, которые слишком короткие, когда облако используется\nИсправление случаев аварии, описанных Sentry\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Otimizar a descoberta do protocolo Tuya 3.4\nEvite horários de reinício que são muito curtos quando a nuvem é usada\nCorrigir casos de acidente relatados por Sentry\nMais informações de esquema adicionado / atualizado",
-        "nl": "Quality over Quantity (QoQ) Releases Vertaling:\nVertaling:\nVertaling:\nMeer schema informatie toegevoegd",
-        "fr": "Optimiser le protocole Tuya 3.4 découverte\nPrévenir les horaires de redémarrage trop courts lorsque le nuage est utilisé\nTroubles de crash signalés par Sentry\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Ottimizzare il protocollo Tuya 3.4 scoperta\nEvitare di riavviare gli orari che sono troppo brevi quando il cloud viene utilizzato\nCorrezione dei casi di crash segnalati da Sentry\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Optimize Tuya protocol 3.4 Discover\nEvitar los horarios de reinicio que son demasiado cortos cuando se utiliza la nube\nCasos de accidente fijo reportados por Sentry\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Protokół Tuya 3.4\nPrevent restart schedule, które są zbyt krótkie, gdy chmura jest używana\nSprawy katastrofy Fix podane przez Sentry’a\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Optimize Tuya протокол 3.4 відкриття\nЗапобігти розкладам перезавантаження, які занадто короткі, коли хмара використовується\nВиправлені випадки аварії, які повідомляються Sentry\nДетальніше про схему додано/оновлено",
-        "zh-cn": "3.4 利用图亚议定书\n防备时间太短,在使用云雾器时太短。\nSentry所报告的六例事故\n更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",
