@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.11.2",
+    "version": "3.11.3",
     "news": {
+      "3.11.3": {
+        "en": "A crash case reported by Sentry is prevented\nMore schema information added/updated",
+        "de": "Ein Unfallfall von Sentry wird verhindert\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Профилактический случай, сообщенный Sentry, предотвращен\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Um caso de acidente relatado por Sentry é impedido\nMais informações de esquema adicionado / atualizado",
+        "nl": "Een crash-zaak gemeld door Sentry wordt voorkomen\nMeer schema informatie toegevoegd",
+        "fr": "A crash case reported by Sentry is prevented\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Un caso di crash segnalato da Sentry è impedito\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Se impide un caso de accidente denunciado por Sentry\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Sprawa doniesienia o katastrofie przeprowadzona przez Sentry'a jest zapobiegana\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Про це повідомляє Sentry\nДетальніше про схему додано/оновлено",
+        "zh-cn": "阻止Sentry所报告的事故\n更多的schema信息增加/更新"
+      },
       "3.11.2": {
         "en": "More schema information added/updated\nA crash case reported by Sentry is prevented",
         "de": "Mehr Schemainformationen hinzugefügt/updated\nEin Unfallfall von Sentry wird verhindert",
@@ -80,19 +93,6 @@
         "pl": "Wstępne wsparcie dla grup\nWsparcie dla drugiego typu IR blaster\nNasiona sesja z odświeżeniem, podczas gdy adapter jest uruchamiany\nDostosowanie do pola jaskrajowego (ang. bright_value field) z brakującym czynnikiem skalnym (10,1000 będzie obecnie 1..100);\nBaza64 kodowane wartości surowych jest obecnie dekodowane, gdy wartość dekodowana jest odczytywana jakocii\nAllow z urządzeniami flagowymi ręcznie potrzebuje „odpowiedniej zamiast dostać”, aby otrzymać bieżące dane – korzystać z „zastosowania RefreshToGet: prawdziwe” w sekcji obiektowej\nWięcej informacji o schemacie dodano/updować",
         "uk": "Додано підтримку груп\nДодати підтримку другого типу IR blaster\nДодано оновлення хмарного сеансу при запуску адаптера\nДодати користувацьке обслуговування для світлих_значення полів з відсутнім коефіцієнтом ваги (10.1000 буде зараз 1..100;);\nBase64 закодовано сирі значення тепер декодовано, коли декодовано значення читається ascii\nДозвольте налаштовувати пристрої вручну, що потрібно \"відновити замість отримання\" для отримання поточних даних - використовуйте \"useRefreshToGet: true\" в об'єкті пристрою рідний розділ\nДетальніше про схему додано/оновлено",
         "zh-cn": "增加对团体的支持\n增加对第二种IR 爆炸器的支持\n增加的云散会议制冷剂,而适应者正在运行。\n增加用于光明的增值田的习惯做法(10.1000)现在为1.100;\n现再次确认的原材料价值,因为腐蚀价值可被理解为2。\n允许以手工方式表示,必须“不再”获取现有数据,在装置中使用“Refresh ToGet:真正的”一词。\n更多的schema信息增加/更新"
-      },
-      "3.9.4": {
-        "en": "More schema information added/updated",
-        "de": "Mehr Schemainformationen hinzugefügt/updated",
-        "ru": "Дополнительная информация по схеме добавлена/обновлена",
-        "pt": "Mais informações de esquema adicionado / atualizado",
-        "nl": "Meer schema informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Más información sobre esquemas añadidos / actualizados",
-        "pl": "Więcej informacji o schemacie dodano/updować",
-        "uk": "Детальніше про схему додано/оновлено",
-        "zh-cn": "更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",

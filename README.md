@@ -141,8 +141,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.11.3 (2022-12-22)
 * (Apollon77) A crash case reported by Sentry is prevented
 * (Apollon77) More schema information added/updated
 
