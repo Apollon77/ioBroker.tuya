@@ -885,6 +885,10 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
     }
     deviceGroups[deviceGroupId].pollingTimeout = setTimeout(async () => {
         deviceGroups[deviceGroupId].pollingTimeout = null;
+        if (!appCloudApi) {
+            adapter.log.warn(`Device group ${deviceGroupId} cannot be polled because cloud API is not available`);
+            return;
+        }
 
         const groupData = await appCloudApi.getDeviceGroupData(deviceGroups[deviceGroupId].gid, deviceGroupId);
         if (!groupData || !Array.isArray(groupData)) {
@@ -912,7 +916,6 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
         pollDeviceGroup(deviceGroupId);
     }, overwriteDelay);
 }
-
 
 function handleReconnect(deviceId, delay) {
     if (!knownDevices[deviceId]) return;
