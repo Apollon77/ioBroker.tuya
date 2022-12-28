@@ -468,7 +468,7 @@ async function initDeviceGroups() {
             }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
             let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
-            if (obj.native && obj.native.property && obj.native.property.type === 'bitmap') {
+            if (native && native.property && native.property.type === 'bitmap') {
                 enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
             }
             if (enhancedLogicList) {
@@ -493,7 +493,8 @@ async function initDeviceGroups() {
                     let enhancedValue = values[id];
                     if (typeof enhancedLogicData.onDpSet === 'function') {
                         enhancedValue = enhancedLogicData.onDpSet(enhancedValue, true);
-                        enhancedValueHandler[`${deviceGroupId}.${id}`] = {
+                        enhancedValueHandler[`${deviceGroupId}.${id}`] = enhancedValueHandler[`${deviceGroupId}.${id}`] || {};
+                        enhancedValueHandler[`${deviceGroupId}.${id}`][enhancedLogicData.namePostfix] = {
                             id: enhancedStateId,
                             handler: enhancedLogicData.onDpSet
                         };
@@ -710,7 +711,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
         let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
-        if (obj.native && obj.native.property && obj.native.property.type === 'bitmap') {
+        if (native && native.property && native.property.type === 'bitmap') {
             enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
         }
         if (enhancedLogicList) {
@@ -735,7 +736,8 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 let enhancedValue = values[id];
                 if (typeof enhancedLogicData.onDpSet === 'function') {
                     enhancedValue = enhancedLogicData.onDpSet(enhancedValue);
-                    enhancedValueHandler[`${deviceId}.${id}`] = {
+                    enhancedValueHandler[`${deviceId}.${id}`] = enhancedValueHandler[`${deviceId}.${id}`] || {};
+                    enhancedValueHandler[`${deviceId}.${id}`][enhancedLogicData.namePostfix] = {
                         id: enhancedStateId,
                         handler: enhancedLogicData.onDpSet
                     };
@@ -917,8 +919,10 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
             }
             adapter.setState(deviceGroupStateId, value, true);
             if (enhancedValueHandler[deviceGroupStateId]) {
-                const enhancedValue = enhancedValueHandler[deviceGroupStateId].handler(value, true);
-                adapter.setState(enhancedValueHandler[deviceGroupStateId].id, enhancedValue, true);
+                for (const subId of Object.keys(enhancedValueHandler[deviceGroupStateId])) {
+                    const enhancedValue = enhancedValueHandler[deviceGroupStateId][subId].handler(value, true);
+                    adapter.setState(enhancedValueHandler[deviceGroupStateId][subId].id, enhancedValue, true);
+                }
             }
         }
         pollDeviceGroup(deviceGroupId);
@@ -1029,8 +1033,10 @@ function connectDevice(deviceId, callback) {
                     }
                     adapter.setState(`${deviceIdToSet}.${id}`, value, true);
                     if (enhancedValueHandler[`${deviceIdToSet}.${id}`]) {
-                        const enhancedValue = enhancedValueHandler[`${deviceIdToSet}.${id}`].handler(value);
-                        adapter.setState(enhancedValueHandler[`${deviceIdToSet}.${id}`].id, enhancedValue, true);
+                        for (const subId of Object.keys(enhancedValueHandler[`${deviceIdToSet}.${id}`])) {
+                            const enhancedValue = enhancedValueHandler[`${deviceIdToSet}.${id}`][subId].handler(value);
+                            adapter.setState(enhancedValueHandler[`${deviceIdToSet}.${id}`][subId].id, enhancedValue, true);
+                        }
                     }
                 }
             }
@@ -2146,8 +2152,10 @@ async function updateValuesFromCloud(groupId, retry = false) {
                 }
                 adapter.setState(`${deviceId}.${id}`, value, true);
                 if (enhancedValueHandler[`${deviceId}.${id}`]) {
-                    const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`].handler(value);
-                    adapter.setState(enhancedValueHandler[`${deviceId}.${id}`].id, enhancedValue, true);
+                    for (const subId of Object.keys(enhancedValueHandler[`${deviceId}.${id}`])) {
+                        const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`][subId].handler(value);
+                        adapter.setState(enhancedValueHandler[`${deviceId}.${id}`][subId].id, enhancedValue, true);
+                    }
                 }
             }
         }
@@ -2354,8 +2362,14 @@ async function onMQTTMessage(message) {
                     }
                     adapter.setState(`${deviceId}.${dpId}`, {val: value, ts, ack: true});
                     if (enhancedValueHandler[`${deviceId}.${dpId}`]) {
-                        const enhancedValue = enhancedValueHandler[`${deviceId}.${dpId}`].handler(value);
-                        adapter.setState(enhancedValueHandler[`${deviceId}.${dpId}`].id, {val: enhancedValue, ts ,ack: true});
+                        for (const subId of Object.keys(enhancedValueHandler[`${deviceId}.${dpId}`])) {
+                            const enhancedValue = enhancedValueHandler[`${deviceId}.${dpId}`][subId].handler(value);
+                            adapter.setState(enhancedValueHandler[`${deviceId}.${dpId}`][subId].id, {
+                                val: enhancedValue,
+                                ts,
+                                ack: true
+                            });
+                        }
                     }
                 }
             }
