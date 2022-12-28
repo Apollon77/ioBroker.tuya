@@ -467,39 +467,43 @@ async function initDeviceGroups() {
                 native
             }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
-            const enhancedLogicData = enhancedDpLogic.getEnhancedLogic(id, native.code);
-            if (enhancedLogicData) {
-                enhancedLogicData.common.read = obj.read;
-                enhancedLogicData.common.write = obj.write;
-                enhancedLogicData.common.name = `${obj.name} ${enhancedLogicData.common.name}`;
+            let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
+            if (obj.native && obj.native.property && obj.native.property.type === 'bitmap') {
+                enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
+            }
+            if (enhancedLogicList) {
+                enhancedLogicList.forEach((enhancedLogicData) => {
+                    enhancedLogicData.common.read = obj.read;
+                    enhancedLogicData.common.write = enhancedLogicData.common.write ? obj.write: enhancedLogicData.common.write;
+                    enhancedLogicData.common.name = `${obj.name} ${enhancedLogicData.common.name}`;
 
-                const enhancedStateId = `${deviceGroupId}.${id}${enhancedLogicData.namePostfix}`;
+                    const enhancedStateId = `${deviceGroupId}.${id}${enhancedLogicData.namePostfix}`;
 
-                let onEnhancedChange;
-                if (typeof enhancedLogicData.onValueChange === 'function') {
-                    onEnhancedChange = async (value) => {
-                        const dps = enhancedLogicData.onValueChange(value, true);
-                        adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
-                        if (!dps) return;
-                        for (const dpId of Object.keys(dps)) {
-                            await adapter.setState(`${deviceGroupId}.${dpId}`, dps[dpId], false);
+                    let onEnhancedChange;
+                    if (typeof enhancedLogicData.onValueChange === 'function') {
+                        onEnhancedChange = async (value) => {
+                            const dps = enhancedLogicData.onValueChange(value, true);
+                            adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
+                            if (!dps) return;
+                            for (const dpId of Object.keys(dps)) {
+                                await adapter.setState(`${deviceGroupId}.${dpId}`, dps[dpId], false);
+                            }
                         }
                     }
-                }
-                let enhancedValue = values[id];
-                if (typeof enhancedLogicData.onDpSet === 'function') {
-                    enhancedValue = enhancedLogicData.onDpSet(enhancedValue, true);
-                    enhancedValueHandler[`${deviceGroupId}.${id}`] = {
-                        id: enhancedStateId,
-                        handler: enhancedLogicData.onDpSet
-                    };
-                }
+                    let enhancedValue = values[id];
+                    if (typeof enhancedLogicData.onDpSet === 'function') {
+                        enhancedValue = enhancedLogicData.onDpSet(enhancedValue, true);
+                        enhancedValueHandler[`${deviceGroupId}.${id}`] = {
+                            id: enhancedStateId,
+                            handler: enhancedLogicData.onDpSet
+                        };
+                    }
 
-                objectHelper.setOrUpdateObject(enhancedStateId, {
-                    type: 'state',
-                    common: enhancedLogicData.common
-                }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, enhancedValue, onEnhancedChange);
-
+                    objectHelper.setOrUpdateObject(enhancedStateId, {
+                        type: 'state',
+                        common: enhancedLogicData.common
+                    }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, enhancedValue, onEnhancedChange);
+                });
             }
         });
 
@@ -705,39 +709,43 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             native
         }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
-        const enhancedLogicData = enhancedDpLogic.getEnhancedLogic(id, native.code);
-        if (enhancedLogicData) {
-            enhancedLogicData.common.read = obj.read;
-            enhancedLogicData.common.write = obj.write;
-            enhancedLogicData.common.name = `${obj.name} ${enhancedLogicData.common.name}`;
+        let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
+        if (obj.native && obj.native.property && obj.native.property.type === 'bitmap') {
+            enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
+        }
+        if (enhancedLogicList) {
+            enhancedLogicList.forEach((enhancedLogicData) => {
+                enhancedLogicData.common.read = obj.read;
+                enhancedLogicData.common.write = enhancedLogicData.common.write ? obj.write: enhancedLogicData.common.write;
+                enhancedLogicData.common.name = `${obj.name} ${enhancedLogicData.common.name}`;
 
-            const enhancedStateId = `${deviceId}.${id}${enhancedLogicData.namePostfix}`;
+                const enhancedStateId = `${deviceId}.${id}${enhancedLogicData.namePostfix}`;
 
-            let onEnhancedChange;
-            if (typeof enhancedLogicData.onValueChange === 'function') {
-                onEnhancedChange = async (value) => {
-                    const dps = enhancedLogicData.onValueChange(value);
-                    adapter.log.debug(`${deviceId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
-                    if (!dps) return;
-                    for (const dpId of Object.keys(dps)) {
-                        await adapter.setState(`${deviceId}.${dpId}`, dps[dpId], false);
+                let onEnhancedChange;
+                if (typeof enhancedLogicData.onValueChange === 'function') {
+                    onEnhancedChange = async (value) => {
+                        const dps = enhancedLogicData.onValueChange(value);
+                        adapter.log.debug(`${deviceId} onChange triggered for ${enhancedStateId} and value ${JSON.stringify(value)} leading to dps ${JSON.stringify(dps)}`);
+                        if (!dps) return;
+                        for (const dpId of Object.keys(dps)) {
+                            await adapter.setState(`${deviceId}.${dpId}`, dps[dpId], false);
+                        }
                     }
                 }
-            }
-            let enhancedValue = values[id];
-            if (typeof enhancedLogicData.onDpSet === 'function') {
-                enhancedValue = enhancedLogicData.onDpSet(enhancedValue);
-                enhancedValueHandler[`${deviceId}.${id}`] = {
-                    id: enhancedStateId,
-                    handler: enhancedLogicData.onDpSet
-                };
-            }
+                let enhancedValue = values[id];
+                if (typeof enhancedLogicData.onDpSet === 'function') {
+                    enhancedValue = enhancedLogicData.onDpSet(enhancedValue);
+                    enhancedValueHandler[`${deviceId}.${id}`] = {
+                        id: enhancedStateId,
+                        handler: enhancedLogicData.onDpSet
+                    };
+                }
 
-            objectHelper.setOrUpdateObject(enhancedStateId, {
-                type: 'state',
-                common: enhancedLogicData.common
-            }, (data.dpName && data.dpName[id]) ? [] : preserveFields, enhancedValue, onEnhancedChange);
-
+                objectHelper.setOrUpdateObject(enhancedStateId, {
+                    type: 'state',
+                    common: enhancedLogicData.common
+                }, (data.dpName && data.dpName[id]) ? [] : preserveFields, enhancedValue, onEnhancedChange);
+            });
         }
     });
 
@@ -1535,6 +1543,8 @@ async function syncDevicesWithAppCloud() {
                 updateValuesFromCloud();
             }, adapter.config.cloudPollingInterval * 1000);
         }
+    } else {
+        adapter.log.warn("App cloud connection failed. No sync possible");
     }
 }
 
