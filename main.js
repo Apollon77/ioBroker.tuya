@@ -51,6 +51,7 @@ let cloudPollingTimeout = null;
 const cloudGroupPollingTimeouts = {};
 let cloudPollingErrorCounter = 0;
 let cloudMqtt = null;
+let lastMqttMessage = 0;
 let isStopping = false;
 
 let Sentry;
@@ -557,13 +558,13 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
         try {
             const res = await appCloudApi.set(cloudDeviceGroups[physicalDeviceId], deviceId, physicalDeviceId, dps);
             adapter.log.debug(`${deviceId}.${id}: set value ${JSON.stringify(value)} via ${physicalDeviceId} (Cloud): res=${JSON.stringify(res)}`);
-            if (!cloudMqtt && !noPolling) {
+            if (!noPolling) {
                 scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
             return res;
         } catch (err) {
             adapter.log.warn(`${deviceId}.${id}: set value ${value} via ${physicalDeviceId} (Cloud) failed: ${err.code} - ${err.message}`);
-            if (!cloudMqtt && !noPolling) {
+            if (!noPolling) {
                 scheduleCloudGroupValueUpdate(cloudDeviceGroups[physicalDeviceId], 2000);
             }
         }
@@ -1529,7 +1530,7 @@ async function syncDevicesWithAppCloud() {
             try {
                 cloudMqtt.stop();
             } catch (err) {
-                adapter.log.error(`Error to stop Cloud MQTT: ${err.message}`);
+                adapter.log.error(`Error while stopping Cloud MQTT: ${err.message}`);
             }
             cloudMqtt = null;
         }
@@ -1539,16 +1540,17 @@ async function syncDevicesWithAppCloud() {
             adapter.log.error(`Error to connect to Cloud MQTT: ${err.message}`);
         }
         if (cloudMqtt) {
-            adapter.log.info(`Cloud MQTT connection established.`);
-        } else {
-            if (adapter.config.cloudPollingWhenNotConnected) {
-                adapter.log.debug('Initialize App CLoud Device Polling for unconnected devices ...');
-                cloudPollingTimeout = setTimeout(() => {
-                    cloudPollingTimeout = null;
-                    updateValuesFromCloud();
-                }, adapter.config.cloudPollingInterval * 1000);
-            }
+            adapter.log.info(`Cloud MQTT connection established successfully.`);
         }
+
+        if (adapter.config.cloudPollingWhenNotConnected) {
+            adapter.log.debug('Initialize App CLoud Device Polling for unconnected devices ...');
+            cloudPollingTimeout = setTimeout(() => {
+                cloudPollingTimeout = null;
+                updateValuesFromCloud();
+            }, adapter.config.cloudPollingInterval * 1000);
+        }
+
     } else {
         adapter.log.warn("App cloud connection failed. No sync possible");
     }
@@ -2084,7 +2086,11 @@ function scheduleCloudGroupValueUpdate(groupId, delay) {
 
 async function updateValuesFromCloud(groupId, retry = false) {
     if (cloudMqtt) {
-        return;
+        if ((Date.now() - lastMqttMessage) <= adapter.config.cloudPollingInterval * 1000) {
+            return
+        } else {
+            adapter.log.info('Use app cloud polling because last MQTT update was ' + Math.floor((Date.now() - lastMqttMessage) / (1000 * 60)) + ' mins ago');
+        }
     }
     if (typeof groupId === 'boolean') {
         retry = groupId;
@@ -2105,12 +2111,10 @@ async function updateValuesFromCloud(groupId, retry = false) {
     }
     if (groups.length === 0) {
         adapter.log.debug('No devices to update from cloud');
-        if (!cloudMqtt) {
-            cloudPollingTimeout = setTimeout(() => {
-                cloudPollingTimeout = null;
-                updateValuesFromCloud();
-            }, adapter.config.cloudPollingInterval * 1000);
-        }
+        cloudPollingTimeout = setTimeout(() => {
+            cloudPollingTimeout = null;
+            updateValuesFromCloud();
+        }, adapter.config.cloudPollingInterval * 1000);
         return;
     }
     let deviceList = [];
@@ -2183,12 +2187,10 @@ async function updateValuesFromCloud(groupId, retry = false) {
         }
         return;
     }
-    if (!cloudMqtt) {
-        cloudPollingTimeout = setTimeout(() => {
-            cloudPollingTimeout = null;
-            updateValuesFromCloud();
-        }, adapter.config.cloudPollingInterval * 1000);
-    }
+    cloudPollingTimeout = setTimeout(() => {
+        cloudPollingTimeout = null;
+        updateValuesFromCloud();
+    }, adapter.config.cloudPollingInterval * 1000);
 }
 
 async function connectMqtt() {
@@ -2244,6 +2246,7 @@ async function connectMqtt() {
 //Handle device deletion, addition, status update
 async function onMQTTMessage(message) {
     if (isStopping) return;
+    lastMqttMessage = Date.now();
     if (message.bizCode && message.bizData) {
         // {"bizCode":"nameUpdate","bizData":{"devId":"34305060807d3a1d7832","uid":"eu1539013901029biqMB","name":"Steckdose irgendwo"},"devId":"34305060807d3a1d7832","productKey":"8FAPq5h6gdV51Vcr","ts":1667689855956,"uuid":"34305060807d3a1d7832"}
         if (message.bizCode === 'nameUpdate') {

@@ -144,6 +144,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ### __WORK IN PROGRESS__
 * (Apollon77) Added decoding of phase_a/b/c and alarm_set_2
+* (Apollon77) Added fallback for cloud polling when no values were updated using MQTT connection
 * (Apollon77) Added decoding of bitmaps (read only for now)
 
 ### 3.11.4 (2022-12-28)
