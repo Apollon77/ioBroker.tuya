@@ -51,7 +51,7 @@ let cloudPollingTimeout = null;
 const cloudGroupPollingTimeouts = {};
 let cloudPollingErrorCounter = 0;
 let cloudMqtt = null;
-let lastMqttMessage = 0;
+let lastMqttMessage = Date.now();
 let isStopping = false;
 
 let Sentry;
@@ -2086,10 +2086,17 @@ function scheduleCloudGroupValueUpdate(groupId, delay) {
 
 async function updateValuesFromCloud(groupId, retry = false) {
     if (cloudMqtt) {
-        if ((Date.now() - lastMqttMessage) <= adapter.config.cloudPollingInterval * 1000) {
-            return
+        const differenceSinceLastMqttMessage = Date.now() - lastMqttMessage;
+        if (differenceSinceLastMqttMessage <= adapter.config.cloudPollingInterval * 1000) {
+            cloudPollingTimeout = setTimeout(() => {
+                cloudPollingTimeout = null;
+                updateValuesFromCloud();
+            }, adapter.config.cloudPollingInterval * 1000);
+            return;
+        } else if (differenceSinceLastMqttMessage < 24 * 60 * 60 * 1000) {
+            adapter.log.debug(`Use app cloud polling because last MQTT update was ${Math.floor(differenceSinceLastMqttMessage / (1000 * 60))} mins ago.`);
         } else {
-            adapter.log.info(`Use app cloud polling because last MQTT update was ${Math.floor((Date.now() - lastMqttMessage) / (1000 * 60))} mins ago. Please check your Tuya IoT Cloud status that no service is expired.`);
+            adapter.log.info(`Use app cloud polling because last MQTT update was ${Math.floor(differenceSinceLastMqttMessage / (1000 * 60 * 60))} hours ago. Please check your Tuya IoT Cloud status that no service is expired.`);
         }
     }
     if (typeof groupId === 'boolean') {
