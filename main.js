@@ -1994,6 +1994,8 @@ async function cloudLogin(username, password, region, appType, appDeviceId, appS
             await cloudInstance.getLocationList();
             if (appSessionId !== cloudInstance.cloudApi.sid) {
                 adapter.log.debug(`Session id changed to ${cloudInstance.cloudApi.sid}`);
+            } else {
+                adapter.log.debug(`Session id is still valid`);
             }
             return cloudInstance;
         } catch (err) {
@@ -2086,7 +2088,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
     }
     if (typeof groupId === 'boolean') {
         retry = groupId;
-        groupId = null;
+        groupId = undefined;
     }
     const groups = [];
     if (groupId === undefined) {
