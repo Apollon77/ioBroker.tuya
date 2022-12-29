@@ -467,7 +467,7 @@ async function initDeviceGroups() {
                 native
             }, (deviceGroup.dpName && deviceGroup.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
-            let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
+            let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code) || [];
             if (native && native.property && native.property.type === 'bitmap') {
                 enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
             }
@@ -710,7 +710,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             native
         }, (data.dpName && data.dpName[id]) ? [] : preserveFields, values[id], onChange);
 
-        let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code);
+        let enhancedLogicList = enhancedDpLogic.getEnhancedLogic(id, native.code) || [];
         if (native && native.property && native.property.type === 'bitmap') {
             enhancedLogicList = [...enhancedLogicList, ...enhancedDpLogic.getBitmapLogic(id, native)];
         }
