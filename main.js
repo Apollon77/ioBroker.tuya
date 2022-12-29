@@ -2089,7 +2089,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
         if ((Date.now() - lastMqttMessage) <= adapter.config.cloudPollingInterval * 1000) {
             return
         } else {
-            adapter.log.info('Use app cloud polling because last MQTT update was ' + Math.floor((Date.now() - lastMqttMessage) / (1000 * 60)) + ' mins ago');
+            adapter.log.info(`Use app cloud polling because last MQTT update was ${Math.floor((Date.now() - lastMqttMessage) / (1000 * 60))} mins ago. Please check your Tuya IoT Cloud status that no service is expired.`);
         }
     }
     if (typeof groupId === 'boolean') {
