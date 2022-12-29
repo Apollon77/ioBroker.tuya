@@ -1523,6 +1523,7 @@ async function syncDevicesWithAppCloud() {
         if (adapterRestartPlanned) {
             return;
         }
+        adapter.log.debug('Initial cloud device sync done');
 
         if (cloudMqtt) {
             try {
@@ -1536,18 +1537,17 @@ async function syncDevicesWithAppCloud() {
             cloudMqtt = await connectMqtt();
         } catch (err) {
             adapter.log.error(`Error to connect to Cloud MQTT: ${err.message}`);
-            return;
         }
         if (cloudMqtt) {
             adapter.log.info(`Cloud MQTT connection established.`);
-            return;
-        }
-
-        if (adapter.config.cloudPollingWhenNotConnected) {
-            cloudPollingTimeout = setTimeout(() => {
-                cloudPollingTimeout = null;
-                updateValuesFromCloud();
-            }, adapter.config.cloudPollingInterval * 1000);
+        } else {
+            if (adapter.config.cloudPollingWhenNotConnected) {
+                adapter.log.debug('Initialize App CLoud Device Polling for unconnected devices ...');
+                cloudPollingTimeout = setTimeout(() => {
+                    cloudPollingTimeout = null;
+                    updateValuesFromCloud();
+                }, adapter.config.cloudPollingInterval * 1000);
+            }
         }
     } else {
         adapter.log.warn("App cloud connection failed. No sync possible");
