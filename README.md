@@ -124,6 +124,39 @@ The triggering is then send to the cloud.
 The adapter also reads out defined groups and creates corresponding states in the adapter. The group value is also polled from cloud and updated in the adapter.
 When controlling groups this also is done via the cloud because else the group status will run out of sync.
 
+## Converted/Enhanced Datapoints
+
+The data from some datapoints are encoded and so needs to be decrypted and re-encrypted if allowed to change.
+
+### Bitmap Fields
+Some fields contain bitmaps, which means that they are a number and each bit in this number represents a state. The adapter converts these fields into substates like X-0 (for bit 0), X-1 (for bit 1) and so on. The label of the bit is set added to the name of the state.
+Currently, bitfields are not writable.
+
+### RGB Color states (IDs 24/5/colour/colour_data)
+RGB Color datapoints are decoded into an object 5-rgb/24-rgb as RGB value in form "#rrggbb". The current color is decoded into that state and  can also be set by setting that state.
+Make sure to use the correct mode of the lamp (white/color) because color is only relevant when the color mode is active.
+
+### Power measurement states (IDs 5/6/7/phase_a/phase_b/phase_c)
+The power measurement states are decoded into an object X-current, X-power and X-voltage. X-power is only having a value for some devices.
+These states are not writable.
+
+### Device Alarm states(IDs 17/alarm_set_2)
+The alarm states are decoded into a 17-decoded object with a json as value. The JSON contains an array with the list of defined alarm types and their thresholds.
+You can modify and set that JSON to change the alarm settings. The following alarm types are known (but maybe not all are supported by all devices):
+* overcurrent
+* three_phase_current_imbalance
+* ammeter_overvoltage
+* under_voltage
+* three_phase_current_loss
+* power_failure
+* magnetic
+* insufficient_balance
+* arrears
+* battery_overvoltage
+* cover_open
+* meter_cover_open
+* fault
+
 ## Credits
 The work of the adapter would not had been possible without the great work of @codetheweb, @kueblc and @NorthernMan54 (https://github.com/codetheweb/tuyapi) and https://github.com/clach04/python-tuya,https://github.com/uzlonewolf/tinytuya and many more.
 
