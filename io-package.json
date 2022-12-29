@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.11.4",
+    "version": "3.12.0",
     "news": {
+      "3.12.0": {
+        "en": "Added decoding of phase_a/b/c and alarm_set_2\nAdded fallback for cloud polling when no values were updated using MQTT connection\nAdded decoding of bitmaps (read only for now)",
+        "de": "Decodierung von Phase_a/b/c und alarm_set_2\nDropback für die Cloud-Umfrage hinzugefügt, wenn keine Werte mit MQTT-Verbindung aktualisiert wurden\nHinzugefügte Dekodierung von Bitmaps (nur jetzt lesen)",
+        "ru": "Добавлена расшифровка фазы_a/b/c и будильник_set_2\nДобавлена опадка для облачного опроса, когда никакие значения не были обновлены с помощью соединения MQTT\nДобавлена расшифровка bitmaps (читать только сейчас)",
+        "pt": "Adicionado decodificação de fase_a/b/c e alarm_set_2\nRedução adicional para pesquisas em nuvem quando nenhum valor foi atualizado usando conexão MQTT\nAdicionado decodificação de bitmaps (leia apenas por agora)",
+        "nl": "Vertaling:\nVertaling:\nToegevoegd decodering van bitmaps (read alleen voor nu)",
+        "fr": "Ajout du décodage de phase_a/b/c et alarm_set_2\nAjout d'un revers pour le sondage en nuage lorsqu'aucune valeur n'a été mise à jour en utilisant la connexion MQTT\nAjout du décodage des bitmaps (lire seulement pour le moment)",
+        "it": "Aggiunta decodifica di phase_a/b/c e Alarm_set_2\nAggiunto fallback per il cloud polling quando non sono stati aggiornati valori utilizzando connessione MQTT\nAggiunta decodifica di bitmaps (leggi solo per ora)",
+        "es": "Decodificación agregada de phase_a/b/c y alarm_set_2\nAgregado retroceso para la encuesta en la nube cuando no se actualizaron los valores usando conexión MQTT\nSe agregó decodificación de bitmaps (sólo por ahora)",
+        "pl": "Zastosowanie fazy_a/b/c i alarm_set_2\nWstępne dochodzenie do zanieczyszczeń chmur, gdy nie zostały zaktualizowane przy użyciu połączenia MQTT\nAddditioning of bitmaps (ang.)",
+        "uk": "Додано декодування фази_a/b/c та тривоги_set_2\nДодано випадання для хмарного опитування, коли не було оновлено значення за допомогою підключення MQTT\nДодано декодування бітмапа (прочитати тільки зараз)",
+        "zh-cn": "A. 增加阶段的编码\n在未更新价值的情况下,添加过云雾剂的下降\n增加标书(仅现在)"
+      },
       "3.11.4": {
         "en": "A crash case reported by Sentry is prevented\nMore schema information added/updated",
         "de": "Ein Unfallfall von Sentry wird verhindert\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Optymizacja IR – obecnie działa lokalnie i przez chmurę we wszystkich przypadkach",
         "uk": "Optimize IR - тепер працює локально і через хмару у всіх випадках",
         "zh-cn": "利用IR-现在在当地工作,在所有情况下都通过云雾进行工作。"
-      },
-      "3.10.1": {
-        "en": "Make info.ip writable to allow manual setting of IP address",
-        "de": "Machen Sie info.ip schreibbar, um die manuelle Einstellung der IP-Adresse zu ermöglichen",
-        "ru": "Сделайте info.ip writable, чтобы позволить ручной настройки IP-адреса",
-        "pt": "Faça info.ip writable para permitir a configuração manual do endereço IP",
-        "nl": "Maak info geschreven om handmatig IP-adres toe te staan",
-        "fr": "Faites info.ip writable pour permettre le réglage manuel de l'adresse IP",
-        "it": "Fare scrivibile info.ip per consentire l'impostazione manuale dell'indirizzo IP",
-        "es": "Hacer info.ip writable para permitir el ajuste manual de la dirección IP",
-        "pl": "Make info.ip writable to umożliwia ręczne ustawienie adresu IP",
-        "uk": "Зробіть інформацію.ip зважений, щоб дозволити ручне налаштування IP-адреси",
-        "zh-cn": "Ming info.iptable to容许IP地址的手册制定"
       }
     },
     "title": "Tuya",
