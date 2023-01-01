@@ -51,7 +51,7 @@
     "@iobroker/dev-server": "^0.6.0",
     "@iobroker/testing": "^4.1.0",
     "chai": "^4.3.6",
-    "mocha": "^10.1.0"
+    "mocha": "^10.2.0"
   },
   "main": "main.js",
   "scripts": {
