@@ -174,6 +174,10 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) More schema information added/updated
+
 ### 3.12.0 (2022-12-29)
 * (Apollon77) Added decoding of phase_a/b/c and alarm_set_2
 * (Apollon77) Added fallback for cloud polling when no values were updated using MQTT connection
