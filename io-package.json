@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.12.0",
+    "version": "3.12.1",
     "news": {
+      "3.12.1": {
+        "en": "More schema information added/updated",
+        "de": "Mehr Schemainformationen hinzugefügt/updated",
+        "ru": "Дополнительная информация по схеме добавлена/обновлена",
+        "pt": "Mais informações de esquema adicionado / atualizado",
+        "nl": "Meer schema informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Más información sobre esquemas añadidos / actualizados",
+        "pl": "Więcej informacji o schemacie dodano/updować",
+        "uk": "Детальніше про схему додано/оновлено",
+        "zh-cn": "更多的schema信息增加/更新"
+      },
       "3.12.0": {
         "en": "Added decoding of phase_a/b/c and alarm_set_2\nAdded fallback for cloud polling when no values were updated using MQTT connection\nAdded decoding of bitmaps (read only for now)",
         "de": "Decodierung von Phase_a/b/c und alarm_set_2\nDropback für die Cloud-Umfrage hinzugefügt, wenn keine Werte mit MQTT-Verbindung aktualisiert wurden\nHinzugefügte Dekodierung von Bitmaps (nur jetzt lesen)",
@@ -80,19 +93,6 @@
         "pl": "Wsparcie dla Zigbee Devices przez Hubsa\nPrzygotowania do wypadku, kiedy odkryto nowy nieoznaczony urządzenie\nWięcej informacji o schemacie dodano/updować",
         "uk": "Додано підтримку для керування пристроями Zigbee через локально\nЗапобігання аварійного випадку, коли відкривається новий нешифрований пристрій\nДетальніше про схему додано/оновлено",
         "zh-cn": "通过当地的Hebs控制Zigbee Devic的支助\n发现新的未加密装置时,预防事故\n更多的schema信息增加/更新"
-      },
-      "3.10.2": {
-        "en": "Optimize IR - now works locally and via cloud in all cases",
-        "de": "Optimieren IR - funktioniert jetzt lokal und über Cloud in allen Fällen",
-        "ru": "Оптимизация IR - теперь работает локально и через облако во всех случаях",
-        "pt": "Otimizar IR - agora funciona localmente e via nuvem em todos os casos",
-        "nl": "Optimize IR - werkt nu in de buurt en via wolk in alle gevallen",
-        "fr": "Optimiser IR - fonctionne maintenant localement et via le cloud dans tous les cas",
-        "it": "Optimize IR - ora funziona localmente e tramite cloud in tutti i casi",
-        "es": "Optimize IR - ahora funciona localmente y a través de la nube en todos los casos",
-        "pl": "Optymizacja IR – obecnie działa lokalnie i przez chmurę we wszystkich przypadkach",
-        "uk": "Optimize IR - тепер працює локально і через хмару у всіх випадках",
-        "zh-cn": "利用IR-现在在当地工作,在所有情况下都通过云雾进行工作。"
       }
     },
     "title": "Tuya",
