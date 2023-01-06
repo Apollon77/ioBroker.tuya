@@ -39,6 +39,7 @@ To support real time updates of devices that are not connected locally, and also
 **Note: The IoT Platform Account is only active for some time and needs to be extended monthly afterwards!**
 
 If you use the Tuya IoT Platform and get the message in log like "Use app cloud polling because last MQTT update was 29 hours ago. Please check your Tuya IoT Cloud status that no service is expired." then this means that there were no MQTT messages in the last time and so most likely the iot Core Service has expired. Login to the Tuya IoT Platform and check the status of the iot Core Service. If it is expired then renew it (possible monthly directly or up to 6 months with a manual review process by Tuya staff.
+Direct Link: https://eu.iot.tuya.com/cloud/products?productType=all
 
 With this featureset you can choose between all available options and work with or (beside the one time syncs) without the Tuya Cloud systems. You decide.
 
