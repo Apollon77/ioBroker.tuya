@@ -13,8 +13,6 @@
 
 ioBroker adapter to connect to several small and cheap Wifi devices that care connected to the Tuya Cloud and mostly use the Smartlife App/Alexa-Skill. The adapter supports reading real time status updates and controlling of those devices once synced with the respective mobile phone app.
 
-Tuya devices are ESP8266MOD WiFi smart devices from Shenzhen Xenon.
-
 Beside devices usable with the Smart Live App or Tuya App.
 
 The adapter locally connects to all devices that are "always in wifi". Devices that only come online when there is an event, send their data and go offline again (mostly **battery powered devices**) are only supported using the Tuya IoT Platform MQTT connection (see below).
@@ -39,6 +37,8 @@ If you decide to store your Tuya App Login Credentials (Smart Life App or Tuya S
 
 To support real time updates of devices that are not connected locally, and also e.g. battery based devices, you can additionally register yourself an Account on the Tuya IoT Platform and Link your App Account and use a Cloud-MQTT connection. To register yourself an Account on the Tuya IoT Platform please follow the instructions on [Tuya IoT Platform](https://developer.tuya.com/en/docs/iot/Platform_Configuration_smarthome?id=Kamcgamwoevrx).
 **Note: The IoT Platform Account is only active for some time and needs to be extended monthly afterwards!**
+
+If you use the Tuya IoT Platform and get the message in log like "Use app cloud polling because last MQTT update was 29 hours ago. Please check your Tuya IoT Cloud status that no service is expired." then this means that there were no MQTT messages in the last time and so most likely the iot Core Service has expired. Login to the Tuya IoT Platform and check the status of the iot Core Service. If it is expired then renew it (possible monthly directly or up to 6 months with a manual review process by Tuya staff.
 
 With this featureset you can choose between all available options and work with or (beside the one time syncs) without the Tuya Cloud systems. You decide.
 
