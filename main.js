@@ -1256,8 +1256,16 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     if (knownDevices[deviceId].meshId) {
         if (data.cid !== undefined) {
             knownDevices[deviceId].cid = data.cid;
-        } else if (data.otaInfo && data.otaInfo.otaModuleMap && data.otaInfo.otaModuleMap.zigbee && data.deviceTopo && data.deviceTopo.nodeId) {
-            adapter.log.debug(`${deviceId}: Initialize cid "${data.deviceTopo.nodeId}" for Sub-Zigbee device via parent ${knownDevices[deviceId].meshId}`);
+        } else if (data.otaInfo && data.otaInfo.otaModuleMap && data.deviceTopo && data.deviceTopo.nodeId) {
+            let gwType;
+            if (data.otaInfo.otaModuleMap.zigbee) {
+                gwType = 'Zigbee';
+            } else if (data.otaInfo.otaModuleMap.subpieces) {
+                gwType = 'Subpieces/Wifi';
+            } else {
+                gwType = 'Unknown';
+            }
+            adapter.log.debug(`${deviceId}: Initialize cid "${data.deviceTopo.nodeId}" for Sub-${gwType} device via parent ${knownDevices[deviceId].meshId}`);
             data.cid = data.deviceTopo.nodeId;
             knownDevices[deviceId].cid = data.cid;
         }

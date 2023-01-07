@@ -27,9 +27,9 @@
   "dependencies": {
     "@apollon/iobroker-tools": "^0.2.1",
     "@iobroker/adapter-core": "^2.6.7",
-    "@sentry/integrations": "^7.23.0",
-    "@sentry/node": "^7.23.0",
-    "@tuyapi/cloud": "^0.6.0",
+    "@sentry/integrations": "^7.29.0",
+    "@sentry/node": "^7.29.0",
+    "@tuyapi/cloud": "^0.6.1",
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "extend": "^3.0.2",
@@ -50,8 +50,8 @@
     "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/dev-server": "^0.6.0",
     "@iobroker/testing": "^4.1.0",
-    "chai": "^4.3.6",
-    "mocha": "^10.1.0"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   },
   "main": "main.js",
   "scripts": {
