@@ -30,7 +30,7 @@
     "@sentry/integrations": "^7.29.0",
     "@sentry/node": "^7.29.0",
     "@tuyapi/cloud": "^0.6.1",
-    "axios": "^0.27.2",
+    "axios": "^1.2.2",
     "crypto-js": "^4.1.1",
     "extend": "^3.0.2",
     "finalhandler": "^1.2.0",
