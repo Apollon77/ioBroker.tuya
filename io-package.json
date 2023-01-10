@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.12.1",
+    "version": "3.13.0",
     "news": {
+      "3.13.0": {
+        "en": "Add generic support for gateways (and so also WLAN Gateways)\nMore schema information added/updated",
+        "de": "Fügen Sie generische Unterstützung für Gateways hinzu (und so auch WLAN Gateways)\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Добавьте общую поддержку ворот (и так же WLAN Gateways)\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Adicionar suporte genérico para gateways (e assim também WLAN Gateways)\nMais informações de esquema adicionado / atualizado",
+        "nl": "Voeg generische steun toe voor poorten en ook WLAN Gateways\nMeer schema informatie toegevoegd",
+        "fr": "Ajoutez un support générique pour les passerelles (et aussi WLAN Gateways)\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Aggiungi supporto generico per gateway (e così anche gateway WLAN)\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Añadir soporte genérico para gateways (y también WLAN Gateways)\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Addd generic support for gateways (a także WLAN Gateways)\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Додати загальний супровід шлюзу (і так само, як і WLAN Gateways)\nДетальніше про схему додано/оновлено",
+        "zh-cn": "增加对门户(以及WLAN Gateways)的通用支助\n更多的schema信息增加/更新"
+      },
       "3.12.1": {
         "en": "More schema information added/updated",
         "de": "Mehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Więcej informacji o schemacie dodano/updować\nPrzygotowania do wypadku Sentry",
         "uk": "Детальніше про схему додано/оновлено\nЗапобігти виникненню аварійних випадків",
         "zh-cn": "更多的schema信息增加/更新\nSentry所报告的预防事故"
-      },
-      "3.11.0": {
-        "en": "Added support to control Zigbee Devices via Hubs locally\nPrevent crash case when new unencrypted device is discovered\nMore schema information added/updated",
-        "de": "Unterstützung zur Steuerung von Zigbee Devices über Hubs vor Ort\nVerhindern Sie Crashfall, wenn neues unverschlüsseltes Gerät entdeckt wird\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Добавлена поддержка для управления устройствами Zigbee через Hubs локально\nПредотвратить случай аварии, когда обнаружено новое незашифрованное устройство\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Adicionado suporte para controlar Zigbee Dispositivos via Hubs localmente\nImpedir caso de acidente quando novo dispositivo não criptografado é descoberto\nMais informações de esquema adicionado / atualizado",
-        "nl": "Ondersteuning van Zigbee Devices via Hubs\nVertaling:\nMeer schema informatie toegevoegd",
-        "fr": "Ajout du support pour contrôler les périphériques Zigbee via les hubs localement\nPrévenir le cas de crash lorsque le nouvel appareil non chiffré est découvert\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Aggiunto supporto per il controllo Zigbee Dispositivi tramite Hub localmente\nPrevenire caso crash quando viene scoperto un nuovo dispositivo non crittografato\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Apoyo añadido para controlar los dispositivos Zigbee a través de Hubs localmente\nPrevenir caso de accidente cuando se descubre nuevo dispositivo no cifrado\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Wsparcie dla Zigbee Devices przez Hubsa\nPrzygotowania do wypadku, kiedy odkryto nowy nieoznaczony urządzenie\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Додано підтримку для керування пристроями Zigbee через локально\nЗапобігання аварійного випадку, коли відкривається новий нешифрований пристрій\nДетальніше про схему додано/оновлено",
-        "zh-cn": "通过当地的Hebs控制Zigbee Devic的支助\n发现新的未加密装置时,预防事故\n更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",
