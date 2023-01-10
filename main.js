@@ -536,6 +536,8 @@ async function sendLocallyOrCloud(deviceId, physicalDeviceId, id, value, forceCl
         dps[id] = value;
     }
 
+    if (!knownDevices[physicalDeviceId]) return null;
+
     if (forceCloud !== true && knownDevices[physicalDeviceId].device && knownDevices[physicalDeviceId].connected) {
         try {
             const res = await knownDevices[physicalDeviceId].device.set({
