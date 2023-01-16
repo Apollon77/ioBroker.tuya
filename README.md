@@ -175,6 +175,9 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (Apollon77) More schema information added/updated
+
 ### 3.13.0 (2023-01-10)
 * (Apollon77) Add generic support for gateways (and so also WLAN Gateways)
 * (Apollon77) More schema information added/updated
