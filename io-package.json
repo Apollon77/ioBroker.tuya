@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.13.0",
+    "version": "3.13.1",
     "news": {
+      "3.13.1": {
+        "en": "More schema information added/updated",
+        "de": "Mehr Schemainformationen hinzugefügt/updated",
+        "ru": "Дополнительная информация по схеме добавлена/обновлена",
+        "pt": "Mais informações de esquema adicionado / atualizado",
+        "nl": "Meer schema informatie toegevoegd",
+        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Más información sobre esquemas añadidos / actualizados",
+        "pl": "Więcej informacji o schemacie dodano/updować",
+        "uk": "Детальніше про схему додано/оновлено",
+        "zh-cn": "更多的schema信息增加/更新"
+      },
       "3.13.0": {
         "en": "Add generic support for gateways (and so also WLAN Gateways)\nMore schema information added/updated",
         "de": "Fügen Sie generische Unterstützung für Gateways hinzu (und so auch WLAN Gateways)\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Więcej informacji o schemacie dodano/updować\nSprawa doniesienia o katastrofie przeprowadzona przez Sentry'a jest zapobiegana",
         "uk": "Детальніше про схему додано/оновлено\nПро це повідомляє Sentry",
         "zh-cn": "更多的schema信息增加/更新\n阻止Sentry所报告的事故"
-      },
-      "3.11.1": {
-        "en": "More schema information added/updated\nPrevent crash case reported by Sentry",
-        "de": "Mehr Schemainformationen hinzugefügt/updated\nVerhindern Crashfall berichtet von Sentry",
-        "ru": "Дополнительная информация по схеме добавлена/обновлена\nПредотвратить случай аварии, сообщается в Sentry",
-        "pt": "Mais informações de esquema adicionado / atualizado\nImpedir caso de acidente relatado por Sentry",
-        "nl": "Meer schema informatie toegevoegd\nVertaling:",
-        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour\nPrévenir l ' accident signalé par Sentry",
-        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato\nPrevenire caso crash segnalato da Sentry",
-        "es": "Más información sobre esquemas añadidos / actualizados\nCaso de emergencia reportado por Sentry",
-        "pl": "Więcej informacji o schemacie dodano/updować\nPrzygotowania do wypadku Sentry",
-        "uk": "Детальніше про схему додано/оновлено\nЗапобігти виникненню аварійних випадків",
-        "zh-cn": "更多的schema信息增加/更新\nSentry所报告的预防事故"
       }
     },
     "title": "Tuya",
