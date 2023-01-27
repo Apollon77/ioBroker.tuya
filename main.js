@@ -391,6 +391,9 @@ async function initDeviceGroups() {
 
                     if (obj.scale) {
                         value *= Math.pow(10, obj.scale);
+                        if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                            value = value / native.property.step;
+                        }
                     } else if (obj.states) {
                         value = obj.states[value.toString()];
                     }
@@ -410,7 +413,11 @@ async function initDeviceGroups() {
             if (obj.scale) {
                 valueHandler[`${deviceGroupId}.${id}`] = (value) => {
                     if (value === undefined) return undefined;
-                    return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                    value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                    if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                        value = value * native.property.step;
+                    }
+                    return value;
                 };
                 values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
             } else if (obj.states) {
@@ -651,6 +658,9 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 
                 if (obj.scale) {
                     value *= Math.pow(10, obj.scale);
+                    if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                        value = value / native.property.step;
+                    }
                 } else if (obj.states) {
                     value = obj.states[value.toString()];
                 }
@@ -666,7 +676,11 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         if (obj.scale) {
             valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
-                return Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
+                if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                    value = value * native.property.step;
+                }
+                return value;
             };
             values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         } else if (obj.states) {
