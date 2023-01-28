@@ -391,7 +391,10 @@ async function initDeviceGroups() {
 
                     if (obj.scale) {
                         value *= Math.pow(10, obj.scale);
-                        if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                        if ((
+                            (native.code === 'TempSet' && native.id === 2) ||
+                            (native.code === 'TempCurrent' && native.id === 3) ||
+                            (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
                             value = value / native.property.step;
                         }
                     } else if (obj.states) {
@@ -414,7 +417,10 @@ async function initDeviceGroups() {
                 valueHandler[`${deviceGroupId}.${id}`] = (value) => {
                     if (value === undefined) return undefined;
                     value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
-                    if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                    if ((
+                        (native.code === 'TempSet' && native.id === 2) ||
+                        (native.code === 'TempCurrent' && native.id === 3) ||
+                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
                         value = value * native.property.step;
                     }
                     return value;
@@ -658,7 +664,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 
                 if (obj.scale) {
                     value *= Math.pow(10, obj.scale);
-                    if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                    if ((
+                        (native.code === 'TempSet' && native.id === 2) ||
+                        (native.code === 'TempCurrent' && native.id === 3) ||
+                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
                         value = value / native.property.step;
                     }
                 } else if (obj.states) {
@@ -677,7 +686,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
                 value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
-                if (native.code === 'TempSet' && native.id === 2 && native.property && native.property.step) {
+                if ((
+                    (native.code === 'TempSet' && native.id === 2) ||
+                    (native.code === 'TempCurrent' && native.id === 3) ||
+                    (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
                     value = value * native.property.step;
                 }
                 return value;
