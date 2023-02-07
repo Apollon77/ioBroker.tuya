@@ -263,6 +263,9 @@ async function initScenes() {
     }
     const allScenes = [];
     for (const group of appCloudApi.groups) {
+        if (!appCloudApi) {
+            return;
+        }
         const scenes = await appCloudApi.getScenes(group.groupId);
         if (scenes && scenes.length) {
             scenes.forEach(scene => {
