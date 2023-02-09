@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.14.0",
+    "version": "3.14.1",
     "news": {
+      "3.14.1": {
+        "en": "Also adjust min/max when using multipliers\nMore schema information added/updated",
+        "de": "Auch min/max einstellen, wenn Multiplikatoren verwendet werden\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Также отрегулируйте мин/макс при использовании мультипликаторов\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Também ajustar min/max ao usar multiplicadores\nMais informações de esquema adicionado / atualizado",
+        "nl": "En wees ook min/max als je gebruik maakt van multipliers\nMeer schema informatie toegevoegd",
+        "fr": "Ajustez également min/max lorsque vous utilisez des multiplicateurs\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Anche regolare min/max quando si utilizzano moltiplicatori\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "También ajuste min/max al utilizar multiplicadores\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Dostosowywanie min/max przy użyciu mnożenia\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Також регулюйте мін/макс при використанні мультиплікаторів\nДетальніше про схему додано/оновлено",
+        "zh-cn": "在使用乘数时调整min/max\n更多的schema信息增加/更新"
+      },
       "3.14.0": {
         "en": "Added special handling for needed multiplier for TempSet(2), TempCurrent(3) and floorTemp(102) objects\nMore schema information added/updated",
         "de": "Zusätzliche spezielle Handhabung für benötigten Multiplikator für TempSet(2,) TempCurrent(3) und FloorTemp(102) Objekte\nMehr Schemainformationen hinzugefügt/updated",
@@ -69,19 +82,6 @@
         "zh-cn": "A. 增加阶段的编码\n在未更新价值的情况下,添加过云雾剂的下降\n增加标书(仅现在)"
       },
       "3.11.4": {
-        "en": "A crash case reported by Sentry is prevented\nMore schema information added/updated",
-        "de": "Ein Unfallfall von Sentry wird verhindert\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Профилактический случай, сообщенный Sentry, предотвращен\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Um caso de acidente relatado por Sentry é impedido\nMais informações de esquema adicionado / atualizado",
-        "nl": "Een crash-zaak gemeld door Sentry wordt voorkomen\nMeer schema informatie toegevoegd",
-        "fr": "A crash case reported by Sentry is prevented\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Un caso di crash segnalato da Sentry è impedito\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Se impide un caso de accidente denunciado por Sentry\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Sprawa doniesienia o katastrofie przeprowadzona przez Sentry'a jest zapobiegana\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Про це повідомляє Sentry\nДетальніше про схему додано/оновлено",
-        "zh-cn": "阻止Sentry所报告的事故\n更多的schema信息增加/更新"
-      },
-      "3.11.3": {
         "en": "A crash case reported by Sentry is prevented\nMore schema information added/updated",
         "de": "Ein Unfallfall von Sentry wird verhindert\nMehr Schemainformationen hinzugefügt/updated",
         "ru": "Профилактический случай, сообщенный Sentry, предотвращен\nДополнительная информация по схеме добавлена/обновлена",

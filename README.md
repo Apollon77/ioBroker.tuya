@@ -175,8 +175,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.14.1 (2023-02-09)
 * (Apollon77) Also adjust min/max when using multipliers
 * (Apollon77) More schema information added/updated
 
