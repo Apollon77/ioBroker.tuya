@@ -175,8 +175,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.14.2 (2023-03-24)
 * (Apollon77) prevent state polling to hang when decide do not return new data
 * (Apollon77) More schema information added/updated
 

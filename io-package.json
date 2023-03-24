@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.14.1",
+    "version": "3.14.2",
     "news": {
+      "3.14.2": {
+        "en": "prevent state polling to hang when decide do not return new data\nMore schema information added/updated",
+        "de": "verhindern, dass die staatsbefragung bei der entscheidung nicht neue daten zurückgibt\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "предотвратить государственное загрязнение, чтобы повесить, когда решение не возвращает новые данные\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "evitar que a votação do estado pendurar quando decidir não retornar novos dados\nMais informações de esquema adicionado / atualizado",
+        "nl": "verhinder de staatsvervuiling te hangen als besluit geen nieuwe data terug te brengen\nMeer schema informatie toegevoegd",
+        "fr": "empêcher le vote de l'état de suspendre lorsque vous décidez de ne pas retourner de nouvelles données\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "prevenire l'inquinamento di stato per appendere quando si decide di non restituire nuovi dati\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "evitar que la encuesta estatal cuelgue cuando decida no devolver nuevos datos\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "zapobieganie zanieczyszczeń, gdy decyduje się nie wrócić nowych danych\nWięcej informacji o schemacie dodano/updować",
+        "uk": "запобігати випиленню стану, якщо ви не повертаєте нові дані\nДетальніше про схему додано/оновлено",
+        "zh-cn": "在决定不归还新数据时,防止国家污染。\n更多的schema信息增加/更新"
+      },
       "3.14.1": {
         "en": "Also adjust min/max when using multipliers\nMore schema information added/updated",
         "de": "Auch min/max einstellen, wenn Multiplikatoren verwendet werden\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Zastosowanie fazy_a/b/c i alarm_set_2\nWstępne dochodzenie do zanieczyszczeń chmur, gdy nie zostały zaktualizowane przy użyciu połączenia MQTT\nAddditioning of bitmaps (ang.)",
         "uk": "Додано декодування фази_a/b/c та тривоги_set_2\nДодано випадання для хмарного опитування, коли не було оновлено значення за допомогою підключення MQTT\nДодано декодування бітмапа (прочитати тільки зараз)",
         "zh-cn": "A. 增加阶段的编码\n在未更新价值的情况下,添加过云雾剂的下降\n增加标书(仅现在)"
-      },
-      "3.11.4": {
-        "en": "A crash case reported by Sentry is prevented\nMore schema information added/updated",
-        "de": "Ein Unfallfall von Sentry wird verhindert\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Профилактический случай, сообщенный Sentry, предотвращен\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Um caso de acidente relatado por Sentry é impedido\nMais informações de esquema adicionado / atualizado",
-        "nl": "Een crash-zaak gemeld door Sentry wordt voorkomen\nMeer schema informatie toegevoegd",
-        "fr": "A crash case reported by Sentry is prevented\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Un caso di crash segnalato da Sentry è impedito\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Se impide un caso de accidente denunciado por Sentry\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Sprawa doniesienia o katastrofie przeprowadzona przez Sentry'a jest zapobiegana\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Про це повідомляє Sentry\nДетальніше про схему додано/оновлено",
-        "zh-cn": "阻止Sentry所报告的事故\n更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",
