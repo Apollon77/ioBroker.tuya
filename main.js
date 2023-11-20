@@ -2254,7 +2254,8 @@ async function connectMqtt() {
         adapter.config.cloudUsername,
         adapter.config.cloudPassword,
         adapter.config.appPhoneCode || 49,
-        adapter.config.appType === 'tuya_smart' ? 'tuyaSmart' : 'smartLife',
+        adapter.config.appType === 'tuya_smart' ? 'tuyaSmart' :
+	 (adapter.config.appType === 'ledvance' ? 'ledvance' : 'smartLife'),
         {log: adapter.log.debug.bind(this)},
     );
 
