@@ -1405,7 +1405,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
         }
     }, value => {
         knownDevices[deviceId].noLocalConnection = !!value;
-        adapter.log.info(`${deviceId}: ${value ? 'Do not connect' : 'Connect'} locally to device`);
+        adapter.log.info(`${deviceId}: ${value ? 'Device will not be connected locally' : 'Trying to connect locally to the device'}`);
         if (knownDevices[deviceId].noLocalConnection) {
             disconnectDevice(deviceId);
         }
