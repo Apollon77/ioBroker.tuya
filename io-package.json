@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.14.2",
+    "version": "3.15.0",
     "news": {
+      "3.15.0": {
+        "en": "Add support to login with \"Ledvance\" App account\nAdd support to login with \"Sylvania\" App account\nFixed several smaller issues reported by Sentry\nMore schema information added/updated",
+        "de": "Unterstützung bei der Anmeldung mit Ledvance App-Konto hinzufügen\nUnterstützung bei der Anmeldung mit Sylvania App-Konto hinzufügen\nBehoben mehrere kleinere Probleme von Sentry\nMehr Schemainformationen hinzugefügt/updated",
+        "ru": "Добавить поддержку для входа в аккаунт Ledvance App\nДобавить поддержку для входа в аккаунт Sylvania App\nИсправлено несколько небольших вопросов, сообщенных Сентри\nДополнительная информация по схеме добавлена/обновлена",
+        "pt": "Adicionar suporte para login com a conta do aplicativo Ledvance\nAdicionar suporte para login com Sylvania App conta\nCorrigido várias questões menores relatadas pela Sentry\nMais informações de esquema adicionado / atualizado",
+        "nl": "Voeg ondersteuning toe met Ledvance App account\nVoeg steun aan Sylvania App account\nVertaling:\nMeer schema informatie toegevoegd",
+        "fr": "Ajouter un support pour vous connecter avec le compte Ledvance App\nAjouter du soutien à la connexion avec le compte Sylvania App\nCorrection de plusieurs petits problèmes signalés par Sentry\nPlus d'informations sur le schéma ajoutées/mises à jour",
+        "it": "Aggiungi il supporto per accedere all'account Ledvance App\nAggiungi il supporto per accedere all'account Sylvania App\nRisolto diversi problemi più piccoli segnalati da Sentry\nUlteriori informazioni sullo schema aggiunto/aggiornato",
+        "es": "Añadir soporte para iniciar sesión con Ledvance App account\nAñadir soporte para iniciar sesión con la cuenta Sylvania App\nArreglado varias cuestiones menores reportadas por Sentry\nMás información sobre esquemas añadidos / actualizados",
+        "pl": "Wspieranie logiki na stronie Ledvance App\nAdd supportuje loginę z Sylvanią App\nFixed kilka mniejszych zagadnień doniesionych przez Sentry’a\nWięcej informacji o schemacie dodano/updować",
+        "uk": "Додайте підтримку входу в обліковий запис програми Ledvance\nДодайте підтримку входу в систему Sylvania App\nВиправлено кілька менших питань, які повідомили Sentry\nДетальніше про схему додано/оновлено",
+        "zh-cn": "增加对伐木的支助\n增加对Sylvania 会费帐户中的伐木的支持\nSentry报告的几个较小问题\n更多的schema信息增加/更新"
+      },
       "3.14.2": {
         "en": "prevent state polling to hang when decide do not return new data\nMore schema information added/updated",
         "de": "verhindern, dass die staatsbefragung bei der entscheidung nicht neue daten zurückgibt\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Więcej informacji o schemacie dodano/updować",
         "uk": "Детальніше про схему додано/оновлено",
         "zh-cn": "更多的schema信息增加/更新"
-      },
-      "3.12.0": {
-        "en": "Added decoding of phase_a/b/c and alarm_set_2\nAdded fallback for cloud polling when no values were updated using MQTT connection\nAdded decoding of bitmaps (read only for now)",
-        "de": "Decodierung von Phase_a/b/c und alarm_set_2\nDropback für die Cloud-Umfrage hinzugefügt, wenn keine Werte mit MQTT-Verbindung aktualisiert wurden\nHinzugefügte Dekodierung von Bitmaps (nur jetzt lesen)",
-        "ru": "Добавлена расшифровка фазы_a/b/c и будильник_set_2\nДобавлена опадка для облачного опроса, когда никакие значения не были обновлены с помощью соединения MQTT\nДобавлена расшифровка bitmaps (читать только сейчас)",
-        "pt": "Adicionado decodificação de fase_a/b/c e alarm_set_2\nRedução adicional para pesquisas em nuvem quando nenhum valor foi atualizado usando conexão MQTT\nAdicionado decodificação de bitmaps (leia apenas por agora)",
-        "nl": "Vertaling:\nVertaling:\nToegevoegd decodering van bitmaps (read alleen voor nu)",
-        "fr": "Ajout du décodage de phase_a/b/c et alarm_set_2\nAjout d'un revers pour le sondage en nuage lorsqu'aucune valeur n'a été mise à jour en utilisant la connexion MQTT\nAjout du décodage des bitmaps (lire seulement pour le moment)",
-        "it": "Aggiunta decodifica di phase_a/b/c e Alarm_set_2\nAggiunto fallback per il cloud polling quando non sono stati aggiornati valori utilizzando connessione MQTT\nAggiunta decodifica di bitmaps (leggi solo per ora)",
-        "es": "Decodificación agregada de phase_a/b/c y alarm_set_2\nAgregado retroceso para la encuesta en la nube cuando no se actualizaron los valores usando conexión MQTT\nSe agregó decodificación de bitmaps (sólo por ahora)",
-        "pl": "Zastosowanie fazy_a/b/c i alarm_set_2\nWstępne dochodzenie do zanieczyszczeń chmur, gdy nie zostały zaktualizowane przy użyciu połączenia MQTT\nAddditioning of bitmaps (ang.)",
-        "uk": "Додано декодування фази_a/b/c та тривоги_set_2\nДодано випадання для хмарного опитування, коли не було оновлено значення за допомогою підключення MQTT\nДодано декодування бітмапа (прочитати тільки зараз)",
-        "zh-cn": "A. 增加阶段的编码\n在未更新价值的情况下,添加过云雾剂的下降\n增加标书(仅现在)"
       }
     },
     "title": "Tuya",
