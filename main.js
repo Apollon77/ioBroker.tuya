@@ -311,6 +311,7 @@ async function initDeviceGroups() {
         return;
     }
     for (const group of appCloudApi.groups) {
+        if (!appCloudApi) return;
         const deviceGroupData = await appCloudApi.getGroupDeviceGroups(group.groupId);
         if (!deviceGroupData || !deviceGroupData.length) {
             continue;
@@ -320,6 +321,7 @@ async function initDeviceGroups() {
             deviceGroups[deviceGroup.id].gid = group.groupId;
         }
 
+        if (!appCloudApi) return;
         const deviceGroupRelationData = await appCloudApi.getGroupDeviceGroupRelations(group.groupId);
         if (!deviceGroupRelationData || !deviceGroupRelationData['5'] || !Array.isArray(deviceGroupRelationData['5'])) {
             continue;
@@ -330,7 +332,7 @@ async function initDeviceGroups() {
             if (relation.children && relation.children['6'] && Array.isArray(relation.children['6'])) {
                 relation.children['6'].forEach(child => devicesInGroup.push(child.id));
             }
-            if (devicesInGroup.length) {
+            if (devicesInGroup.length && deviceGroups[id]) {
                 deviceGroups[id].children = devicesInGroup;
             }
         });
@@ -1056,7 +1058,10 @@ function connectDevice(deviceId, callback) {
                 for (const id in data.dps) {
                     if (!data.dps.hasOwnProperty(id)) continue;
                     let value = data.dps[id];
-                    if (!knownDevices[deviceIdToSet].dpIdList.includes(parseInt(id, 10))) {
+                    if (
+                        !knownDevices[deviceIdToSet].dpIdList ||
+                        !knownDevices[deviceIdToSet].dpIdList.includes(parseInt(id, 10))
+                    ) {
                         adapter.log.info(`${deviceIdToSet}: Unknown datapoint ${id} with value ${value}. Please resync devices`);
                         continue;
                     }
@@ -2248,14 +2253,26 @@ async function connectMqtt() {
     const TuyaSHOpenAPI = require('./lib/tuya/lib/tuyashopenapi');
     const TuyaOpenMQ = require('./lib/tuya/lib/tuyamqttapi');
 
+    let appSchema = 'smartLife'; // default
+    switch (adapter.config.appType) {
+        case 'tuya_smart':
+            appSchema = 'tuyaSmart';
+            break;
+        case 'ledvance':
+            appSchema = 'ledvance';
+            break;
+        case 'sylvania':
+            appSchema = 'sylvania';
+            break;
+    }
+
     const api = new TuyaSHOpenAPI(
         adapter.config.iotCloudAccessId,
         adapter.config.iotCloudAccessSecret,
         adapter.config.cloudUsername,
         adapter.config.cloudPassword,
         adapter.config.appPhoneCode || 49,
-        adapter.config.appType === 'tuya_smart' ? 'tuyaSmart' :
-	 (adapter.config.appType === 'ledvance' ? 'ledvance' : 'smartLife'),
+        appSchema,
         {log: adapter.log.debug.bind(this)},
     );
 
