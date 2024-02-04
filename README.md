@@ -175,6 +175,11 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (Apollon77) Try to support phase_X information with 10 bytes
+* (Apollon77) More schema information added/updated
+
 ### 3.15.0 (2023-11-23)
 * (agraf) Add support to login with "Ledvance" App account
 * (Apollon77) Add support to login with "Sylvania" App account
