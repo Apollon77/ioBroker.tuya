@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.15.0",
+    "version": "3.16.0",
     "news": {
+      "3.16.0": {
+        "en": "js-controller 5.0 is now required at least\nImproves stability\nTries to support phase_X information with 10 bytes\nMore schema information were added/updated",
+        "de": "js-controller 5.0 wird nun mindestens benötigt\nVerbessert die Stabilität\nVersuche zur Unterstützung von phase_ X-Informationen mit 10 Bytes\nWeitere Schemainformationen wurden hinzugefügt/updated",
+        "ru": "js-контроллер 5.0 теперь требуется по крайней мере\nУлучшает стабильность\nПоездки для поддержки фазы_ X информация с 10 байтами\nДополнительная информация о схемах была добавлена/обновлена",
+        "pt": "js-controller 5.0 é agora necessário pelo menos\nMelhora a estabilidade\nTenta apoiar phase_ X informações com 10 bytes\nMais informações de esquema foram adicionadas / atualizadas",
+        "nl": "js-controller 5.0 is nu minstens vereist\nVerbetert de stabiliteit\nProbeert fase te ondersteunen_ X-informatie met 10 bytes\nMeer schema informatie zijn toegevoegd/bijgewerkt",
+        "fr": "js-controller 5.0 est maintenant nécessaire au moins\nAméliore la stabilité\nEssaie de supporter la phase_ X informations avec 10 octets\nPlus d'informations sur le schéma ont été ajoutées/mises à jour",
+        "it": "js-controller 5.0 è ora richiesto almeno\nMigliora la stabilità\nProva a sostenere phase_ X informazioni con 10 byte\nUlteriori informazioni sullo schema sono state aggiunte/aggiornate",
+        "es": "js-controller 5.0 ahora se requiere al menos\nMejora la estabilidad\nTries to support phase_ X información con 10 bytes\nSe añadieron más información sobre esquemas/actualizados",
+        "pl": "js- kontroler 5.0 jest teraz wymagany co najmniej\nPoprawia stabilność\nPróby wsparcia fazy _ Informacje X z 10 bajtami\nDodano / zaktualizowano więcej informacji o schematach",
+        "uk": "js-controller 5.0 тепер потрібно принаймні\nПокращення стабільності\nТрійники для підтримки фази_ X інформація з 10 байтами\nДодана інформація про схему",
+        "zh-cn": "现在至少需要 js 控制器 5.0\n改善稳定性\n尝试支持阶段_ 带有 10 字节的 X 信息\n添加/更新了更多的计划信息"
+      },
       "3.15.0": {
         "en": "Add support to login with \"Ledvance\" App account\nAdd support to login with \"Sylvania\" App account\nFixed several smaller issues reported by Sentry\nMore schema information added/updated",
         "de": "Unterstützung bei der Anmeldung mit Ledvance App-Konto hinzufügen\nUnterstützung bei der Anmeldung mit Sylvania App-Konto hinzufügen\nBehoben mehrere kleinere Probleme von Sentry\nMehr Schemainformationen hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Addd generic support for gateways (a także WLAN Gateways)\nWięcej informacji o schemacie dodano/updować",
         "uk": "Додати загальний супровід шлюзу (і так само, як і WLAN Gateways)\nДетальніше про схему додано/оновлено",
         "zh-cn": "增加对门户(以及WLAN Gateways)的通用支助\n更多的schema信息增加/更新"
-      },
-      "3.12.1": {
-        "en": "More schema information added/updated",
-        "de": "Mehr Schemainformationen hinzugefügt/updated",
-        "ru": "Дополнительная информация по схеме добавлена/обновлена",
-        "pt": "Mais informações de esquema adicionado / atualizado",
-        "nl": "Meer schema informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Más información sobre esquemas añadidos / actualizados",
-        "pl": "Więcej informacji o schemacie dodano/updować",
-        "uk": "Детальніше про схему додано/оновлено",
-        "zh-cn": "更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",

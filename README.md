@@ -175,8 +175,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.16.0 (2024-08-15)
 * js-controller 5.0 is now required at least
 * (Apollon77) Improves stability
 * (Apollon77) Tries to support phase_X information with 10 bytes
