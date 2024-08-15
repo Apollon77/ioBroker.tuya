@@ -177,6 +177,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 ## Changelog
 
 ### __WORK IN PROGRESS__
+* js-controller 5.0 is now required at least
 * (Apollon77) Improves stability
 * (Apollon77) Tries to support phase_X information with 10 bytes
 * (Apollon77) More schema information were added/updated
