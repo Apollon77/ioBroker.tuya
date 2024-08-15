@@ -122,7 +122,10 @@
       "zh-cn": "涂鸦适配器",
       "uk": "Туя адаптер"
     },
-    "license": "MIT",
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
     "authors": [
       "Apollon77 <iobroker@fischer-ka.de>"
     ],
@@ -130,7 +133,6 @@
     "mode": "daemon",
     "icon": "tuya.png",
     "messagebox": true,
-    "subscribe": "messagebox",
     "materialize": true,
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
@@ -146,6 +148,7 @@
     "restartAdapters": [],
     "stopTimeout": 5000,
     "compact": true,
+    "singletonHost": true,
     "dependencies": [
       {
         "js-controller": ">=3.0.0"
