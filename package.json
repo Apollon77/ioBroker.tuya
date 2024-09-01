@@ -28,7 +28,7 @@
     "@apollon/iobroker-tools": "^0.2.1",
     "@iobroker/adapter-core": "^3.1.6",
     "@sentry/integrations": "^7.114.0",
-    "@sentry/node": "^8.26.0",
+    "@sentry/node": "^8.27.0",
     "@tuyapi/cloud": "^0.6.2",
     "axios": "^1.7.4",
     "crypto-js": "^4.2.0",
