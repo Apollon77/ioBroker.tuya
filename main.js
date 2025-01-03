@@ -53,6 +53,7 @@ let cloudPollingErrorCounter = 0;
 let cloudMqtt = null;
 let lastMqttMessage = Date.now();
 let isStopping = false;
+let schemaCleanupInterval = null;
 
 let Sentry;
 let SentryIntegrations;
@@ -391,6 +392,7 @@ async function initDeviceGroups() {
                         }
                         pollDeviceGroup(deviceGroup.id, 5000);
                     }*/
+                    if (!appCloudApi) return;
 
                     adapter.log.debug(`Devicegroup ${deviceGroupId} onChange triggered for ${id} and value ${JSON.stringify(value)} - set value via Cloud or group`);
 
@@ -1611,6 +1613,10 @@ async function initDone() {
         await initScenes();
         await initDeviceGroups();
     }
+
+    // Cleanup loaded schemas because need a lot of ram, and simply do every 10 minutes if new devices were handled silently
+    mapper.clearLoadedSchemas();
+    schemaCleanupInterval = setInterval(() => mapper.clearLoadedSchemas(), 60 * 60 * 1000);
 }
 
 function processMessage(msg) {
