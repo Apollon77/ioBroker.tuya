@@ -182,6 +182,7 @@ function startAdapter(options) {
 
     adapter.on('unload', function(callback) {
         isStopping = true;
+        adapter.clearInterval(schemaCleanupInterval);
         try {
             if (cloudMqtt) {
                 try {
@@ -1616,7 +1617,7 @@ async function initDone() {
 
     // Cleanup loaded schemas because need a lot of ram, and simply do every 10 minutes if new devices were handled silently
     mapper.clearLoadedSchemas();
-    schemaCleanupInterval = setInterval(() => mapper.clearLoadedSchemas(), 60 * 60 * 1000);
+    schemaCleanupInterval = adapter.setInterval(() => mapper.clearLoadedSchemas(), 60 * 60 * 1000);
 }
 
 function processMessage(msg) {
