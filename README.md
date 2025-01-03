@@ -182,6 +182,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (@Apollon77) Tries to reduce memory usage by only loading Schema definitions when needed and giving memory free afterwards
 * (@Apollon77) More schema information were added/updated
 * (@Apollon77) Added enhanced logic for AC/DC states and generalized it for more devices
+* (@Apollon77) Fixes raw data parsing for some devices
 
 ### 3.16.0 (2024-08-15)
 * js-controller 5.0 is now required at least

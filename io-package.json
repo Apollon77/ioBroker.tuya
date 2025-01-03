@@ -137,10 +137,7 @@
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
     "keywords": [
-      "Tuya",
-      "switch",
-      "smarthome",
-      "iobroker"
+      "Tuya"
     ],
     "readme": "https://github.com/Apollon77/ioBroker.tuya/blob/master/README.md",
     "loglevel": "info",
@@ -151,7 +148,7 @@
     "singletonHost": true,
     "dependencies": [
       {
-        "js-controller": ">=5.0.0"
+        "js-controller": ">=5.0.19"
       }
     ],
     "globalDependencies": [
