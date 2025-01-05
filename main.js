@@ -1472,11 +1472,11 @@ function discoverLocalDevices() {
 
     serverEncrypted = dgram.createSocket('udp4');
 
-    serverEncrypted.on('listening', function () {
+    serverEncrypted.on('listening', () => {
         //const address = server.address();
         adapter.log.info('Listen for encrypted local Tuya devices on port 6667');
     });
-    serverEncrypted.on('message', function (message, remote) {
+    serverEncrypted.on('message',  (message, remote) =>  {
         if (!discoveredEncryptedDevices[remote.address]) {
             adapter.log.debug(`Discovered encrypted device and store for later usage: ${remote.address}:${remote.port} - ${message.toString('hex')}`);
             discoveredEncryptedDevices[remote.address] = message;
@@ -1485,7 +1485,7 @@ function discoverLocalDevices() {
             if (adapterInitDone) {
                 for (let deviceId of Object.keys(knownDevices)) {
                     if (!knownDevices[deviceId].localKey || knownDevices[deviceId].device) continue;
-                    checkDiscoveredEncryptedDevices(deviceId);
+                    checkDiscoveredEncryptedDevices(deviceId).catch(err => adapter.log.warn(`Error on auto init encrypted device: ${err.message}`));
                 }
             }
         }
@@ -1627,7 +1627,7 @@ function processMessage(msg) {
             startProxy(msg);
             break;
         case 'cloudSync':
-            cloudSync(msg);
+            cloudSync(msg).catch(err => adapter.log.warn(`Error on cloudSync: ${err.message}`));
             break;
         case 'stopProxy':
             stopProxy(msg);
@@ -1736,7 +1736,7 @@ function startProxy(msg) {
                             adapter.log.debug(`SSL-Proxy: error checking response: ${err.message}`);
                             adapter.log.debug(body);
                         }
-                        catchProxyInfo(response);
+                        catchProxyInfo(response).catch(err => adapter.log.warn(`Error on catchProxyInfo: ${err.message}`));
                     }
                     else if (body.startsWith('{') && body.includes('"result":')) {
                         let response;
@@ -2108,7 +2108,7 @@ async function receiveCloudDevices(cloudApiInstance, onlyNew) {
         }
     }
 
-    catchProxyInfo({
+    await catchProxyInfo({
         result: [
             {
                 a: 'tuya.m.my.group.device.list',
@@ -2239,7 +2239,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
         adapter.log.error('Too many errors while updating devices from cloud, try a relogin');
         appCloudApi = await cloudLogin(adapter.config.username, adapter.config.password, adapter.config.region, adapter.config.appType, adapter.config.appDeviceId, adapter.config.appSessionId, adapter.config.appRegion, adapter.config.appEndpoint);
         if (appCloudApi) {
-            updateValuesFromCloud(true);
+            await updateValuesFromCloud(true);
         } else {
             adapter.log.error('Relogin failed, disabling cloud polling');
         }
@@ -2525,15 +2525,15 @@ async function main() {
             for (const device of devicesToInit) {
                 if (device._id && device.native) {
                     const id = device._id.substr(adapter.namespace.length + 1);
-                    await initDevice(id, device.native.productKey, device.native, ['name'], false,() => {
-                        if (!--deviceCnt) initDone();
+                    await initDevice(id, device.native.productKey, device.native, ['name'], false, async () => {
+                        if (!--deviceCnt) await initDone();
                     });
                 } else {
-                    if (!--deviceCnt) initDone();
+                    if (!--deviceCnt) await initDone();
                 }
             }
         } else if (!deviceCnt) {
-            initDone();
+            await initDone();
         }
     });
 }
