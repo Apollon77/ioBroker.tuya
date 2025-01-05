@@ -402,8 +402,8 @@ async function initDeviceGroups() {
                         if ((
                             (native.code === 'TempSet' && native.id === 2) ||
                             (native.code === 'TempCurrent' && native.id === 3) ||
-                            (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
-                            value = value / native.property.step;
+                            (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+                            value = value * 2;
                         }
                     } else if (obj.states) {
                         value = obj.states[value.toString()];
@@ -428,8 +428,8 @@ async function initDeviceGroups() {
                     if ((
                         (native.code === 'TempSet' && native.id === 2) ||
                         (native.code === 'TempCurrent' && native.id === 3) ||
-                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
-                        value = value * native.property.step;
+                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+                        value = value / 2;
                     }
                     return value;
                 };
@@ -675,8 +675,8 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                     if ((
                         (native.code === 'TempSet' && native.id === 2) ||
                         (native.code === 'TempCurrent' && native.id === 3) ||
-                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
-                        value = value / native.property.step;
+                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+                        value = value * 2;
                     }
                 } else if (obj.states) {
                     value = obj.states[value.toString()];
@@ -697,8 +697,8 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 if ((
                     (native.code === 'TempSet' && native.id === 2) ||
                     (native.code === 'TempCurrent' && native.id === 3) ||
-                    (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step) {
-                    value = value * native.property.step;
+                    (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+                    value = value / 2;
                 }
                 return value;
             };
