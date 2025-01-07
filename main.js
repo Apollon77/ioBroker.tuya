@@ -202,6 +202,26 @@ async function initScenes() {
     }
 }
 
+function handleValueChangeCorrections(value, native) {
+    if ((
+        (native.code === 'TempSet' && native.id === 2) ||
+        (native.code === 'TempCurrent' && native.id === 3) ||
+        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+        value = value / 2;
+    }
+    return value
+}
+
+function handleSetValueCorrections(value, native) {
+    if ((
+        (native.code === 'TempSet' && native.id === 2) ||
+        (native.code === 'TempCurrent' && native.id === 3) ||
+        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
+        value = value * 2;
+    }
+    return value
+}
+
 async function initDeviceGroups() {
     if (!appCloudApi || !appCloudApi.groups) {
         return;
@@ -293,15 +313,10 @@ async function initDeviceGroups() {
 
                     if (obj.scale) {
                         value *= Math.pow(10, obj.scale);
-                        if ((
-                            (native.code === 'TempSet' && native.id === 2) ||
-                            (native.code === 'TempCurrent' && native.id === 3) ||
-                            (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
-                            value = value * 2;
-                        }
                     } else if (obj.states) {
                         value = obj.states[value.toString()];
                     }
+                    value = handleSetValueCorrections(value, native);
 
                     const dps = {};
                     dps[id] = value;
@@ -319,12 +334,7 @@ async function initDeviceGroups() {
                 valueHandler[`${deviceGroupId}.${id}`] = (value) => {
                     if (value === undefined) return undefined;
                     value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
-                    if ((
-                        (native.code === 'TempSet' && native.id === 2) ||
-                        (native.code === 'TempCurrent' && native.id === 3) ||
-                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
-                        value = value / 2;
-                    }
+                    value = handleValueChangeCorrections(value, native);
                     return value;
                 };
                 values[id] = valueHandler[`${deviceGroupId}.${id}`](values[id]);
@@ -371,6 +381,7 @@ async function initDeviceGroups() {
                     if (obj.type === 'boolean') {
                         return (!value || value === 'false') ? false : true;
                     } else if (obj.type === 'number') {
+                        value = handleValueChangeCorrections(value, native);
                         return parseFloat(value);
                     } else {
                         return value;
@@ -566,15 +577,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
 
                 if (obj.scale) {
                     value *= Math.pow(10, obj.scale);
-                    if ((
-                        (native.code === 'TempSet' && native.id === 2) ||
-                        (native.code === 'TempCurrent' && native.id === 3) ||
-                        (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
-                        value = value * 2;
-                    }
                 } else if (obj.states) {
                     value = obj.states[value.toString()];
                 }
+                value = handleSetValueCorrections(value, native);
 
                 const parentDpList = knownDevices[physicalDeviceId] && knownDevices[physicalDeviceId].dpIdList || [];
                 let sendViaCloud;
@@ -588,12 +594,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
                 value = Math.floor(value * Math.pow(10, -obj.scale) * 100) / 100;
-                if ((
-                    (native.code === 'TempSet' && native.id === 2) ||
-                    (native.code === 'TempCurrent' && native.id === 3) ||
-                    (native.code === 'floorTemp' && native.id === 102)) && native.property && native.property.step === 5) {
-                    value = value / 2;
-                }
+                value = handleValueChangeCorrections(value, native);
                 return value;
             };
             values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
@@ -634,6 +635,9 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
             }
             delete obj.encoding;
+        }
+        if (!valueHandler[`${deviceId}.${id}`] && obj.type === 'number') {
+            valueHandler[`${deviceId}.${id}`] = (value) => handleValueChangeCorrections(value, native);
         }
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',
