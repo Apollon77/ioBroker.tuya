@@ -19,7 +19,7 @@
         }
 
         .m .page {
-            height: calc(100% - 10px) !important;
+            height: calc(100% - 50px) !important;
         }
 
         .m span {
@@ -38,10 +38,31 @@
             cursor: pointer;
         }
 
-        .linkDesign a:link{
-            color: #1e88e5!important;
-            cursor: pointer!important;
-            text-decoration: underline!important;
+        .linkDesign a:link {
+            color: #1e88e5 !important;
+            cursor: pointer !important;
+            text-decoration: underline !important;
+        }
+
+        #tab-cloudSync,
+        #tab-proxySync {
+            padding-top: 1rem;
+        }
+
+        .title {
+            background-color: #39c;
+        }
+
+        /* Style for very small Screens */
+        @media screen and (max-width: 600px) {
+            .playCircleDesign {
+                margin-bottom: 3rem !important;
+            }
+
+            #tab-cloudSync,
+            #tab-proxySync {
+                padding-top: 3rem;
+            }
         }
     </style>
 
@@ -257,7 +278,7 @@
 
             <div id="tab-local" class="col s12 page">
                 <div class="row">
-                    <div class="col s12 m4 l2">
+                    <div class="col s12 m6 l6">
                         <img src="tuya.png" class="logo">
                     </div>
                 </div>
@@ -288,7 +309,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input class="value" id="pollingInterval" type="number" min="10" max="100000"/>
+                        <input class="value" id="pollingInterval" type="number" min="10" max="100000" />
                         <label for="pollingInterval" class="translate">Polling Interval</label>
                     </div>
                 </div>
@@ -303,7 +324,7 @@
                         <span for="cloudPollingWhenNotConnected" class="translate">cloudPollingWhenNotConnected</span>
                     </div>
                     <div class="input-field col s6">
-                        <input class="value" id="cloudPollingInterval" type="number" min="60" max="100000"/>
+                        <input class="value" id="cloudPollingInterval" type="number" min="60" max="100000" />
                         <label for="cloudPollingInterval" class="translate">Cloud Polling Interval</label>
                     </div>
                 </div>
@@ -336,11 +357,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6">
+                    <div class="playCircleDesign input-field col s6">
                         <i id="startCloudSync" class="material-icons prefix">play_circle_filled</i>
                         <label class="translate">Sync devices with cloud one time</label>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                     </div>
                     <div class="input-field col s6">
                         <input id="storeCloudCredentials" type="checkbox" class="value" />
@@ -389,10 +410,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="row">
-                        <div class="col s12 linkDesign">
-                            <span class="translate">iotCloudRegisterInfo</span>
-                        </div>
+                    <div class="col s12 linkDesign">
+                        <span class="translate">iotCloudRegisterInfo</span>
                     </div>
                 </div>
                 <div class="row">
@@ -419,11 +438,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6">
+                    <div class="playCircleDesign input-field col s6">
                         <i id="startProxy" class="material-icons prefix">play_circle_filled</i>
                         <label class="translate">Start proxy</label>
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                     </div>
                     <div class="col s6 linkDesign">
                         <img src="warning.png" width="50" height="50" align="left">
@@ -446,29 +465,35 @@
             <div class="modal-content">
                 <h6 class="title translate">Proxy Information</h6>
                 <br>
-                <span class="translate showOnStart">ProxySteps</span><br/><br/>
+                <span class="translate showOnStart">ProxySteps</span><br /><br />
                 <div class="progress showOnStart">
                     <div class="indeterminate"></div>
                 </div>
-                <p style="text-align:center;"><i id="success" class="material-icons large hideOnStart">check</i><a id="certUrl" href=""><img id="certImage" class="showOnStart" src="" width="164" height="164" /></a></p>
+                <p style="text-align:center;"><i id="success" class="material-icons large hideOnStart">check</i><a
+                        id="certUrl" href=""><img id="certImage" class="showOnStart" src="" width="164"
+                            height="164" /></a></p>
                 <div id="proxyDone" class="input-field col s12 hideOnStart">
                     <b><span id="proxyResult"></span></b>
                 </div>
             </div>
             <div class="modal-footer">
-                <a id="stopProxy" class="btn-close modal-action modal-close waves-effect waves-green btn-flat translate">Stop Proxy</a>
+                <a id="stopProxy"
+                    class="btn-close modal-action modal-close waves-effect waves-green btn-flat translate">Stop
+                    Proxy</a>
             </div>
         </div>
         <div id="cloudsync-dialog" class="modal">
             <div class="modal-content">
                 <h6 class="title translate">Cloud Sync Title</h6>
                 <br>
-                <span class="translate showOnCloudSyncStart">Cloud Sync Information</span><br/><br/>
-                <span style="font-weight:bold" class="translate showOnCloudSyncStart">appCloudLoginInfo</span><br/><br/>
+                <span class="translate showOnCloudSyncStart">Cloud Sync Information</span><br /><br />
+                <span style="font-weight:bold"
+                    class="translate showOnCloudSyncStart">appCloudLoginInfo</span><br /><br />
                 <div class="progress cloudSyncProgress showOnCloudSyncStart">
                     <div class="indeterminate"></div>
                 </div>
-                <p style="text-align:center;"><i id="cloudSuccess" class="material-icons large hideOnCloudSyncStart">check</i></p>
+                <p style="text-align:center;"><i id="cloudSuccess"
+                        class="material-icons large hideOnCloudSyncStart">check</i></p>
                 <div id="cloudSyncDone" class="input-field col s12 hideOnCloudSyncStart">
                     <b><span id="cloudSyncResult"></span></b>
                 </div>
