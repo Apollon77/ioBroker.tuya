@@ -175,8 +175,7 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
-
-### __WORK IN PROGRESS__
+### 3.17.0 (2025-01-08)
 * (@Apollon77) Added support for Tuya 3.5 devices
 * (@Apollon77) Fixed several errors report by Sentry
 * (@Apollon77) Tried to reduce memory usage by only loading Schema definitions when needed and giving memory free afterward

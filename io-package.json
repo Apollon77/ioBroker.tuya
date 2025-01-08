@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.16.0",
+    "version": "3.17.0",
     "news": {
+      "3.17.0": {
+        "en": "Added support for Tuya 3.5 devices\nFixed several errors report by Sentry\nTried to reduce memory usage by only loading Schema definitions when needed and giving memory free afterward\nMore schema information were added/updated\nAdded enhanced logic for AC/DC states and generalized it for more devices\nFixed raw data parsing for some devices\nAdjusted special handling for TempSet, TempCurrent and FloorTemp states to return correct values\nResponsive Design added",
+        "de": "Unterstützung für Tuya 3.5 Geräte hinzugefügt\nBehoben mehrere Fehler von Sentry\nVersuchen Sie, die Speichernutzung zu reduzieren, indem Sie nur die Schemadefinitionen laden, wenn erforderlich und Speicher kostenlos nachher\nWeitere Schemainformationen wurden hinzugefügt/updated\nErweiterte Logik für AC/DC- Zustände hinzugefügt und verallgemeinert es für mehr Geräte\nFeste Rohdatenparsing für einige Geräte\nGeregelte Spezialhandhabung für TempSet, TempCurrent und FloorTemp Zustände, um korrekte Werte zurückzugeben\nResponsive Design hinzugefügt",
+        "ru": "Добавлена поддержка устройств Tuya 3.5\nИсправлено несколько сообщений об ошибках Sentry\nПытался уменьшить использование памяти, загрузив только определения Шема, когда это необходимо, и давая память бесплатно после этого\nДополнительная информация о схемах была добавлена/обновлена\nДобавлена улучшенная логика для состояний AC/DC и обобщена ее для большего количества устройств\nИсправленное первичное разделение данных для некоторых устройств\nРегулируемая специальная обработка для состояний TempSet, TempCurrent и FloorTemp для возврата правильных значений\nResponsive Design",
+        "pt": "Adicionado suporte para dispositivos Tuya 3.5\nCorrigido vários relatórios de erros da Sentry\nTentei reduzir o uso de memória apenas carregando definições de Schema quando necessário e dando memória livre depois\nMais informações de esquema foram adicionadas / atualizadas\nAdicionada lógica aprimorada para estados de AC/DC e generalizada para mais dispositivos\nAnálise de dados brutos fixos para alguns dispositivos\nManipulação especial ajustada para estados TempSet, TempCurrent e FloorTemp para retornar valores corretos\nDesign responsivo adicionado",
+        "nl": "Ondersteuning toegevoegd voor Tuya 3.5 apparaten\nMeerdere fouten gemeld door Sentry\nGeprobeerd om het geheugengebruik te verminderen door alleen schemadefinities te laden indien nodig en daarna gratis geheugen te geven\nMeer schema informatie zijn toegevoegd/bijgewerkt\nToegevoegd verbeterde logica voor AC/DC-staten en generaliseerd voor meer apparaten\nVaste ruwe gegevens ontleden voor sommige apparaten\nAangepaste speciale bediening voor TempSet, TempCurrent en FloorTemp toestanden om de juiste waarden terug te geven\nResponsive Design toegevoegd",
+        "fr": "Ajout de la prise en charge des appareils Tuya 3.5\nCorrection de plusieurs rapports d'erreurs par Sentry\nEssayé de réduire l'utilisation de la mémoire en chargeant uniquement les définitions de Schema au besoin et en donnant la mémoire libre après\nPlus d'informations sur le schéma ont été ajoutées/mises à jour\nAjout d'une logique améliorée pour les états AC/DC et généralisation pour plus de dispositifs\nCorrigé l'analyse des données brutes pour certains appareils\nManipulation spéciale ajustée pour les états TempSet, TempCurrent et FloorTemp pour retourner les valeurs correctes\nDesign sensible ajouté",
+        "it": "Aggiunto supporto per dispositivi Tuya 3.5\nRisolto diversi errori relazione di Sentry\nHo cercato di ridurre l'utilizzo della memoria caricando solo le definizioni dello schema quando necessario e dando la memoria libera in seguito\nUlteriori informazioni sullo schema sono state aggiunte/aggiornate\nAggiunta logica potenziata per gli stati AC/DC e generalizzata per più dispositivi\nPassaggio dati grezzi fissi per alcuni dispositivi\nMovimentazione speciale regolata per TempSet, TempCurrent e FloorTemp stati per restituire i valori corretti\nResponsive Design aggiunto",
+        "es": "Soporte añadido para dispositivos Tuya 3.5\nCorregido varios errores report por Sentry\nTraté de reducir el uso de la memoria sólo cargando las definiciones de Schema cuando sea necesario y dando la memoria libre después\nSe añadieron más información sobre esquemas/actualizados\nSe agregó una lógica mejorada para los estados AC/DC y la generalizó para más dispositivos\nSeparación de datos brutos fijos para algunos dispositivos\nManejo especial ajustado para TempSet, TempCurrent y FloorTemp estados para devolver valores correctos\nDiseño responsable añadido",
+        "pl": "Dodano wsparcie dla urządzeń Tuya 3.5\nNaprawiono kilka błędów w raporcie przez Sentry\nPróbowano zmniejszyć zużycie pamięci tylko ładując definicje Schemy w razie potrzeby i dając pamięci wolne później\nDodano / zaktualizowano więcej informacji o schematach\nDodano wzmocnioną logikę dla stanów AC / DC i uogólniono ją dla większej liczby urządzeń\nStałe przetwarzanie danych nieprzetworzonych dla niektórych urządzeń\nDostosowana obsługa specjalna dla stanów TempSet, TempCurrent i FloorTemp, aby zwrócić prawidłowe wartości\nDodano projekt odpowiedzialny",
+        "uk": "Додано підтримку пристроїв Tuya 3.5\nВиправлено кілька звітів про помилки Sentry\nВизначені для зменшення використання пам'яті лише завантаження визначення стеми при необхідності та надання пам'яті безкоштовно після\nДодана інформація про схему\nДодано розширену логіку для станів AC / DC і узагальнено її для більшої кількості пристроїв\nФіксована обробка даних для деяких пристроїв\nРегульована спеціальна обробка для TempSet, TempCurrent і FloorTemp стани, щоб повернути правильні значення\nДодано адаптивний дизайн",
+        "zh-cn": "为 Tuya 3.5 设备增加支持\n哨兵的几个错误报告\n尝试减少内存使用量, 只需在需要时加载 Schema 定义并事后免费提供内存\n添加/更新了更多的计划信息\n增加了AC/DC状态的增强逻辑,并将其扩展为更多设备\n某些设备的固定原始数据解析\n调整了 TempeSet、 TempeCurrent 和 FloorTemp 状态的特殊处理,以返回正确的值\n添加响应设计"
+      },
       "3.16.0": {
         "en": "js-controller 5.0 is now required at least\nImproves stability\nTries to support phase_X information with 10 bytes\nMore schema information were added/updated",
         "de": "js-controller 5.0 wird nun mindestens benötigt\nVerbessert die Stabilität\nVersuche zur Unterstützung von phase_ X-Informationen mit 10 Bytes\nWeitere Schemainformationen wurden hinzugefügt/updated",
@@ -80,19 +93,6 @@
         "pl": "Więcej informacji o schemacie dodano/updować",
         "uk": "Детальніше про схему додано/оновлено",
         "zh-cn": "更多的schema信息增加/更新"
-      },
-      "3.13.0": {
-        "en": "Add generic support for gateways (and so also WLAN Gateways)\nMore schema information added/updated",
-        "de": "Fügen Sie generische Unterstützung für Gateways hinzu (und so auch WLAN Gateways)\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Добавьте общую поддержку ворот (и так же WLAN Gateways)\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Adicionar suporte genérico para gateways (e assim também WLAN Gateways)\nMais informações de esquema adicionado / atualizado",
-        "nl": "Voeg generische steun toe voor poorten en ook WLAN Gateways\nMeer schema informatie toegevoegd",
-        "fr": "Ajoutez un support générique pour les passerelles (et aussi WLAN Gateways)\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Aggiungi supporto generico per gateway (e così anche gateway WLAN)\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Añadir soporte genérico para gateways (y también WLAN Gateways)\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Addd generic support for gateways (a także WLAN Gateways)\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Додати загальний супровід шлюзу (і так само, як і WLAN Gateways)\nДетальніше про схему додано/оновлено",
-        "zh-cn": "增加对门户(以及WLAN Gateways)的通用支助\n更多的schema信息增加/更新"
       }
     },
     "title": "Tuya",
