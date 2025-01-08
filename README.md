@@ -184,6 +184,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 * (@Apollon77) Added enhanced logic for AC/DC states and generalized it for more devices
 * (@Apollon77) Fixes raw data parsing for some devices
 * (@Apollon77) Adjusted special handling for TempSet, TempCurrent and FloorTemp states to return correct values
+* (@simatec) Responsive Design added
 
 ### 3.16.0 (2024-08-15)
 * js-controller 5.0 is now required at least
