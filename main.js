@@ -636,8 +636,10 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             }
             delete obj.encoding;
         }
+        adapter.log.debug(`${deviceId}.${id}: ${obj.type} ${JSON.stringify(native)}`);
         if (!valueHandler[`${deviceId}.${id}`] && obj.type === 'number') {
             valueHandler[`${deviceId}.${id}`] = (value) => handleValueChangeCorrections(value, native);
+            adapter.log.debug(`${deviceId}.${id}: ${obj.type} ${JSON.stringify(native)}`);
             values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         }
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
