@@ -638,6 +638,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
         }
         if (!valueHandler[`${deviceId}.${id}`] && obj.type === 'number') {
             valueHandler[`${deviceId}.${id}`] = (value) => handleValueChangeCorrections(value, native);
+            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         }
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',

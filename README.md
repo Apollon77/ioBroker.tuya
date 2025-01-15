@@ -175,6 +175,11 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+
+### __WORK IN PROGRESS__
+* (@Apollon77) Fixed initial setting and value correction for special Temp values
+* (@Apollon77) More schema information were added/updated
+
 ### 3.17.0 (2025-01-08)
 * (@Apollon77) Added support for Tuya 3.5 devices
 * (@Apollon77) Fixed several errors report by Sentry
