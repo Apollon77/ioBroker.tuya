@@ -30,8 +30,6 @@
   "dependencies": {
     "@apollon/iobroker-tools": "^0.2.1",
     "@iobroker/adapter-core": "^3.2.3",
-    "@sentry/integrations": "^7.114.0",
-    "@sentry/node": "^8.47.0",
     "@tuyapi/cloud": "^0.6.2",
     "axios": "^1.7.9",
     "crypto-js": "^4.2.0",
