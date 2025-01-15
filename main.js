@@ -798,7 +798,7 @@ function pollDevice(deviceId, overwriteDelay) {
                         // adapter.log.debug(deviceId + ' polling not supported');
                     }
                 } catch (err) {
-                    adapter.log.warn(`${deviceId} error on refresh: ${err.message}`);
+                    adapter.log.debug(`${deviceId} error on refresh: ${err.message}`);
                 }
             } else {
                 try {
