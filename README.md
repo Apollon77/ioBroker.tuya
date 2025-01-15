@@ -19,6 +19,8 @@ The adapter locally connects to all devices that are "always in wifi". Devices t
 
 One adapter instance can locally discover and connect to all devices in a network that routes UDP packages! For Docker environments this requires additional actions and potentially Macvlan or similar!
 
+**Note: Only one instance of this adapter can run on one host because of the used network ports.**
+
 ## Disclaimer
 **All product and company names or logos are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them or any associated subsidiaries! This personal project is maintained in spare time and has no business goal.**
 **TUYA is a trademark of Tuya Global Inc.**
