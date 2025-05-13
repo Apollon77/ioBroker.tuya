@@ -180,6 +180,7 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ### __WORK IN PROGRESS__
 * (@Apollon77) Fixed initial setting and value correction for special Temp values
+* (@Apollon77) Updating Tuyapi to latest version to prevent parsing issues
 * (@Apollon77) More schema information were added/updated
 
 ### 3.17.0 (2025-01-08)

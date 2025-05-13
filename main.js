@@ -597,7 +597,6 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 value = handleValueChangeCorrections(value, native);
                 return value;
             };
-            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         } else if (obj.states) {
             valueHandler[`${deviceId}.${id}`] = (value) => {
                 if (value === undefined) return undefined;
@@ -608,7 +607,6 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                 adapter.log.warn(`${deviceId}.${id}: Value from device not defined in Schema: ${value}`);
                 return null;
             };
-            values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
         }
         if (obj.encoding) {
             const dpEncoding = obj.encoding;
@@ -632,15 +630,15 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
                         return value;
                     }
                 };
-                values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
             }
             delete obj.encoding;
         }
-        adapter.log.debug(`${deviceId}.${id}: ${obj.type} ${JSON.stringify(native)}`);
         if (!valueHandler[`${deviceId}.${id}`] && obj.type === 'number') {
             valueHandler[`${deviceId}.${id}`] = (value) => handleValueChangeCorrections(value, native);
-            adapter.log.debug(`${deviceId}.${id}: ${obj.type} ${JSON.stringify(native)}`);
+        }
+        if (valueHandler[`${deviceId}.${id}`]) {
             values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
+            adapter.log.debug(`Corrected value: ${values[id]}`);
         }
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',
@@ -880,12 +878,12 @@ function handleReconnect(deviceId, delay) {
             return;
         }
         knownDevices[deviceId].device.connect().catch(err => {
+            knownDevices[deviceId].errorcount++;
             if (!cloudMqtt && !appCloudApi) {
                 adapter.log.warn(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
             } else  {
                 adapter.log.info(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
             }
-            knownDevices[deviceId].errorcount++;
             handleReconnect(deviceId, knownDevices[deviceId].errorcount < 6 ? (knownDevices[deviceId].errorcount * 10000) : 60000);
         });
     }, delay);
@@ -1036,20 +1034,18 @@ function connectDevice(deviceId, callback) {
                 }
             }
 
-            knownDevices[deviceId].errorcount++;
-
             if (knownDevices[deviceId].errorcount > 5) {
                 disconnectDevice(deviceId);
             }
         });
 
         knownDevices[deviceId].device.connect().catch(err => {
-            if (!cloudMqtt && !appCloudApi) {
-                adapter.log.warn(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
-            } else  {
-                adapter.log.info(`${deviceId}: Error on Reconnect (${knownDevices[deviceId].errorcount}): ${err.message}`);
-            }
             knownDevices[deviceId].errorcount++;
+            if (!cloudMqtt && !appCloudApi) {
+                adapter.log.warn(`${deviceId}: Error on connect (${knownDevices[deviceId].errorcount}): ${err.message}`);
+            } else  {
+                adapter.log.info(`${deviceId}: Error on connect (${knownDevices[deviceId].errorcount}): ${err.message}`);
+            }
             handleReconnect(deviceId, knownDevices[deviceId].errorcount < 6 ? (knownDevices[deviceId].errorcount * 10000) : 60000);
         });
 
@@ -2310,7 +2306,7 @@ async function onMQTTMessage(message) {
         const deviceId = message.devId;
         if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList && knownDevices[deviceId].dpIdList.length) {
             for (const dpData of message.status) {
-                const ts = dpData.t * 1000;
+                const ts = dpData.t ? dpData.t * 1000 : message.t ? message.t * 1000 : undefined;
                 delete dpData.t;
                 delete dpData.code;
                 delete dpData.value;
