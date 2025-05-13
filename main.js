@@ -2306,7 +2306,7 @@ async function onMQTTMessage(message) {
         const deviceId = message.devId;
         if (knownDevices[deviceId] && !knownDevices[deviceId].connected && knownDevices[deviceId].dpIdList && knownDevices[deviceId].dpIdList.length) {
             for (const dpData of message.status) {
-                const ts = dpData.t ? dpData.t * 1000 : message.t ? message.t * 1000 : undefined;
+                let ts = dpData.t ? dpData.t * 1000 : message.t ? message.t * 1000 : undefined;
                 delete dpData.t;
                 delete dpData.code;
                 delete dpData.value;
@@ -2333,6 +2333,7 @@ async function onMQTTMessage(message) {
                     if (valueHandler[`${deviceId}.${dpId}`]) {
                         value = valueHandler[`${deviceId}.${dpId}`](value);
                     }
+                    if (typeof ts !== 'number') ts = undefined;
                     adapter.setState(`${deviceId}.${dpId}`, {val: value, ts, ack: true});
                     if (enhancedValueHandler[`${deviceId}.${dpId}`]) {
                         for (const subId of Object.keys(enhancedValueHandler[`${deviceId}.${dpId}`])) {
