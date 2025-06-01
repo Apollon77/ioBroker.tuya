@@ -42,7 +42,7 @@
     "serve-static": "^2.2.0",
     "source-map-support": "^0.5.21",
     "tuyapi": "^7.7.1",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.8.0",
