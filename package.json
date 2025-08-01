@@ -51,7 +51,7 @@
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/dev-server": "^0.7.8",
     "@iobroker/testing": "^5.0.4",
-    "chai": "^4.5.0",
+    "chai": "^5.2.1",
     "mocha": "^11.2.2"
   },
   "main": "main.js",
