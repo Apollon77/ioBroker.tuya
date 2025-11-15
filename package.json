@@ -52,7 +52,7 @@
     "@iobroker/dev-server": "^0.7.8",
     "@iobroker/testing": "^5.0.4",
     "chai": "^4.5.0",
-    "mocha": "^11.2.2"
+    "mocha": "^11.7.5"
   },
   "main": "main.js",
   "scripts": {
