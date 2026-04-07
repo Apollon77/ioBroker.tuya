@@ -25,7 +25,7 @@
     "url": "https://github.com/Apollon77/ioBroker.tuya"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "@apollon/iobroker-tools": "^0.2.1",
