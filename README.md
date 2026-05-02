@@ -178,6 +178,9 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 
 ## Changelog
 
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### __WORK IN PROGRESS__
 * (@Apollon77) Fixed initial setting and value correction for special Temp values
 * (@Apollon77) Updating Tuyapi to latest version to prevent parsing issues
