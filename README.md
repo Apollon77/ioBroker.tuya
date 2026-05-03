@@ -549,6 +549,8 @@ Send the log with reference to the generated GitHub issue to iobroker@fischer-ka
 ### 0.1.0/1
 * (Apollon77) development and first tests
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 The MIT License (MIT)
