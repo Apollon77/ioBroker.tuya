@@ -133,7 +133,6 @@
     "mode": "daemon",
     "icon": "tuya.png",
     "messagebox": true,
-    "materialize": true,
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/admin/tuya.png",
     "keywords": [
@@ -169,6 +168,9 @@
           "SyntaxError"
         ]
       }
+    },
+    "adminUI": {
+      "config": "materialize"
     }
   },
   "native": {
