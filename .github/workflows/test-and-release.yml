@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [24.x]
 
     steps:
       - name: Checkout code
@@ -129,8 +129,6 @@ jobs:
 #        run: npm run build
       - name: Publish package to npm
         run: |
-          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-          npm whoami
           npm publish
 
       - name: Create Github Release
