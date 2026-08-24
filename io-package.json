@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.17.0",
+    "version": "3.18.0",
     "news": {
+      "3.18.0": {
+        "en": "Fixed initial setting and value correction for special Temp values\nUpdating Tuyapi to latest version to prevent parsing issues\nAdjust timestamps from MQTT\nMore schema information were added/updated",
+        "de": "Feste Anfangseinstellung und Wertkorrektur für besondere Temp-Werte\nAktualisieren von Tuyapi auf die neueste Version, um Parsing-Probleme zu vermeiden\nZeitstempel von MQTT anpassen\nWeitere Schemainformationen wurden hinzugefügt / aktualisiert",
+        "ru": "Фиксированная начальная настройка и коррекция значений для специальных значений Temp\nОбновление Tuyapi до последней версии для предотвращения проблем с парсингом\nНастройка временных меток от MQTT\nДобавлено/обновлено больше информации о схеме",
+        "pt": "Ajuste inicial fixo e correção de valor para valores Temp especiais\nAtualizando Tuyapi para a versão mais recente para evitar problemas de análise\nAjustar as datas do MQTT\nMais informações do esquema foram adicionadas/atualizadas",
+        "nl": "Vaste initiële instelling en waardecorrectie voor speciale temperatuurwaarden\nBijwerken van Tuyapi naar de nieuwste versie om ontleden problemen te voorkomen\nTijdstempels van MQTT aanpassen\nMeer schema informatie zijn toegevoegd/bijgewerkt",
+        "fr": "Réglage initial fixe et correction de valeur pour des valeurs Temp spéciales\nMise à jour de Tuyapi à la dernière version pour éviter les problèmes d'analyse\nRégler les timestamps de MQTT\nPlus d'informations sur le schéma ont été ajoutées/mises à jour",
+        "it": "Impostazione iniziale fissa e correzione del valore per valori speciali Temp\nAggiornare Tuyapi alla versione più recente per evitare problemi di parsing\nRegolare i timestamp da MQTT\nUlteriori informazioni sullo schema sono state aggiunte/aggiornate",
+        "es": "Ajuste inicial fijo y corrección de valor para valores especiales de Tempor\nActualizar Tuyapi a la última versión para evitar problemas de par\nAjuste de los horarios de MQTT\nSe añadieron más información sobre esquemas/actualizados",
+        "pl": "Stałe ustawienie początkowe i korekta wartości dla specjalnych wartości temp\nAktualizacja Tuyapi do najnowszej wersji, aby zapobiec problemów z parsowaniem\nDostosuj znaczniki czasu z MQTT\nDodano / zaktualizowano więcej informacji dotyczących schematów",
+        "uk": "Виправлено початкове налаштування та виправлення значення для спеціальних значень Темп\nОновлення Tuyapi до останньої версії для запобігання проблем з парою\nРегулювання міток часу від MQTT\nДодана інформація про схему",
+        "zh-cn": "特殊时间值的固定初始设定和数值校正\n将 Tuyapi 更新到最新版本以防止解析问题\nMQTT 调整时间戳\n添加/更新了更多的计划信息"
+      },
       "3.17.0": {
         "en": "Added support for Tuya 3.5 devices\nFixed several errors report by Sentry\nTried to reduce memory usage by only loading Schema definitions when needed and giving memory free afterward\nMore schema information were added/updated\nAdded enhanced logic for AC/DC states and generalized it for more devices\nFixed raw data parsing for some devices\nAdjusted special handling for TempSet, TempCurrent and FloorTemp states to return correct values\nResponsive Design added",
         "de": "Unterstützung für Tuya 3.5 Geräte hinzugefügt\nBehoben mehrere Fehler von Sentry\nVersuchen Sie, die Speichernutzung zu reduzieren, indem Sie nur die Schemadefinitionen laden, wenn erforderlich und Speicher kostenlos nachher\nWeitere Schemainformationen wurden hinzugefügt/updated\nErweiterte Logik für AC/DC- Zustände hinzugefügt und verallgemeinert es für mehr Geräte\nFeste Rohdatenparsing für einige Geräte\nGeregelte Spezialhandhabung für TempSet, TempCurrent und FloorTemp Zustände, um korrekte Werte zurückzugeben\nResponsive Design hinzugefügt",
@@ -80,19 +93,6 @@
         "pl": "Dodano specjalną obsługę potrzebną do mnożenia dla TempSet(2,) TempCurrent(3) i podłogi (102)\nWięcej informacji o schemacie dodano/updować",
         "uk": "Додано спеціальне обслуговування для необхідних мультиплікаторів для TempSet(2,) TempCurrent(3) і підлогуTemp(102) об'єктів\nДетальніше про схему додано/оновлено",
         "zh-cn": "添加特别处理TempSet(2)、TempCurrent(3)和Temp(102)目标所需的乘数\n更多的schema信息增加/更新"
-      },
-      "3.13.1": {
-        "en": "More schema information added/updated",
-        "de": "Mehr Schemainformationen hinzugefügt/updated",
-        "ru": "Дополнительная информация по схеме добавлена/обновлена",
-        "pt": "Mais informações de esquema adicionado / atualizado",
-        "nl": "Meer schema informatie toegevoegd",
-        "fr": "Plus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Ulteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Más información sobre esquemas añadidos / actualizados",
-        "pl": "Więcej informacji o schemacie dodano/updować",
-        "uk": "Детальніше про схему додано/оновлено",
-        "zh-cn": "更多的schema信息增加/更新"
       }
     },
     "titleLang": {
