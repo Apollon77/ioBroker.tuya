@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "tuya",
-    "version": "3.18.1",
+    "version": "3.18.2",
     "news": {
+      "3.18.2": {
+        "en": "Removes the http-mitm-proxy patching because no longer needed",
+        "de": "Entfernt den http-mitm-proxy-Patch, da er nicht mehr benötigt wird.",
+        "ru": "Удаляет патчи для http-mitm-proxy, поскольку они больше не нужны.",
+        "pt": "Remove a correção do proxy http-mitm porque não é mais necessária.",
+        "nl": "Verwijdert de http-mitm-proxy-patch omdat deze niet langer nodig is.",
+        "fr": "Suppression du correctif http-mitm-proxy car il n'est plus nécessaire.",
+        "it": "Rimuove la patch http-mitm-proxy perché non è più necessaria",
+        "es": "Elimina el parcheo de http-mitm-proxy porque ya no es necesario.",
+        "pl": "Usuwa łatkę http-mitm-proxy, ponieważ nie jest już potrzebna",
+        "uk": "Видаляє патч http-mitm-proxy, оскільки він більше не потрібен",
+        "zh-cn": "移除 http-mitm-proxy 补丁，因为不再需要了"
+      },
       "3.18.1": {
         "en": "Fixed initial setting and value correction for special Temp values\nUpdating Tuyapi to latest version to prevent parsing issues\nAdjust timestamps from MQTT\nMore schema information were added/updated",
         "de": "Feste Anfangseinstellung und Wertkorrektur für besondere Temp-Werte\nAktualisieren von Tuyapi auf die neueste Version, um Parsing-Probleme zu vermeiden\nZeitstempel von MQTT anpassen\nWeitere Schemainformationen wurden hinzugefügt / aktualisiert",
@@ -80,19 +93,6 @@
         "pl": "Dostosowywanie min/max przy użyciu mnożenia\nWięcej informacji o schemacie dodano/updować",
         "uk": "Також регулюйте мін/макс при використанні мультиплікаторів\nДетальніше про схему додано/оновлено",
         "zh-cn": "在使用乘数时调整min/max\n更多的schema信息增加/更新"
-      },
-      "3.14.0": {
-        "en": "Added special handling for needed multiplier for TempSet(2), TempCurrent(3) and floorTemp(102) objects\nMore schema information added/updated",
-        "de": "Zusätzliche spezielle Handhabung für benötigten Multiplikator für TempSet(2,) TempCurrent(3) und FloorTemp(102) Objekte\nMehr Schemainformationen hinzugefügt/updated",
-        "ru": "Добавлена специальная обработка для необходимых мультипликаторов для TempSet(2,) TempCurrent(3) и floorTemp(102) объектов\nДополнительная информация по схеме добавлена/обновлена",
-        "pt": "Adicionado manuseio especial para o multiplicador necessário para os objetos TempSet(2,) TempCurrent(3) e floorTemp(102)\nMais informações de esquema adicionado / atualizado",
-        "nl": "Aangepast voor een multiplier voor TempSet (2) TempCurrent (3) en vloertemperatuur (102) objecten\nMeer schema informatie toegevoegd",
-        "fr": "Ajout d'une manipulation spéciale pour les objets TempSet(2,) TempCurrent(3) et floorTemp(102)\nPlus d'informations sur le schéma ajoutées/mises à jour",
-        "it": "Aggiunta manipolazione speciale per moltiplicatore necessario per TempSet(2,) TempCurrent(3) e pavimentoTemp(102) oggetti\nUlteriori informazioni sullo schema aggiunto/aggiornato",
-        "es": "Se agregó un manejo especial para el multiplicador necesario para TempSet(2,) TempCurrent(3) y sueloTemp(102) objetos\nMás información sobre esquemas añadidos / actualizados",
-        "pl": "Dodano specjalną obsługę potrzebną do mnożenia dla TempSet(2,) TempCurrent(3) i podłogi (102)\nWięcej informacji o schemacie dodano/updować",
-        "uk": "Додано спеціальне обслуговування для необхідних мультиплікаторів для TempSet(2,) TempCurrent(3) і підлогуTemp(102) об'єктів\nДетальніше про схему додано/оновлено",
-        "zh-cn": "添加特别处理TempSet(2)、TempCurrent(3)和Temp(102)目标所需的乘数\n更多的schema信息增加/更新"
       }
     },
     "titleLang": {
