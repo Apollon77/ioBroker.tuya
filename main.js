@@ -2353,27 +2353,6 @@ async function onMQTTMessage(message) {
 
 async function main() {
     setConnected(false);
-
-    // Work around/Hack until https://github.com/joeferner/node-http-mitm-proxy/issues/263 is fixed
-    try {
-        const mitmCaFile = require.resolve('http-mitm-proxy/lib/ca.js');
-        if (mitmCaFile) {
-            let fileContent = fs.readFileSync(mitmCaFile, 'utf-8');
-            if (fileContent && fileContent.includes('.validity.notBefore.getFullYear() + 2);')) {
-                // hacky workaround ... replace twice because should be included two times
-                fileContent = fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
-                fileContent = fileContent.replace('.validity.notBefore.getFullYear() + 2);', '.validity.notBefore.getFullYear() + 1);');
-                fs.writeFileSync(mitmCaFile, fileContent, 'utf-8');
-                adapter.log.info('http-mitm-proxy/lib/ca.js patched to only generate 1 year long certificates');
-            } else {
-                adapter.log.debug('http-mitm-proxy/lib/ca.js already patched to only generate 1 year long certificates');
-            }
-        } else {
-            adapter.log.info('http-mitm-proxy/lib/ca.js not found');
-        }
-    } catch (e) {
-        adapter.log.warn(`Cannot patch http-mitm-proxy/lib/ca.js: ${e}`);
-    }
     mitm = require('http-mitm-proxy');
 
     if (adapter.config.cloudUsername && adapter.config.cloudPassword) {
