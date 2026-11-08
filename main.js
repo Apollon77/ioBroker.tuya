@@ -41,6 +41,7 @@ const deviceGroups = {};
 let discoveredEncryptedDevices = {};
 const valueHandler = {};
 const enhancedValueHandler = {};
+const valueRanges = {};
 let connected = null;
 let connectedCount = 0;
 let adapterInitDone = false;
@@ -222,6 +223,51 @@ function handleSetValueCorrections(value, native) {
     return value
 }
 
+/**
+ * Some devices report values outside of the min/max range defined in their Tuya schema
+ * (e.g. 0 when a feature is disabled). Extend the range of the object so that the real
+ * value can be stored without js-controller warnings.
+ * Returns the extended common.min/max values or null if the value is within the range.
+ */
+function getExtendedValueRange(stateId, value) {
+    const range = valueRanges[stateId];
+    if (!range || typeof value !== 'number' || isNaN(value)) return null;
+    const common = {};
+    if (typeof range.min === 'number' && value < range.min) {
+        common.min = value;
+    }
+    if (typeof range.max === 'number' && value > range.max) {
+        common.max = value;
+    }
+    if (!Object.keys(common).length) return null;
+    adapter.log.info(`${stateId}: Value ${value} is outside of the range defined by the device schema (min ${range.min}, max ${range.max}). Extend the range of the object`);
+    Object.assign(range, common);
+    return common;
+}
+
+function registerValueRange(stateId, common, initialValue) {
+    if (common.type !== 'number' || (typeof common.min !== 'number' && typeof common.max !== 'number')) return;
+    valueRanges[stateId] = {min: common.min, max: common.max};
+    const extendedRange = getExtendedValueRange(stateId, initialValue);
+    if (extendedRange) {
+        Object.assign(common, extendedRange);
+    }
+}
+
+function setDpState(stateId, value) {
+    const extendedRange = getExtendedValueRange(stateId, value);
+    if (!extendedRange) {
+        adapter.setState(stateId, value, true);
+        return;
+    }
+    adapter.extendObject(stateId, {common: extendedRange}, (err) => {
+        if (err) {
+            adapter.log.warn(`${stateId}: Cannot extend value range: ${err.message}`);
+        }
+        adapter.setState(stateId, value, true);
+    });
+}
+
 async function initDeviceGroups() {
     if (!appCloudApi || !appCloudApi.groups) {
         return;
@@ -388,6 +434,7 @@ async function initDeviceGroups() {
                     }
                 };
             }
+            registerValueRange(`${deviceGroupId}.${id}`, obj, values[id]);
             objectHelper.setOrUpdateObject(`${deviceGroupId}.${id}`, {
                 type: 'state',
                 common: obj,
@@ -640,6 +687,7 @@ async function initDeviceObjects(deviceId, data, objs, values, preserveFields) {
             values[id] = valueHandler[`${deviceId}.${id}`](values[id]);
             adapter.log.debug(`Corrected value: ${values[id]}`);
         }
+        registerValueRange(`${deviceId}.${id}`, obj, values[id]);
         objectHelper.setOrUpdateObject(`${deviceId}.${id}`, {
             type: 'state',
             common: obj,
@@ -853,7 +901,7 @@ function pollDeviceGroup(deviceGroupId, overwriteDelay) {
             if (valueHandler[deviceGroupStateId]) {
                 value = valueHandler[deviceGroupStateId](value);
             }
-            adapter.setState(deviceGroupStateId, value, true);
+            setDpState(deviceGroupStateId, value);
             if (enhancedValueHandler[deviceGroupStateId]) {
                 for (const subId of Object.keys(enhancedValueHandler[deviceGroupStateId])) {
                     const enhancedValue = enhancedValueHandler[deviceGroupStateId][subId].handler(value, true);
@@ -970,7 +1018,7 @@ function connectDevice(deviceId, callback) {
                     if (valueHandler[`${deviceIdToSet}.${id}`]) {
                         value = valueHandler[`${deviceIdToSet}.${id}`](value);
                     }
-                    adapter.setState(`${deviceIdToSet}.${id}`, value, true);
+                    setDpState(`${deviceIdToSet}.${id}`, value);
                     if (enhancedValueHandler[`${deviceIdToSet}.${id}`]) {
                         for (const subId of Object.keys(enhancedValueHandler[`${deviceIdToSet}.${id}`])) {
                             const enhancedValue = enhancedValueHandler[`${deviceIdToSet}.${id}`][subId].handler(value);
@@ -2111,7 +2159,7 @@ async function updateValuesFromCloud(groupId, retry = false) {
                 if (valueHandler[`${deviceId}.${id}`]) {
                     value = valueHandler[`${deviceId}.${id}`](value);
                 }
-                adapter.setState(`${deviceId}.${id}`, value, true);
+                setDpState(`${deviceId}.${id}`, value);
                 if (enhancedValueHandler[`${deviceId}.${id}`]) {
                     for (const subId of Object.keys(enhancedValueHandler[`${deviceId}.${id}`])) {
                         const enhancedValue = enhancedValueHandler[`${deviceId}.${id}`][subId].handler(value);
