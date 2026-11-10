@@ -177,6 +177,9 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (@michiproep) Ignore unit/min/max/scale for bitmap datapoints (some product schemas contain wrong values copied from other datapoints, leading to "less than min" warnings and wrongly scaled bitmap values). Existing objects are cleaned up automatically
+
 ### 3.18.2 (2026-08-25)
 * (@Apollon77) Removes the http-mitm-proxy patching because no longer needed
 

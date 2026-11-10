@@ -202,6 +202,39 @@ async function initScenes() {
     }
 }
 
+const bitmapObjectsChecked = new Set();
+/**
+ * Bitmap datapoints are bit fields, so unit/min/max/scale do not apply. Older adapter versions
+ * copied them from (broken) product schemas into the objects. extendObject does not remove
+ * existing fields, so remove them explicitly once per object.
+ */
+async function removeBitmapRangeFields(baseId, schema) {
+    if (!Array.isArray(schema)) return;
+    for (const def of schema) {
+        if (!def || !def.property || def.property.type !== 'bitmap') continue;
+        const id = `${baseId}.${def.id}`;
+        if (bitmapObjectsChecked.has(id)) continue;
+        bitmapObjectsChecked.add(id);
+        try {
+            const obj = await adapter.getObjectAsync(id);
+            if (!obj || !obj.common) continue;
+            let changed = false;
+            for (const key of ['unit', 'min', 'max', 'scale']) {
+                if (key in obj.common) {
+                    delete obj.common[key];
+                    changed = true;
+                }
+            }
+            if (changed) {
+                adapter.log.debug(`${id}: Remove unit/min/max/scale from bitmap object`);
+                await adapter.setObjectAsync(id, obj);
+            }
+        } catch (err) {
+            adapter.log.warn(`${id}: Cannot clean up bitmap object: ${err.message}`);
+        }
+    }
+}
+
 function handleValueChangeCorrections(value, native) {
     if ((
         (native.code === 'TempSet' && native.id === 2) ||
@@ -265,6 +298,7 @@ async function initDeviceGroups() {
     });
 
     const preserveFields = ['name'];
+    const bitmapCleanups = [];
 
     for (const devGroupId of Object.keys(deviceGroups)) {
         const deviceGroup = deviceGroups[devGroupId];
@@ -278,6 +312,7 @@ async function initDeviceGroups() {
         if (groupSchema) {
             adapter.log.debug(`Devicegroup ${deviceGroupId}: Use following Schema for ${deviceGroup.productId}: ${JSON.stringify(groupSchema)}`);
             objs = mapper.getObjectsForSchema(groupSchema.schema, groupSchema.schemaExt, deviceGroup.dpName);
+            bitmapCleanups.push([deviceGroupId, groupSchema.schema]);
         } else {
             adapter.log.info(`Devicegroup ${deviceGroupId}: No schema exists, init basic states ...`);
             objs = mapper.getObjectsForData(deviceGroup.dps, true);
@@ -446,7 +481,10 @@ async function initDeviceGroups() {
         }, deviceGroup.name ? preserveFields : undefined);
 
     }
-    return new Promise((resolve) => objectHelper.processObjectQueue(() => {
+    return new Promise((resolve) => objectHelper.processObjectQueue(async () => {
+        for (const [deviceGroupId, schema] of bitmapCleanups) {
+            await removeBitmapRangeFields(deviceGroupId, schema);
+        }
         for (const deviceGroupId of Object.keys(deviceGroups)) {
             //pollDeviceGroup(deviceGroupId, adapter.config.cloudPollingInterval * Math.random() + 5);
         }
@@ -1334,6 +1372,7 @@ async function initDevice(deviceId, productKey, data, preserveFields, fromDiscov
     }
 
     objectHelper.processObjectQueue(async () => {
+        await removeBitmapRangeFields(deviceId, data.schema);
         const noLocalConnectionState = await adapter.getStateAsync(`${deviceId}.noLocalConnection`);
         knownDevices[deviceId].noLocalConnection = noLocalConnectionState && !!noLocalConnectionState.val;
         adapter.log.info(`${deviceId}: ${knownDevices[deviceId].noLocalConnection ? 'Do not connect' : 'Connect'} locally to device`);
