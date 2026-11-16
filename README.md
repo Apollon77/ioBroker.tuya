@@ -177,6 +177,9 @@ When there are issues with the Tuya App Cloud synchronisation then additional lo
 Send the log with reference to the generated GitHub issue to iobroker@fischer-ka.de
 
 ## Changelog
+### __WORK IN PROGRESS__
+* Fix adapter crash (UNCAUGHT_EXCEPTION/restart loop) on cloud request errors, e.g. short internet outages (#760)
+
 ### 3.18.2 (2026-08-25)
 * (@Apollon77) Removes the http-mitm-proxy patching because no longer needed
 
